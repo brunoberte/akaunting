@@ -48,8 +48,6 @@ class CreateBillsTable extends Migration
             $table->double('quantity', 7, 2);
             $table->double('price', 15, 4);
             $table->double('total', 15, 4);
-            $table->float('tax', 15, 4)->default('0.0000');
-            $table->integer('tax_id');
             $table->timestamps();
             $table->softDeletes();
 

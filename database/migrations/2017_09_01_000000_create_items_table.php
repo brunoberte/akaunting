@@ -22,7 +22,6 @@ class CreateItemsTable extends Migration
             $table->double('purchase_price', 15, 4);
             $table->integer('quantity');
             $table->integer('category_id')->nullable();
-            $table->integer('tax_id')->nullable();
             $table->string('picture')->nullable();
             $table->boolean('enabled');
             $table->timestamps();
