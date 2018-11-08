@@ -13,23 +13,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\UpdateFinished' => [
-            'App\Listeners\Updates\Version106',
-            'App\Listeners\Updates\Version107',
-            'App\Listeners\Updates\Version108',
-            'App\Listeners\Updates\Version109',
-            'App\Listeners\Updates\Version110',
-            'App\Listeners\Updates\Version112',
-            'App\Listeners\Updates\Version113',
-            'App\Listeners\Updates\Version119',
-            'App\Listeners\Updates\Version120',
-            'App\Listeners\Updates\Version126',
-            'App\Listeners\Updates\Version127',
-            'App\Listeners\Updates\Version129',
-            'App\Listeners\Updates\Version1210',
-            'App\Listeners\Updates\Version1211',
-            'App\Listeners\Updates\Version130',
-        ],
         'Illuminate\Auth\Events\Login' => [
             'App\Listeners\Auth\Login',
         ],

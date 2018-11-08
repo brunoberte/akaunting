@@ -34,7 +34,6 @@ return [
     'notes'                 => 'Nota|Notas',
     'totals'                => 'Total|Totais',
     'languages'             => 'Idioma|Idiomas',
-    'updates'               => 'Atualização|Atualizações',
     'numbers'               => 'Número|Números',
     'statuses'              => 'Status|Status',
     'others'                => 'Outro | Outros',

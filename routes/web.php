@@ -175,21 +175,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::get('{alias}', 'Modules\Item@show');
             });
 
-            Route::group(['prefix' => 'install'], function () {
-                Route::get('updates/changelog', 'Install\Updates@changelog');
-                Route::get('updates/check', 'Install\Updates@check');
-                Route::get('updates/update/{alias}/{version}', 'Install\Updates@update');
-                Route::get('updates/post/{alias}/{old}/{new}', 'Install\Updates@post');
-                Route::post('updates/steps', 'Install\Updates@steps');
-                Route::post('updates/download', 'Install\Updates@download');
-                Route::post('updates/download', 'Install\Updates@download');
-                Route::post('updates/unzip', 'Install\Updates@unzip');
-                Route::post('updates/file-copy', 'Install\Updates@fileCopy');
-                Route::post('updates/migrate', 'Install\Updates@migrate');
-                Route::post('updates/finish', 'Install\Updates@finish');
-                Route::resource('updates', 'Install\Updates');
-            });
-
             Route::group(['as' => 'modals.', 'prefix' => 'modals'], function () {
                 Route::resource('categories', 'Modals\Categories');
                 Route::resource('customers', 'Modals\Customers');

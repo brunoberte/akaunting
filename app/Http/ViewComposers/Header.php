@@ -58,8 +58,6 @@ class Header
             }
         }
 
-        $updates = count(Updater::all());
-
         $this->loadSuggestions();
 
         $view->with([
@@ -69,7 +67,6 @@ class Header
             'invoices' => $invoices,
             'items' => $items,
             'company' => $company,
-            'updates' => $updates,
         ]);
     }
 }
