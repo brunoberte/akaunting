@@ -11,8 +11,6 @@
             @include('partials.admin.menu')
 
             @include('partials.admin.content')
-
-            @include('partials.admin.footer')
         </div>
 
         @stack('body_end')
