@@ -22,15 +22,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::post('currencies', 'Wizard\Currencies@store')->name('wizard.currencies.store');
                 Route::patch('currencies/{currency}', 'Wizard\Currencies@update')->name('wizard.currencies.update');
 
-                Route::get('taxes', 'Wizard\Taxes@index')->name('wizard.taxes.index');
-                Route::get('taxes/create', 'Wizard\Taxes@create')->name('wizard.taxes.create');
-                Route::get('taxes/{tax}/edit', 'Wizard\Taxes@edit')->name('wizard.taxes.edit');
-                Route::get('taxes/{tax}/enable', 'Wizard\Taxes@enable')->name('wizard.taxes.enable');
-                Route::get('taxes/{tax}/disable', 'Wizard\Taxes@disable')->name('wizard.taxes.disable');
-                Route::get('taxes/{tax}/delete', 'Wizard\Taxes@destroy')->name('wizard.taxes.delete');
-                Route::post('taxes', 'Wizard\Taxes@store')->name('wizard.taxes.store');
-                Route::patch('taxes/{tax}', 'Wizard\Taxes@update')->name('wizard.taxes.upadate');
-
                 Route::get('finish', 'Wizard\Finish@index')->name('wizard.finish.index');
             });
         });
@@ -143,7 +134,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('income-summary', 'Reports\IncomeSummary');
                 Route::resource('expense-summary', 'Reports\ExpenseSummary');
                 Route::resource('income-expense-summary', 'Reports\IncomeExpenseSummary');
-                Route::resource('tax-summary', 'Reports\TaxSummary');
                 Route::resource('profit-loss', 'Reports\ProfitLoss');
             });
 
@@ -159,9 +149,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('currencies', 'Settings\Currencies');
                 Route::get('settings', 'Settings\Settings@edit');
                 Route::patch('settings', 'Settings\Settings@update');
-                Route::get('taxes/{tax}/enable', 'Settings\Taxes@enable')->name('taxes.enable');
-                Route::get('taxes/{tax}/disable', 'Settings\Taxes@disable')->name('taxes.disable');
-                Route::resource('taxes', 'Settings\Taxes');
                 Route::get('apps/{alias}', 'Settings\Modules@edit');
                 Route::patch('apps/{alias}', 'Settings\Modules@update');
             });
@@ -209,7 +196,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('vendors', 'Modals\Vendors');
                 Route::resource('invoices/{invoice}/payment', 'Modals\InvoicePayments', ['middleware' => ['dateformat', 'money']]);
                 Route::resource('bills/{bill}/payment', 'Modals\BillPayments', ['middleware' => ['dateformat', 'money']]);
-                Route::resource('taxes', 'Modals\Taxes');
             });
 
             /* @deprecated */

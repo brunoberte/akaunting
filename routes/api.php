@@ -29,7 +29,6 @@ $api->version('v1', ['middleware' => ['api']], function($api) {
         $api->resource('categories', 'Settings\Categories');
         $api->resource('currencies', 'Settings\Currencies');
         $api->resource('settings', 'Settings\Settings');
-        $api->resource('taxes', 'Settings\Taxes');
 
         // Common
         $api->resource('ping', 'Common\Ping');
