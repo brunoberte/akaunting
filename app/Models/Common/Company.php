@@ -121,11 +121,6 @@ class Company extends Eloquent
         return $this->hasMany('App\Models\Setting\Setting');
     }
 
-    public function taxes()
-    {
-        return $this->hasMany('App\Models\Setting\Tax');
-    }
-
     public function transfers()
     {
         return $this->hasMany('App\Models\Banking\Transfer');

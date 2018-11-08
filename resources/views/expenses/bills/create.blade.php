@@ -50,9 +50,6 @@
                             @stack('price_th_start')
                             <th width="10%" class="text-right">{{ trans('bills.price') }}</th>
                             @stack('price_th_end')
-                            @stack('taxes_th_start')
-                            <th width="15%" class="text-right">{{ trans_choice('general.taxes', 1) }}</th>
-                            @stack('taxes_th_end')
                             @stack('total_th_start')
                             <th width="10%" class="text-right">{{ trans('bills.total') }}</th>
                             @stack('total_th_end')
@@ -93,14 +90,6 @@
                             </td>
                         </tr>
                         @stack('add_discount_td_end')
-                        @stack('tax_total_td_start')
-                        <tr id="tr-tax">
-                            <td class="text-right" colspan="5">
-                                <strong>{{ trans_choice('general.taxes', 1) }}</strong>
-                            </td>
-                            <td class="text-right"><span id="tax-total">0</span></td>
-                        </tr>
-                        @stack('tax_total_td_end')
                         @stack('grand_total_td_start')
                         <tr id="tr-total">
                             <td class="text-right" colspan="5"><strong>{{ trans('bills.total') }}</strong></td>
@@ -187,21 +176,6 @@
 
                         $('[data-toggle="tooltip"]').tooltip('hide');
 
-                        $('#item-row-' + item_row + ' .tax-select2').select2({
-                            placeholder: {
-                                id: '-1', // the value of the option
-                                text: "{{ trans('general.form.select.field', ['field' => trans_choice('general.taxes', 1)]) }}"
-                            },
-                            escapeMarkup: function (markup) {
-                                return markup;
-                            },
-                            language: {
-                                noResults: function () {
-                                    return '<span id="tax-add-new"><i class="fa fa-plus"> {{ trans('general.title.new', ['type' => trans_choice('general.tax_rates', 1)]) }}</span>';
-                                }
-                            }
-                        });
-
                         var currency = json['data']['currency'];
 
                         $("#item-price-" + item_row).maskMoney({
@@ -258,21 +232,6 @@
                 language: '{{ language()->getShortCode() }}'
             });
 
-            $(".tax-select2").select2({
-                placeholder: {
-                    id: '-1', // the value of the option
-                    text: "{{ trans('general.form.select.field', ['field' => trans_choice('general.taxes', 1)]) }}"
-                },
-                escapeMarkup: function (markup) {
-                    return markup;
-                },
-                language: {
-                    noResults: function () {
-                        return '<span id="tax-add-new"><i class="fa fa-plus"> {{ trans('general.title.new', ['type' => trans_choice('general.tax_rates', 1)]) }}</span>';
-                    }
-                }
-            });
-
             $("#vendor_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.vendors', 1)]) }}"
             });
@@ -289,24 +248,6 @@
                 text  : '{{ trans('general.form.select.file') }}',
                 style : 'btn-default',
                 placeholder : '{{ trans('general.form.no_file_selected') }}'
-            });
-
-            $(document).on('click', '#tax-add-new', function(e){
-                tax_name = $('.select2-search__field').val();
-
-                $('#modal-create-tax').remove();
-
-                $.ajax({
-                    url: '{{ url("modals/taxes/create") }}',
-                    type: 'GET',
-                    dataType: 'JSON',
-                    data: {name: tax_name},
-                    success: function(json) {
-                        if (json['success']) {
-                            $('body').append(json['html']);
-                        }
-                    }
-                });
             });
 
             var autocomplete_path = "{{ url('common/items/autocomplete') }}";
@@ -336,11 +277,9 @@
                         $('#item-id-' + item_id).val(data.item_id);
                         $('#item-quantity-' + item_id).val('1');
                         $('#item-price-' + item_id).val(data.purchase_price);
-                        $('#item-tax-' + item_id).val(data.tax_id);
 
                         // This event Select2 Stylesheet
                         $('#item-price-' + item_id).trigger('focusout');
-                        $('#item-tax-' + item_id).trigger('change');
 
                         $('#item-total-' + item_id).html(data.total);
 
@@ -490,7 +429,6 @@
 
                         $('#sub-total').html(data.sub_total);
                         $('#discount-total').html(data.discount_total);
-                        $('#tax-total').html(data.tax_total);
                         $('#grand-total').html(data.grand_total);
 
                         $('.input-price').each(function(){

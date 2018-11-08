@@ -8,7 +8,6 @@ use App\Http\Requests\Common\TotalItem as TRequest;
 use App\Models\Common\Item;
 use App\Models\Setting\Category;
 use App\Models\Setting\Currency;
-use App\Models\Setting\Tax;
 use App\Traits\Uploads;
 use App\Utilities\Import;
 use App\Utilities\ImportFile;
@@ -50,11 +49,9 @@ class Items extends Controller
     {
         $categories = Category::enabled()->orderBy('name')->type('item')->pluck('name', 'id');
 
-        $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
         $currency = Currency::where('code', '=', setting('general.default_currency', 'USD'))->first();
 
-        return view('common.items.create', compact('categories', 'taxes', 'currency'));
+        return view('common.items.create', compact('categories', 'currency'));
     }
 
     /**
@@ -131,11 +128,9 @@ class Items extends Controller
     {
         $categories = Category::enabled()->orderBy('name')->type('item')->pluck('name', 'id');
 
-        $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
         $currency = Currency::where('code', '=', setting('general.default_currency', 'USD'))->first();
 
-        return view('common.items.edit', compact('item', 'categories', 'taxes', 'currency'));
+        return view('common.items.edit', compact('item', 'categories', 'currency'));
     }
 
     /**
@@ -270,33 +265,6 @@ class Items extends Controller
 
         $items = $autocomplete->get();
 
-        if ($items) {
-            foreach ($items as $item) {
-                $tax = Tax::find($item->tax_id);
-
-                $item_tax_price = 0;
-
-                if (!empty($tax)) {
-                    $item_tax_price = ($item->sale_price / 100) * $tax->rate;
-                }
-
-                //$item->sale_price = $this->convertPrice($item->sale_price, $currency_code, $currency->rate);
-                //$item->purchase_price = $this->convertPrice($item->purchase_price, $currency_code, $currency->rate);
-
-                switch ($type) {
-                    case 'bill':
-                        $total = $item->purchase_price + $item_tax_price;
-                        break;
-                    case 'invoice':
-                    default:
-                        $total = $item->sale_price + $item_tax_price;
-                        break;
-                }
-
-                $item->total = money($total, $currency_code, true)->format();
-            }
-        }
-
         return response()->json($items);
     }
 
@@ -313,7 +281,6 @@ class Items extends Controller
         $json = new \stdClass;
 
         $sub_total = 0;
-        $tax_total = 0;
 
         $items = array();
 
@@ -322,26 +289,9 @@ class Items extends Controller
                 $price = (double) $item['price'];
                 $quantity = (double) $item['quantity'];
 
-                $item_tax_total = 0;
                 $item_sub_total = ($price * $quantity);
 
-                if (!empty($item['tax_id'])) {
-                    foreach ($item['tax_id'] as $tax_id) {
-                        $tax = Tax::find($tax_id);
-
-                        $item_tax = (($price * $quantity) / 100) * $tax->rate;
-
-                        // Apply discount to tax
-                        if ($discount) {
-                            $item_tax = $item_tax - ($item_tax * ($discount / 100));
-                        }
-
-                        $item_tax_total += $item_tax;
-                    }
-                }
-
                 $sub_total += $item_sub_total;
-                $tax_total += $item_tax_total;
 
                 $items[$key] = money($item_sub_total, $currency_code, true)->format();
             }
@@ -354,8 +304,6 @@ class Items extends Controller
         $json->discount_text= trans('invoices.add_discount');
         $json->discount_total = '';
 
-        $json->tax_total = money($tax_total, $currency_code, true)->format();
-
         // Apply discount to total
         if ($discount) {
             $json->discount_text= trans('invoices.show_discount', ['discount' => $discount]);
@@ -364,7 +312,7 @@ class Items extends Controller
             $sub_total = $sub_total - ($sub_total * ($discount / 100));
         }
 
-        $grand_total = $sub_total + $tax_total;
+        $grand_total = $sub_total;
 
         $json->grand_total = money($grand_total, $currency_code, true)->format();
 

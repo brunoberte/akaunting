@@ -14,14 +14,12 @@ use App\Models\Expense\BillStatus;
 use App\Models\Expense\Vendor;
 use App\Models\Expense\Bill;
 use App\Models\Expense\BillItem;
-use App\Models\Expense\BillItemTax;
 use App\Models\Expense\BillTotal;
 use App\Models\Expense\BillHistory;
 use App\Models\Expense\BillPayment;
 use App\Models\Common\Item;
 use App\Models\Setting\Category;
 use App\Models\Setting\Currency;
-use App\Models\Setting\Tax;
 use App\Traits\Currencies;
 use App\Traits\DateTime;
 use App\Traits\Uploads;
@@ -95,11 +93,9 @@ class Bills extends Controller
 
         $items = Item::enabled()->orderBy('name')->pluck('name', 'id');
 
-        $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
         $categories = Category::enabled()->type('expense')->orderBy('name')->pluck('name', 'id');
 
-        return view('expenses.bills.create', compact('vendors', 'currencies', 'currency', 'items', 'taxes', 'categories'));
+        return view('expenses.bills.create', compact('vendors', 'currencies', 'currency', 'items', 'categories'));
     }
 
     /**
@@ -120,9 +116,6 @@ class Bills extends Controller
             $bill->attachMedia($media, 'attachment');
         }
 
-        $taxes = [];
-
-        $tax_total = 0;
         $sub_total = 0;
         $discount_total = 0;
         $discount = $request['discount'];
@@ -146,66 +139,17 @@ class Bills extends Controller
                     $item_object->save();
                 }
 
-                $item_tax = 0;
-                $item_taxes = [];
-                $bill_item_taxes = [];
-
-                if (!empty($item['tax_id'])) {
-                    foreach ($item['tax_id'] as $tax_id) {
-                        $tax_object = Tax::find($tax_id);
-
-                        $item_taxes[] = $tax_id;
-
-                        $tax = (((double) $item['price'] * (double) $item['quantity']) / 100) * $tax_object->rate;
-
-                        // Apply discount to tax
-                        if ($discount) {
-                            $tax = $tax - ($tax * ($discount / 100));
-                        }
-
-                        $bill_item_taxes[] = [
-                            'company_id' => $request['company_id'],
-                            'bill_id' => $bill->id,
-                            'tax_id' => $tax_id,
-                            'name' => $tax_object->name,
-                            'amount' => $tax,
-                        ];
-
-                        $item_tax += $tax;
-                    }
-                }
 
                 $bill_item['item_id'] = $item['item_id'];
                 $bill_item['name'] = str_limit($item['name'], 180, '');
                 $bill_item['sku'] = $item_sku;
                 $bill_item['quantity'] = (double) $item['quantity'];
                 $bill_item['price'] = (double) $item['price'];
-                $bill_item['tax'] = $item_tax;
-                $bill_item['tax_id'] = 0;//$tax_id;
                 $bill_item['total'] = (double) $item['price'] * (double) $item['quantity'];
 
                 $bill_item_created = BillItem::create($bill_item);
 
-                if ($bill_item_taxes) {
-                    foreach ($bill_item_taxes as $bill_item_tax) {
-                        $bill_item_tax['bill_item_id'] = $bill_item_created->id;
-
-                        BillItemTax::create($bill_item_tax);
-
-                        // Set taxes
-                        if (isset($taxes) && array_key_exists($bill_item_tax['tax_id'], $taxes)) {
-                            $taxes[$bill_item_tax['tax_id']]['amount'] += $bill_item_tax['amount'];
-                        } else {
-                            $taxes[$bill_item_tax['tax_id']] = [
-                                'name' => $bill_item_tax['name'],
-                                'amount' => $bill_item_tax['amount']
-                            ];
-                        }
-                    }
-                }
-
                 // Calculate totals
-                $tax_total += $item_tax;
                 $sub_total += $bill_item['total'];
             }
         }
@@ -219,14 +163,14 @@ class Bills extends Controller
             $s_total = $s_total - $s_discount;
         }
 
-        $amount = $s_total + $tax_total;
+        $amount = $s_total;
 
         $request['amount'] = money($amount, $request['currency_code'])->getAmount();
 
         $bill->update($request->input());
 
         // Add bill totals
-        $this->addTotals($bill, $request, $taxes, $sub_total, $discount_total, $tax_total);
+        $this->addTotals($bill, $request, $sub_total, $discount_total);
 
         // Add bill history
         BillHistory::create([
@@ -337,11 +281,9 @@ class Bills extends Controller
 
         $items = Item::enabled()->orderBy('name')->pluck('name', 'id');
 
-        $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
         $categories = Category::enabled()->type('expense')->orderBy('name')->pluck('name', 'id');
 
-        return view('expenses.bills.edit', compact('bill', 'vendors', 'currencies', 'currency', 'items', 'taxes', 'categories'));
+        return view('expenses.bills.edit', compact('bill', 'vendors', 'currencies', 'currency', 'items', 'categories'));
     }
 
     /**
@@ -354,9 +296,6 @@ class Bills extends Controller
      */
     public function update(Bill $bill, Request $request)
     {
-        $taxes = [];
-
-        $tax_total = 0;
         $sub_total = 0;
         $discount_total = 0;
         $discount = $request['discount'];
@@ -369,7 +308,6 @@ class Bills extends Controller
             $this->deleteRelationships($bill, 'items');
 
             foreach ($request['item'] as $item) {
-                unset($tax_object);
                 $item_sku = '';
 
                 if (!empty($item['item_id'])) {
@@ -379,66 +317,16 @@ class Bills extends Controller
                     $item_sku = $item_object->sku;
                 }
 
-                $item_tax = 0;
-                $item_taxes = [];
-                $bill_item_taxes = [];
-
-                if (!empty($item['tax_id'])) {
-                    foreach ($item['tax_id'] as $tax_id) {
-                        $tax_object = Tax::find($tax_id);
-
-                        $item_taxes[] = $tax_id;
-
-                        $tax = (((double) $item['price'] * (double) $item['quantity']) / 100) * $tax_object->rate;
-
-                        // Apply discount to tax
-                        if ($discount) {
-                            $tax = $tax - ($tax * ($discount / 100));
-                        }
-
-                        $bill_item_taxes[] = [
-                            'company_id' => $request['company_id'],
-                            'bill_id' => $bill->id,
-                            'tax_id' => $tax_id,
-                            'name' => $tax_object->name,
-                            'amount' => $tax,
-                        ];
-
-                        $item_tax += $tax;
-                    }
-                }
-
                 $bill_item['item_id'] = $item['item_id'];
                 $bill_item['name'] = str_limit($item['name'], 180, '');
                 $bill_item['sku'] = $item_sku;
                 $bill_item['quantity'] = (double) $item['quantity'];
                 $bill_item['price'] = (double) $item['price'];
-                $bill_item['tax'] = $item_tax;
-                $bill_item['tax_id'] = 0;//$tax_id;
                 $bill_item['total'] = (double) $item['price'] * (double) $item['quantity'];
 
-                $tax_total += $item_tax;
                 $sub_total += $bill_item['total'];
 
-                $bill_item_created = BillItem::create($bill_item);
-
-                if ($bill_item_taxes) {
-                    foreach ($bill_item_taxes as $bill_item_tax) {
-                        $bill_item_tax['bill_item_id'] = $bill_item_created->id;
-
-                        BillItemTax::create($bill_item_tax);
-
-                        // Set taxes
-                        if (isset($taxes) && array_key_exists($bill_item_tax['tax_id'], $taxes)) {
-                            $taxes[$bill_item_tax['tax_id']]['amount'] += $bill_item_tax['amount'];
-                        } else {
-                            $taxes[$bill_item_tax['tax_id']] = [
-                                'name' => $bill_item_tax['name'],
-                                'amount' => $bill_item_tax['amount']
-                            ];
-                        }
-                    }
-                }
+                BillItem::create($bill_item);
             }
         }
 
@@ -451,7 +339,7 @@ class Bills extends Controller
             $s_total = $s_total - $s_discount;
         }
 
-        $amount = $s_total + $tax_total;
+        $amount = $s_total;
 
         $request['amount'] = money($amount, $request['currency_code'])->getAmount();
 
@@ -468,7 +356,7 @@ class Bills extends Controller
         $this->deleteRelationships($bill, 'totals');
 
         // Add bill totals
-        $this->addTotals($bill, $request, $taxes, $sub_total, $discount_total, $tax_total);
+        $this->addTotals($bill, $request, $sub_total, $discount_total);
 
         // Recurring
         $bill->updateRecurring();
@@ -741,14 +629,12 @@ class Bills extends Controller
         if ($request['item_row']) {
             $item_row = $request['item_row'];
 
-            $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
             $currency = Currency::where('code', '=', $request['currency_code'])->first();
 
             // it should be integer for amount mask
             $currency->precision = (int) $currency->precision;
 
-            $html = view('expenses.bills.item', compact('item_row', 'taxes', 'currency'))->render();
+            $html = view('expenses.bills.item', compact('item_row', 'currency'))->render();
 
             return response()->json([
                 'success' => true,
@@ -795,7 +681,7 @@ class Bills extends Controller
         return $bill;
     }
 
-    protected function addTotals($bill, $request, $taxes, $sub_total, $discount_total, $tax_total)
+    protected function addTotals($bill, $request, $sub_total, $discount_total)
     {
         $sort_order = 1;
 
@@ -828,29 +714,13 @@ class Bills extends Controller
             $sort_order++;
         }
 
-        // Added bill taxes
-        if (isset($taxes)) {
-            foreach ($taxes as $tax) {
-                BillTotal::create([
-                    'company_id' => $request['company_id'],
-                    'bill_id' => $bill->id,
-                    'code' => 'tax',
-                    'name' => $tax['name'],
-                    'amount' => $tax['amount'],
-                    'sort_order' => $sort_order,
-                ]);
-
-                $sort_order++;
-            }
-        }
-
         // Added bill total
         BillTotal::create([
             'company_id' => $request['company_id'],
             'bill_id' => $bill->id,
             'code' => 'total',
             'name' => 'bills.total',
-            'amount' => $sub_total + $tax_total,
+            'amount' => $sub_total,
             'sort_order' => $sort_order,
         ]);
     }

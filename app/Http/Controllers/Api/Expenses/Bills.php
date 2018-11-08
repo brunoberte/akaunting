@@ -12,7 +12,6 @@ use App\Models\Expense\BillItem;
 use App\Models\Expense\BillPayment;
 use App\Models\Expense\BillStatus;
 use App\Models\Common\Item;
-use App\Models\Setting\Tax;
 use App\Transformers\Expense\Bill as Transformer;
 use Dingo\Api\Routing\Helpers;
 
@@ -77,26 +76,13 @@ class Bills extends ApiController
                     $item_sku = $item['sku'];
                 }
 
-                $tax = $tax_id = 0;
-
-                if (!empty($item['tax_id'])) {
-                    $tax_object = Tax::find($item['tax_id']);
-
-                    $tax_id = $item['tax_id'];
-
-                    $tax = (($item['price'] * $item['quantity']) / 100) * $tax_object->rate;
-                } elseif (!empty($item['tax'])) {
-                    $tax = $item['tax'];
-                }
 
                 $bill_item['item_id'] = $item_id;
                 $bill_item['name'] = str_limit($item['name'], 180, '');
                 $bill_item['sku'] = $item_sku;
                 $bill_item['quantity'] = $item['quantity'];
                 $bill_item['price'] = $item['price'];
-                $bill_item['tax'] = $tax;
-                $bill_item['tax_id'] = $tax_id;
-                $bill_item['total'] = ($item['price'] + $bill_item['tax']) * $item['quantity'];
+                $bill_item['total'] = ($item['price']) * $item['quantity'];
 
                 $request['amount'] += $bill_item['total'];
 
@@ -150,26 +136,12 @@ class Bills extends ApiController
                     $item_sku = $item['sku'];
                 }
 
-                $tax = $tax_id = 0;
-
-                if (!empty($item['tax_id'])) {
-                    $tax_object = Tax::find($item['tax_id']);
-
-                    $tax_id = $item['tax_id'];
-
-                    $tax = (($item['price'] * $item['quantity']) / 100) * $tax_object->rate;
-                } elseif (!empty($item['tax'])) {
-                    $tax = $item['tax'];
-                }
-
                 $bill_item['item_id'] = $item_id;
                 $bill_item['name'] = str_limit($item['name'], 180, '');
                 $bill_item['sku'] = $item_sku;
                 $bill_item['quantity'] = $item['quantity'];
                 $bill_item['price'] = $item['price'];
-                $bill_item['tax'] = $tax;
-                $bill_item['tax_id'] = $tax_id;
-                $bill_item['total'] = ($item['price'] + $bill_item['tax']) * $item['quantity'];
+                $bill_item['total'] = ($item['price']) * $item['quantity'];
 
                 $request['amount'] += $bill_item['total'];
 

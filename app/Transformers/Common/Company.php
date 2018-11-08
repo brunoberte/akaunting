@@ -22,7 +22,6 @@ class Company extends TransformerAbstract
             'logo' => $model->company_logo,
             'default_account' => $model->default_account,
             'default_currency' => $model->default_currency,
-            'default_tax' => $model->default_tax,
             'default_payment_method' => $model->default_payment_method,
             'default_language' => $model->default_language,
             'enabled' => $model->enabled,

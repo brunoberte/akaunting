@@ -20,8 +20,6 @@
 
         {{ Form::textGroup('quantity', trans_choice('items.quantities', 1), 'cubes', ['required' => 'required'], '1') }}
 
-        {{ Form::selectGroup('tax_id', trans_choice('general.taxes', 1), 'percent', $taxes, setting('general.default_tax'), []) }}
-
         @stack('category_id_input_start')
         <div class="form-group col-md-6 required {{ $errors->has('category_id') ? 'has-error' : ''}}">
             {!! Form::label('category_id', trans_choice('general.categories', 1), ['class' => 'control-label']) !!}
@@ -97,13 +95,6 @@
         $('#enabled_1').trigger('click');
 
         $('#name').focus();
-
-        $("#tax_id").select2({
-            placeholder: {
-                id: '-1', // the value of the option
-                text: "{{ trans('general.form.select.field', ['field' => trans_choice('general.taxes', 1)]) }}"
-            }
-        });
 
         $("#category_id").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"

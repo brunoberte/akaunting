@@ -33,6 +33,7 @@
                         <th class="col-md-3 hidden-xs">@sortablelink('code', trans('currencies.code'))</th>
                         <th class="col-md-2">@sortablelink('rate', trans('currencies.rate'))</th>
                         <th class="col-md-1 hidden-xs">@sortablelink('enabled', trans_choice('general.statuses', 1))</th>
+                        <th class="col-md-1 text-center">{{ trans('currencies.default') }}</th>
                         <th class="col-md-1 text-center">{{ trans('general.actions') }}</th>
                     </tr>
                 </thead>
@@ -47,6 +48,13 @@
                                 <span class="label label-success">{{ trans('general.enabled') }}</span>
                             @else
                                 <span class="label label-danger">{{ trans('general.disabled') }}</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            @if ($item->code == setting()->get('general.default_currency'))
+                                <span class="label label-primary">{{ trans('general.yes') }}</span>
+                            @else
+                                <span class="label label-default">{{ trans('general.no') }}</span>
                             @endif
                         </td>
                         <td class="text-center">

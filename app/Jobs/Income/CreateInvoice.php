@@ -44,9 +44,6 @@ class CreateInvoice
             $invoice->attachMedia($media, 'attachment');
         }
 
-        $taxes = [];
-
-        $tax_total = 0;
         $sub_total = 0;
         $discount_total = 0;
         $discount = $this->request['discount'];
@@ -56,7 +53,6 @@ class CreateInvoice
                 $invoice_item = dispatch(new CreateInvoiceItem($item, $invoice, $discount));
 
                 // Calculate totals
-                $tax_total += $invoice_item->tax;
                 $sub_total += $invoice_item->total;
             }
         }
@@ -70,14 +66,14 @@ class CreateInvoice
             $s_total = $s_total - $s_discount;
         }
 
-        $amount = $s_total + $tax_total;
+        $amount = $s_total;
 
         $this->request['amount'] = money($amount, $this->request['currency_code'])->getAmount();
 
         $invoice->update($this->request->input());
 
         // Add invoice totals
-        $this->addTotals($invoice, $this->request, $taxes, $sub_total, $discount_total, $tax_total);
+        $this->addTotals($invoice, $this->request, $sub_total, $discount_total);
 
         // Add invoice history
         InvoiceHistory::create([
@@ -100,7 +96,7 @@ class CreateInvoice
         return $invoice;
     }
 
-    protected function addTotals($invoice, $request, $taxes, $sub_total, $discount_total, $tax_total)
+    protected function addTotals($invoice, $request, $sub_total, $discount_total)
     {
         $sort_order = 1;
 
@@ -133,29 +129,13 @@ class CreateInvoice
             $sort_order++;
         }
 
-        // Added invoice taxes
-        if (isset($taxes)) {
-            foreach ($taxes as $tax) {
-                InvoiceTotal::create([
-                    'company_id' => $request['company_id'],
-                    'invoice_id' => $invoice->id,
-                    'code' => 'tax',
-                    'name' => $tax['name'],
-                    'amount' => $tax['amount'],
-                    'sort_order' => $sort_order,
-                ]);
-
-                $sort_order++;
-            }
-        }
-
         // Added invoice total
         InvoiceTotal::create([
             'company_id' => $request['company_id'],
             'invoice_id' => $invoice->id,
             'code' => 'total',
             'name' => 'invoices.total',
-            'amount' => $sub_total + $tax_total,
+            'amount' => $sub_total,
             'sort_order' => $sort_order,
         ]);
     }

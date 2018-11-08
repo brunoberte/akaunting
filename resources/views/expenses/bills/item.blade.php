@@ -32,14 +32,6 @@
         @stack('price_input_end')
     </td>
     @stack('price_td_end')
-    @stack('taxes_td_start')
-    <td {{ $errors->has('item.' . $item_row . '.tax_id') ? 'class="has-error"' : '' }}>
-        @stack('tax_id_input_start')
-        {!! Form::select('item[' . $item_row . '][tax_id][]', $taxes, empty($item) ? setting('general.default_tax') : $item->tax_id, ['id'=> 'item-tax-'. $item_row, 'class' => 'form-control tax-select2', 'multiple' => 'true']) !!}
-        {!! $errors->first('item.' . $item_row . '.tax_id', '<p class="help-block">:message</p>') !!}
-        @stack('tax_id_input_end')
-    </td>
-    @stack('taxes_td_end')
     @stack('total_td_start')
     <td class="text-right" style="vertical-align: middle;">
         @stack('total_input_start')

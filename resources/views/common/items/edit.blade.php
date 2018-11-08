@@ -26,8 +26,6 @@
 
         {{ Form::textGroup('quantity', trans_choice('items.quantities', 1), 'cubes') }}
 
-        {{ Form::selectGroup('tax_id', trans_choice('general.taxes', 1), 'percent', $taxes, null, []) }}
-
         {{ Form::selectGroup('category_id', trans_choice('general.categories', 1), 'folder-open-o', $categories, null, []) }}
 
         {{ Form::fileGroup('picture', trans_choice('general.pictures', 1)) }}
@@ -86,13 +84,6 @@
 
             $("#sale_price").focusout();
             $("#purchase_price").focusout();*/
-
-            $("#tax_id").select2({
-                placeholder: {
-                    id: '-1', // the value of the option
-                    text: "{{ trans('general.form.select.field', ['field' => trans_choice('general.taxes', 1)]) }}"
-                }
-            });
 
             $("#category_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"

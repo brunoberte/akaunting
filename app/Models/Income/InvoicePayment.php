@@ -43,11 +43,6 @@ class InvoicePayment extends Model
         return $this->belongsTo('App\Models\Common\Item');
     }
 
-    public function tax()
-    {
-        return $this->belongsTo('App\Models\Setting\Tax');
-    }
-
     public function scopeLatest($query)
     {
         return $query->orderBy('paid_at', 'desc');

@@ -3,7 +3,6 @@
 namespace App\Models\Expense;
 
 use App\Models\Model;
-use App\Models\Setting\Tax;
 use App\Traits\DateTime;
 
 class BillTotal extends Model
@@ -57,14 +56,6 @@ class BillTotal extends Model
             case 'discount':
                 $title = trans($title);
                 $percent = $this->bill->discount;
-
-                break;
-            case 'tax':
-                $rate = Tax::where('name', $title)->value('rate');
-
-                if (!empty($rate)) {
-                    $percent = $rate;
-                }
 
                 break;
         }

@@ -12,7 +12,6 @@ use App\Models\Income\InvoiceItem;
 use App\Models\Income\InvoicePayment;
 use App\Models\Income\InvoiceTotal;
 use App\Models\Common\Item;
-use App\Models\Setting\Tax;
 use App\Traits\Incomes;
 use App\Transformers\Income\Invoice as Transformer;
 use Dingo\Api\Routing\Helpers;
@@ -77,8 +76,6 @@ class Invoices extends ApiController
      */
     public function update(Invoice $invoice, Request $request)
     {
-        $taxes = [];
-        $tax_total = 0;
         $sub_total = 0;
 
         $invoice_item = array();
@@ -103,52 +100,25 @@ class Invoices extends ApiController
                     $item_sku = $item['sku'];
                 }
 
-                $tax = $tax_id = 0;
-
-                if (!empty($item['tax_id'])) {
-                    $tax_object = Tax::find($item['tax_id']);
-
-                    $tax_id = $item['tax_id'];
-
-                    $tax = (($item['price'] * $item['quantity']) / 100) * $tax_object->rate;
-                } elseif (!empty($item['tax'])) {
-                    $tax = $item['tax'];
-                }
-
                 $invoice_item['item_id'] = $item_id;
                 $invoice_item['name'] = str_limit($item['name'], 180, '');
                 $invoice_item['sku'] = $item_sku;
                 $invoice_item['quantity'] = $item['quantity'];
                 $invoice_item['price'] = $item['price'];
-                $invoice_item['tax'] = $tax;
-                $invoice_item['tax_id'] = $tax_id;
                 $invoice_item['total'] = $item['price'] * $item['quantity'];
 
                 $request['amount'] += $invoice_item['total'];
 
                 InvoiceItem::create($invoice_item);
 
-                if (isset($tax_object)) {
-                    if (array_key_exists($tax_object->id, $taxes)) {
-                        $taxes[$tax_object->id]['amount'] += $tax;
-                    } else {
-                        $taxes[$tax_object->id] = [
-                            'name' => $tax_object->name,
-                            'amount' => $tax
-                        ];
-                    }
-                }
-
-                $tax_total += $tax;
                 $sub_total += $invoice_item['total'];
 
                 unset($item_object);
-                unset($tax_object);
             }
         }
 
         if (empty($request['amount'])) {
-            $request['amount'] = $sub_total + $tax_total;
+            $request['amount'] = $sub_total;
         }
 
         $invoice->update($request->input());
@@ -156,7 +126,7 @@ class Invoices extends ApiController
         // Delete previous invoice totals
         InvoiceTotal::where('invoice_id', $invoice->id)->delete();
 
-        $this->addTotals($invoice, $request, $taxes, $sub_total, $tax_total);
+        $this->addTotals($invoice, $request, $sub_total);
 
         // Fire the event to make it extendible
         event(new InvoiceUpdated($invoice));
@@ -178,7 +148,7 @@ class Invoices extends ApiController
         return $this->response->noContent();
     }
 
-    protected function addTotals($invoice, $request, $taxes, $sub_total, $tax_total) {
+    protected function addTotals($invoice, $request, $sub_total) {
         // Add invoice total taxes
         if ($request['totals']) {
             $sort_order = 1;
@@ -218,31 +188,13 @@ class Invoices extends ApiController
 
             $sort_order = 2;
 
-            // Added invoice total taxes
-            if ($taxes) {
-                foreach ($taxes as $tax) {
-                    $invoice_tax_total = [
-                        'company_id' => $request['company_id'],
-                        'invoice_id' => $invoice->id,
-                        'code' => 'tax',
-                        'name' => $tax['name'],
-                        'amount' => $tax['amount'],
-                        'sort_order' => $sort_order,
-                    ];
-
-                    InvoiceTotal::create($invoice_tax_total);
-
-                    $sort_order++;
-                }
-            }
-
             // Added invoice total total
             $invoice_total = [
                 'company_id' => $request['company_id'],
                 'invoice_id' => $invoice->id,
                 'code' => 'total',
                 'name' => 'invoices.total',
-                'amount' => $sub_total + $tax_total,
+                'amount' => $sub_total,
                 'sort_order' => $sort_order,
             ];
 

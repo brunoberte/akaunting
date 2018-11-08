@@ -23,8 +23,6 @@ class InvoiceItems extends TransformerAbstract
             'quantity' => $model->quantity,
             'price' => $model->price,
             'total' => $model->total,
-            'tax' => $model->tax,
-            'tax_id' => $model->tax_id,
             'created_at' => $model->created_at->toIso8601String(),
             'updated_at' => $model->updated_at->toIso8601String(),
         ];

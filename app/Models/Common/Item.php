@@ -26,7 +26,7 @@ class Item extends Model
      *
      * @var array
      */
-    protected $fillable = ['company_id', 'name', 'sku', 'description', 'sale_price', 'purchase_price', 'quantity', 'category_id', 'tax_id', 'enabled'];
+    protected $fillable = ['company_id', 'name', 'sku', 'description', 'sale_price', 'purchase_price', 'quantity', 'category_id', 'enabled'];
 
     /**
      * Sortable columns.
@@ -49,11 +49,6 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo('App\Models\Setting\Category');
-    }
-
-    public function tax()
-    {
-        return $this->belongsTo('App\Models\Setting\Tax');
     }
 
     public function bill_items()

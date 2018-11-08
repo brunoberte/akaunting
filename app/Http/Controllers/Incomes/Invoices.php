@@ -17,13 +17,11 @@ use App\Models\Income\Customer;
 use App\Models\Income\Invoice;
 use App\Models\Income\InvoiceHistory;
 use App\Models\Income\InvoiceItem;
-use App\Models\Income\InvoiceItemTax;
 use App\Models\Income\InvoiceTotal;
 use App\Models\Income\InvoicePayment;
 use App\Models\Income\InvoiceStatus;
 use App\Models\Setting\Category;
 use App\Models\Setting\Currency;
-use App\Models\Setting\Tax;
 use App\Notifications\Income\Invoice as Notification;
 use App\Notifications\Common\Item as ItemNotification;
 use App\Notifications\Common\ItemReminder as ItemReminderNotification;
@@ -104,13 +102,11 @@ class Invoices extends Controller
 
         $items = Item::enabled()->orderBy('name')->pluck('name', 'id');
 
-        $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
         $categories = Category::enabled()->type('income')->orderBy('name')->pluck('name', 'id');
 
         $number = $this->getNextInvoiceNumber();
 
-        return view('incomes.invoices.create', compact('customers', 'currencies', 'currency', 'items', 'taxes', 'categories', 'number'));
+        return view('incomes.invoices.create', compact('customers', 'currencies', 'currency', 'items', 'categories', 'number'));
     }
 
     /**
@@ -221,11 +217,9 @@ class Invoices extends Controller
 
         $items = Item::enabled()->orderBy('name')->pluck('name', 'id');
 
-        $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
         $categories = Category::enabled()->type('income')->orderBy('name')->pluck('name', 'id');
 
-        return view('incomes.invoices.edit', compact('invoice', 'customers', 'currencies', 'currency', 'items', 'taxes', 'categories'));
+        return view('incomes.invoices.edit', compact('invoice', 'customers', 'currencies', 'currency', 'items', 'categories'));
     }
 
     /**
@@ -238,10 +232,6 @@ class Invoices extends Controller
      */
     public function update(Invoice $invoice, Request $request)
     {
-        $taxes = [];
-
-		$tax = 0;
-        $tax_total = 0;
         $sub_total = 0;
         $discount_total = 0;
         $discount = $request['discount'];
@@ -254,7 +244,6 @@ class Invoices extends Controller
             $this->deleteRelationships($invoice, 'items');
 
             foreach ($request['item'] as $item) {
-                unset($tax_object);
                 $item_sku = '';
 
                 if (!empty($item['item_id'])) {
@@ -264,65 +253,16 @@ class Invoices extends Controller
                     $item_sku = $item_object->sku;
                 }
 
-                $item_tax = 0;
-                $item_taxes = [];
-                $invoice_item_taxes = [];
-
-                if (!empty($item['tax_id'])) {
-                    foreach ($item['tax_id'] as $tax_id) {
-                        $tax_object = Tax::find($tax_id);
-
-                        $item_taxes[] = $tax_id;
-
-                        $tax = (((double) $item['price'] * (double) $item['quantity']) / 100) * $tax_object->rate;
-
-                        // Apply discount to tax
-                        if ($discount) {
-                            $tax = $tax - ($tax * ($discount / 100));
-                        }
-
-                        $invoice_item_taxes[] = [
-                            'company_id' => $request['company_id'],
-                            'invoice_id' => $invoice->id,
-                            'tax_id' => $tax_id,
-                            'name' => $tax_object->name,
-                            'amount' => $tax,
-                        ];
-
-                        $item_tax += $tax;
-                    }
-                }
 
                 $invoice_item['item_id'] = $item['item_id'];
                 $invoice_item['name'] = str_limit($item['name'], 180, '');
                 $invoice_item['sku'] = $item_sku;
                 $invoice_item['quantity'] = (double) $item['quantity'];
                 $invoice_item['price'] = (double) $item['price'];
-                $invoice_item['tax'] = $tax;
-                $invoice_item['tax_id'] = 0;//$tax_id;
                 $invoice_item['total'] = (double) $item['price'] * (double) $item['quantity'];
 
                 $invoice_item_created = InvoiceItem::create($invoice_item);
 
-                if ($invoice_item_taxes) {
-                    foreach ($invoice_item_taxes as $invoice_item_tax) {
-                        $invoice_item_tax['invoice_item_id'] = $invoice_item_created->id;
-
-                        InvoiceItemTax::create($invoice_item_tax);
-
-                        // Set taxes
-                        if (isset($taxes) && array_key_exists($invoice_item_tax['tax_id'], $taxes)) {
-                            $taxes[$invoice_item_tax['tax_id']]['amount'] += $invoice_item_tax['amount'];
-                        } else {
-                            $taxes[$invoice_item_tax['tax_id']] = [
-                                'name' => $invoice_item_tax['name'],
-                                'amount' => $invoice_item_tax['amount']
-                            ];
-                        }
-                    }
-                }
-
-                $tax_total += $item_tax;
                 $sub_total += $invoice_item['total'];
             }
         }
@@ -336,7 +276,7 @@ class Invoices extends Controller
             $s_total = $s_total - $s_discount;
         }
 
-        $amount = $s_total + $tax_total;
+        $amount = $s_total;
 
         $request['amount'] = money($amount, $request['currency_code'])->getAmount();
 
@@ -353,7 +293,7 @@ class Invoices extends Controller
         $this->deleteRelationships($invoice, 'totals');
 
         // Add invoice totals
-        $this->addTotals($invoice, $request, $taxes, $sub_total, $discount_total, $tax_total);
+        $this->addTotals($invoice, $request, $sub_total, $discount_total);
 
         // Recurring
         $invoice->updateRecurring();
@@ -721,14 +661,12 @@ class Invoices extends Controller
         if ($request['item_row']) {
             $item_row = $request['item_row'];
 
-            $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
-
             $currency = Currency::where('code', '=', $request['currency_code'])->first();
 
             // it should be integer for amount mask
             $currency->precision = (int) $currency->precision;
 
-            $html = view('incomes.invoices.item', compact('item_row', 'taxes', 'currency'))->render();
+            $html = view('incomes.invoices.item', compact('item_row', 'currency'))->render();
 
             return response()->json([
                 'success' => true,
@@ -775,7 +713,7 @@ class Invoices extends Controller
         return $invoice;
     }
 
-    protected function addTotals($invoice, $request, $taxes, $sub_total, $discount_total, $tax_total)
+    protected function addTotals($invoice, $request, $sub_total, $discount_total)
     {
         $sort_order = 1;
 
@@ -808,29 +746,13 @@ class Invoices extends Controller
             $sort_order++;
         }
 
-        // Added invoice taxes
-        if (isset($taxes)) {
-            foreach ($taxes as $tax) {
-                InvoiceTotal::create([
-                    'company_id' => $request['company_id'],
-                    'invoice_id' => $invoice->id,
-                    'code' => 'tax',
-                    'name' => $tax['name'],
-                    'amount' => $tax['amount'],
-                    'sort_order' => $sort_order,
-                ]);
-
-                $sort_order++;
-            }
-        }
-
         // Added invoice total
         InvoiceTotal::create([
             'company_id' => $request['company_id'],
             'invoice_id' => $invoice->id,
             'code' => 'total',
             'name' => 'invoices.total',
-            'amount' => $sub_total + $tax_total,
+            'amount' => $sub_total,
             'sort_order' => $sort_order,
         ]);
     }

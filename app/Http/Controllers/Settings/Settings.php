@@ -9,7 +9,6 @@ use App\Models\Common\Company;
 use App\Models\Setting\Currency;
 use App\Models\Setting\Setting;
 use App\Models\Common\Media;
-use App\Models\Setting\Tax;
 use App\Traits\DateTime;
 use App\Traits\Uploads;
 use App\Utilities\Installer;
@@ -46,8 +45,6 @@ class Settings extends Controller
         $accounts = Account::enabled()->orderBy('name')->pluck('name', 'id');
 
         $currencies = Currency::enabled()->orderBy('name')->pluck('name', 'code');
-
-        $taxes = Tax::enabled()->orderBy('rate')->get()->pluck('title', 'id');
 
         $payment_methods = Modules::getPaymentMethods();
 
@@ -102,7 +99,6 @@ class Settings extends Controller
             'timezones',
             'accounts',
             'currencies',
-            'taxes',
             'payment_methods',
             'date_formats',
             'date_separators',

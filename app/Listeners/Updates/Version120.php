@@ -46,13 +46,6 @@ class Version120 extends Listener
     {
         $permissions = [];
 
-        // Create tax summary permission
-        $permissions[] = Permission::firstOrCreate([
-            'name' => 'read-reports-tax-summary',
-            'display_name' => 'Read Reports Tax Summary',
-            'description' => 'Read Reports Tax Summary',
-        ]);
-
         // Create profit loss permission
         $permissions[] = Permission::firstOrCreate([
             'name' => 'read-reports-profit-loss',

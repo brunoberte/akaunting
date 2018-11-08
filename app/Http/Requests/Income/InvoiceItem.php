@@ -29,8 +29,6 @@ class InvoiceItem extends Request
             'quantity' => 'required|integer',
             'price' => 'required',
             'total' => 'required',
-            'tax' => 'required',
-            'tax_id' => 'required',
         ];
     }
 }

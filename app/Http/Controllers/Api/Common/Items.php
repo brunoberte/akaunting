@@ -19,7 +19,7 @@ class Items extends ApiController
      */
     public function index()
     {
-        $items = Item::with(['category', 'tax'])->collect();
+        $items = Item::with(['category'])->collect();
 
         return $this->response->paginator($items, new Transformer());
     }
@@ -34,9 +34,9 @@ class Items extends ApiController
     {
         // Check if we're querying by id or sku
         if (is_numeric($id)) {
-            $item = Item::with(['category', 'tax'])->find($id);
+            $item = Item::with(['category'])->find($id);
         } else {
-            $item = Item::with(['category', 'tax'])->where('sku', $id)->first();
+            $item = Item::with(['category'])->where('sku', $id)->first();
         }
 
         return $this->response->item($item, new Transformer());

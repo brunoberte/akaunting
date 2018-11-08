@@ -40,16 +40,6 @@ class AdminMenu
                 'order' => 1,
             ]);
 
-            // Items
-            if ($user->can('read-common-items')) {
-                $menu->add([
-                    'url' => 'common/items',
-                    'title' => trans_choice('general.items', 2),
-                    'icon' => 'fa fa-cubes',
-                    'order' => 2,
-                ]);
-            }
-
             // Incomes
             if ($user->can(['read-incomes-invoices', 'read-incomes-revenues', 'read-incomes-customers'])) {
                 $menu->dropdown(trans_choice('general.incomes', 2), function ($sub) use($user, $attr) {
@@ -119,7 +109,6 @@ class AdminMenu
                 'read-reports-income-summary',
                 'read-reports-expense-summary',
                 'read-reports-income-expense-summary',
-                'read-reports-tax-summary',
                 'read-reports-profit-loss',
             ])) {
                 $menu->dropdown(trans_choice('general.reports', 2), function ($sub) use($user, $attr) {
@@ -135,10 +124,6 @@ class AdminMenu
                         $sub->url('reports/income-expense-summary', trans('reports.summary.income_expense'), 3, $attr);
                     }
 
-                    if ($user->can('read-reports-tax-summary')) {
-                        $sub->url('reports/tax-summary', trans('reports.summary.tax'), 4, $attr);
-                    }
-
                     if ($user->can('read-reports-profit-loss')) {
                         $sub->url('reports/profit-loss', trans('reports.profit_loss'), 5, $attr);
                     }
@@ -149,7 +134,7 @@ class AdminMenu
             }
 
             // Settings
-            if ($user->can(['read-settings-settings', 'read-settings-categories', 'read-settings-currencies', 'read-settings-taxes'])) {
+            if ($user->can(['read-settings-settings', 'read-settings-categories', 'read-settings-currencies'])) {
                 $menu->dropdown(trans_choice('general.settings', 2), function ($sub) use($user, $attr) {
                     if ($user->can('read-settings-settings')) {
                         $sub->url('settings/settings', trans('general.general'), 1, $attr);
@@ -161,10 +146,6 @@ class AdminMenu
 
                     if ($user->can('read-settings-currencies')) {
                         $sub->url('settings/currencies', trans_choice('general.currencies', 2), 3, $attr);
-                    }
-
-                    if ($user->can('read-settings-taxes')) {
-                        $sub->url('settings/taxes', trans_choice('general.tax_rates', 2), 4, $attr);
                     }
 
                     // Modules

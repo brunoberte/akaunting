@@ -29,11 +29,6 @@ class InvoiceHistory extends Model
         return $this->belongsTo('App\Models\Common\Item');
     }
 
-    public function tax()
-    {
-        return $this->belongsTo('App\Models\Setting\Tax');
-    }
-
     public function payment()
     {
         return $this->belongsTo('App\Models\Setting\Payment');
