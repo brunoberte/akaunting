@@ -3,7 +3,6 @@
 namespace App\Http\ViewComposers;
 
 use Auth;
-use App\Utilities\Updater;
 use Illuminate\View\View;
 use App\Traits\Modules as RemoteModules;
 

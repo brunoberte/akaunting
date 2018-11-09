@@ -15,7 +15,7 @@
         <div class="box-body">
             {{ Form::textGroup('name', trans('general.name'), 'id-card-o') }}
 
-            {{ Form::textGroup('number', trans('accounts.number'), 'pencil') }}
+            {{ Form::textGroup('number', trans('accounts.number'), 'pencil', []) }}
 
             {{ Form::selectGroup('currency_code', trans_choice('general.currencies', 1), 'exchange', $currencies) }}
 

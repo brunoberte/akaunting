@@ -25,7 +25,7 @@ class Account extends Request
     {
         return [
             'name' => 'required|string',
-            'number' => 'required|string',
+            'number' => 'string',
             'currency_code' => 'required|string|currency',
             'opening_balance' => 'required',
             'enabled' => 'integer|boolean',
