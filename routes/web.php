@@ -98,6 +98,10 @@ Route::group(['middleware' => 'language'], function () {
             });
 
             Route::group(['prefix' => 'expenses'], function () {
+
+                Route::resource('payables', 'Expenses\Payables', ['middleware' => ['dateformat', 'money']]);
+                Route::get('payables/{payable}/duplicate', 'Expenses\Payables@duplicate');
+
                 Route::get('bills/{bill}/received', 'Expenses\Bills@markReceived');
                 Route::get('bills/{bill}/print', 'Expenses\Bills@printBill');
                 Route::get('bills/{bill}/pdf', 'Expenses\Bills@pdfBill');

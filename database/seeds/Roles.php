@@ -41,6 +41,7 @@ class Roles extends Seeder
                 'incomes-invoices' => 'c,r,u,d',
                 'incomes-revenues' => 'c,r,u,d',
                 'incomes-customers' => 'c,r,u,d',
+                'expenses-payables' => 'c,r,u,d',
                 'expenses-bills' => 'c,r,u,d',
                 'expenses-payments' => 'c,r,u,d',
                 'expenses-vendors' => 'c,r,u,d',

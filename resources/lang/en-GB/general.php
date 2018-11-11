@@ -121,6 +121,7 @@ return [
     'difference'            => 'Difference',
     'title_'                => 'Title',
     'receivables'           => 'Receivable|Receivables',
+    'payables'              => 'Payable|Payables',
 
     'title' => [
         'new'               => 'New :type',
