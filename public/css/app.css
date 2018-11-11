@@ -908,3 +908,8 @@ input[type="number"] {
     transition: all 0.2s ease-in-out;
 }
 /* App Detail Page Sliders Finish */
+
+
+.text-no-wrap {
+    white-space: nowrap;
+}

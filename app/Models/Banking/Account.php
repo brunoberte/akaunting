@@ -2,6 +2,8 @@
 
 namespace App\Models\Banking;
 
+use App\Models\Expense\Payment;
+use App\Models\Income\Revenue;
 use App\Models\Model;
 use Sofa\Eloquence\Eloquence;
 
@@ -88,28 +90,20 @@ class Account extends Model
      */
     public function getBalanceAttribute()
     {
+        //TODO: cache
+
         // Opening Balance
         $total = $this->opening_balance;
 
-        // Sum invoices
-        foreach ($this->invoice_payments as $item) {
-            $total += $item->amount;
-        }
-
         // Sum revenues
-        foreach ($this->revenues as $item) {
-            $total += $item->amount;
-        }
-
-        // Subtract bills
-        foreach ($this->bill_payments as $item) {
-            $total -= $item->amount;
-        }
+        $total += Revenue::query()
+            ->where('account_id', $this->id)
+            ->sum('amount');
 
         // Subtract payments
-        foreach ($this->payments as $item) {
-            $total -= $item->amount;
-        }
+        $total -= Payment::query()
+            ->where('account_id', $this->id)
+            ->sum('amount');
 
         return $total;
     }

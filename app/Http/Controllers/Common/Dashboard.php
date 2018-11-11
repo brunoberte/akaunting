@@ -5,15 +5,17 @@ namespace App\Http\Controllers\Common;
 use App\Http\Controllers\Controller;
 use App\Models\Banking\Account;
 use App\Models\Expense\Bill;
-use App\Models\Expense\BillPayment;
+use App\Models\Expense\Payable;
 use App\Models\Expense\Payment;
 use App\Models\Income\Invoice;
-use App\Models\Income\InvoicePayment;
+use App\Models\Income\Receivable;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
 use App\Traits\Currencies;
+use Carbon\Carbon;
 use Charts;
 use Date;
+use Illuminate\Support\Facades\Response;
 
 class Dashboard extends Controller
 {
@@ -38,24 +40,25 @@ class Dashboard extends Controller
 
         $cashflow = $this->getCashFlow();
 
+        $current_balance = $this->getCurrentBalance();
+        $forecast_table = $this->getForecastTable();
+        $forecast_chart = $this->getForecastChart($forecast_table, $current_balance);
+
         list($donut_incomes, $donut_expenses) = $this->getDonuts();
 
-        $accounts = Account::enabled()->take(6)->get();
-
-        $latest_incomes = $this->getLatestIncomes();
-
-        $latest_expenses = $this->getLatestExpenses();
+        $accounts = Account::enabled()->orderBy('name')->get();
 
         return view('common.dashboard.index', compact(
             'total_incomes',
             'total_expenses',
             'total_profit',
             'cashflow',
+            'current_balance',
+            'forecast_table',
+            'forecast_chart',
             'donut_incomes',
             'donut_expenses',
-            'accounts',
-            'latest_incomes',
-            'latest_expenses'
+            'accounts'
         ));
     }
 
@@ -166,6 +169,189 @@ class Dashboard extends Controller
             ->dataset(trans_choice('general.profits', 1), $profit)
             ->dataset(trans_choice('general.incomes', 1), $income)
             ->dataset(trans_choice('general.expenses', 1), $expense)
+            ->labels($labels)
+            ->credits(false)
+            ->view('vendor.consoletvs.charts.chartjs.multi.line');
+
+        return $chart;
+    }
+
+    private function getCurrentBalance()
+    {
+        //TODO: cache
+
+        // get opening balance of enabled accounts
+        $current_balance = Account::query()
+            ->enabled()
+            ->sum('opening_balance');
+
+        // Sum revenues
+        $current_balance += Revenue::query()
+            ->sum('amount');
+
+        // Subtract payments
+        $current_balance -= Payment::query()
+            ->sum('amount');
+
+        return $current_balance;
+    }
+
+    private function getForecastTable()
+    {
+        //TODO: cache
+
+        $end = Carbon::today()->endOfDay()->addDays(90);
+
+        $forecast_table = [];
+
+        $receivables = Receivable::query()
+            ->with(['recurring'])
+            ->get();
+        $this->_addItemsToForecastTable($receivables, $end, $forecast_table);
+
+
+        $payables = Payable::query()
+            ->with(['recurring'])
+            ->get();
+        $this->_addItemsToForecastTable($payables, $end, $forecast_table);
+
+        return $forecast_table;
+    }
+
+    private function _addItemsToForecastTable($list, Carbon $date_limit, &$forecast_table)
+    {
+        foreach($list as $item) {
+            if ($item->due_at <= $date_limit) {
+                $dt_formatted = $item->due_at->format('Y-m-d');
+                if (!isset($forecast_table[$dt_formatted])) {
+                    $forecast_table[$dt_formatted] = [];
+                }
+                $forecast_table[$dt_formatted][] = [
+                    'type' => get_class($item),
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'amount' => $item->amount,
+                    'currency_code' => $item->currency_code,
+                ];
+
+                //check recurring
+                if ($item->recurring) {
+                    $next_date = $item->recurring->getNextDate();
+                    while($next_date !== false && $next_date < $date_limit) {
+                        $dt_formatted = $next_date->format('Y-m-d');
+                        if (!isset($forecast_table[$dt_formatted])) {
+                            $forecast_table[$dt_formatted] = [];
+                        }
+                        $forecast_table[$dt_formatted][] = [
+                            'type' => get_class($item),
+                            'id' => $item->id,
+                            'title' => $item->title,
+                            'amount' => $item->amount,
+                            'currency_code' => $item->currency_code,
+                        ];
+                        $next_date = $item->recurring->getNextDate();
+                    }
+                }
+            }
+        }
+    }
+
+    private function getForecastChart(array $forecast_table, $initial_balance)
+    {
+        //TODO: cache
+
+
+        $start = Carbon::today()->startOfDay();
+        $end = Carbon::today()->endOfDay()->addDays(90);
+
+        $labels = [];
+        $values = [];
+
+        $receivables = Receivable::query()
+            ->with(['recurring'])
+            ->get();
+        /** @var Receivable $receivable */
+        foreach($receivables as $receivable) {
+            if ($receivable->due_at <= $end) {
+                $dt_formatted = $receivable->due_at->format('Y-m-d');
+                if ($receivable->due_at < $start) {
+                    $dt_formatted = $start->format('Y-m-d');
+                }
+                if (!isset($values[$dt_formatted])) {
+                    $values[$dt_formatted] = 0;
+                }
+                $values[$dt_formatted] += $receivable->amount;
+
+                //TODO: check recurring
+                if ($receivable->recurring) {
+                    $next_date = $receivable->recurring->getNextDate();
+                    while($next_date !== false && $next_date < $end) {
+                        $dt_formatted = $next_date->format('Y-m-d');
+                        if ($next_date < $start) {
+                            $dt_formatted = $start->format('Y-m-d');
+                        }
+                        if (!isset($values[$dt_formatted])) {
+                            $values[$dt_formatted] = 0;
+                        }
+                        $values[$dt_formatted] += $receivable->amount;
+                        $next_date = $receivable->recurring->getNextDate();
+                    }
+                }
+            }
+        }
+
+        $payables = Payable::query()
+            ->with(['recurring'])
+            ->get();
+        /** @var Payable $receivable */
+        foreach($payables as $payable) {
+            if ($payable->due_at <= $end) {
+                $dt_formatted = $payable->due_at->format('Y-m-d');
+                if ($payable->due_at < $start) {
+                    $dt_formatted = $start->format('Y-m-d');
+                }
+                if (!isset($values[$dt_formatted])) {
+                    $values[$dt_formatted] = 0;
+                }
+                $values[$dt_formatted] -= $payable->amount;
+
+                //TODO: check recurring
+                if ($payable->recurring) {
+                    $next_date = $payable->recurring->getNextDate();
+                    while($next_date !== false && $next_date < $end) {
+                        $dt_formatted = $next_date->format('Y-m-d');
+                        if ($next_date < $start) {
+                            $dt_formatted = $start->format('Y-m-d');
+                        }
+                        if (!isset($values[$dt_formatted])) {
+                            $values[$dt_formatted] = 0;
+                        }
+                        $values[$dt_formatted] -= $payable->amount;
+                        $next_date = $payable->recurring->getNextDate();
+                    }
+                }
+            }
+        }
+
+        // apply initial balance
+        $current_balance = $initial_balance;
+        $s = clone $start;
+        while($s <= $end) {
+            $dt_formatted = $s->format('Y-m-d');
+            $labels[] = $dt_formatted;
+            if (isset($values[$dt_formatted])) {
+                $current_balance += $values[$dt_formatted];
+            }
+            $values[$dt_formatted] = $current_balance;
+            $s->addDay();
+        }
+
+        ksort($values);
+
+        $chart = Charts::multi('line', 'chartjs')
+            ->dimensions(0, 300)
+            ->colors(['#6da252'])
+            ->dataset(trans_choice('general.balance', 1), $values)
             ->labels($labels)
             ->credits(false)
             ->view('vendor.consoletvs.charts.chartjs.multi.line');
