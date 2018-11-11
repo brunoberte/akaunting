@@ -34,7 +34,6 @@ class Settings extends Seeder
             'general.invoice_number_prefix'     => 'INV-',
             'general.invoice_number_digit'      => '5',
             'general.invoice_number_next'       => '1',
-            'general.default_payment_method'    => 'offlinepayment.cash.1',
             'general.email_protocol'            => 'mail',
             'general.email_sendmail_path'       => '/usr/sbin/sendmail -bs',
             'general.send_invoice_reminder'     => '0',
@@ -55,7 +54,6 @@ class Settings extends Seeder
             'general.invoice_item'              => 'settings.invoice.item',
             'general.invoice_price'             => 'settings.invoice.price',
             'general.invoice_quantity'          => 'settings.invoice.quantity',
-            'offlinepayment.methods'            => '[{"code":"offlinepayment.cash.1","name":"Cash","order":"1","description":null},{"code":"offlinepayment.bank_transfer.2","name":"Bank Transfer","order":"2","description":null}]',
         ]);
     }
 }

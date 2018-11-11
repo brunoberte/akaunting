@@ -161,7 +161,6 @@ class Companies extends Controller
             }
         }
 
-        setting()->set('general.default_payment_method', 'offlinepayment.cash.1');
         setting()->set('general.default_currency', $request->get('default_currency'));
 
         setting()->save();
