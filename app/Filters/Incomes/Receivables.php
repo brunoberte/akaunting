@@ -16,7 +16,12 @@ class Receivables extends ModelFilter
 
     public function search($query)
     {
-        return $this->whereLike('customer_name', $query);
+        return $this->whereLike('title', $query);
+    }
+
+    public function accounts($accounts)
+    {
+        return $this->whereIn('account_id', (array) $accounts);
     }
 
     public function customers($customers)
