@@ -37,6 +37,7 @@ class Roles extends Seeder
                 'common-import' => 'c',
                 'common-items' => 'c,r,u,d',
                 'common-uploads' => 'd',
+                'incomes-receivables' => 'c,r,u,d',
                 'incomes-invoices' => 'c,r,u,d',
                 'incomes-revenues' => 'c,r,u,d',
                 'incomes-customers' => 'c,r,u,d',

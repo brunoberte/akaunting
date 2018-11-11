@@ -66,6 +66,10 @@ Route::group(['middleware' => 'language'], function () {
             });
 
             Route::group(['prefix' => 'incomes'], function () {
+
+                Route::resource('receivables', 'Incomes\Receivables', ['middleware' => ['dateformat', 'money']]);
+                Route::get('receivables/{receivable}/duplicate', 'Incomes\Receivables@duplicate');
+
                 Route::get('invoices/{invoice}/sent', 'Incomes\Invoices@markSent');
                 Route::get('invoices/{invoice}/email', 'Incomes\Invoices@emailInvoice');
                 Route::get('invoices/{invoice}/pay', 'Incomes\Invoices@markPaid');

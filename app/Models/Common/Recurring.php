@@ -26,4 +26,21 @@ class Recurring extends Model
     {
         return $this->morphTo();
     }
+
+    public function toString() {
+
+        if ($this->interval !== 1) {
+            $frequency_translate = [
+                'daily' => trans('recurring.days'),
+                'weekly' => trans('recurring.weeks'),
+                'monthly' => trans('recurring.months'),
+                'yearly' => trans('recurring.years'),
+            ];
+            $frequency_label = $frequency_translate[$this->frequency];
+            $every_label = trans('recurring.every');
+
+            return "{$every_label} {$this->interval} {$frequency_label} - {$this->count}x";
+        }
+        return trans('recurring.' . $this->frequency) . " - {$this->count}x";
+    }
 }

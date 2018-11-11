@@ -119,6 +119,8 @@ return [
     'end'                   => 'End',
     'clear'                 => 'Clear',
     'difference'            => 'Difference',
+    'title_'                => 'Title',
+    'receivables'           => 'Receivables',
 
     'title' => [
         'new'               => 'New :type',

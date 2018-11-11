@@ -40,6 +40,16 @@ class AdminMenu
                 'order' => 1,
             ]);
 
+            if ($user->can('read-incomes-receivables')) {
+            // Receivables
+                $menu->add([
+                    'url' => '/incomes/receivables',
+                    'title' => trans_choice('general.receivables', 2),
+                    'icon' => 'fa fa-money',
+                    'order' => 2,
+                ]);
+            }
+
             // Incomes
             if ($user->can(['read-incomes-invoices', 'read-incomes-revenues', 'read-incomes-customers'])) {
                 $menu->dropdown(trans_choice('general.incomes', 2), function ($sub) use($user, $attr) {
@@ -60,7 +70,7 @@ class AdminMenu
                 ]);
             }
 
-            // Expences
+            // Expenses
             if ($user->can(['read-expenses-bills', 'read-expenses-payments', 'read-expenses-vendors'])) {
                 $menu->dropdown(trans_choice('general.expenses', 2), function ($sub) use($user, $attr) {
                     if ($user->can('read-expenses-bills')) {
