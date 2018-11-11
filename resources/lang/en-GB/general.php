@@ -120,7 +120,7 @@ return [
     'clear'                 => 'Clear',
     'difference'            => 'Difference',
     'title_'                => 'Title',
-    'receivables'           => 'Receivables',
+    'receivables'           => 'Receivable|Receivables',
 
     'title' => [
         'new'               => 'New :type',

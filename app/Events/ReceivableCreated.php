@@ -4,7 +4,7 @@ namespace App\Events;
 
 class ReceivableCreated
 {
-    public $invoice;
+    public $receivable;
 
     /**
      * Create a new event instance.
@@ -13,6 +13,6 @@ class ReceivableCreated
      */
     public function __construct($receivable)
     {
-        $this->invoice = $receivable;
+        $this->receivable = $receivable;
     }
 }

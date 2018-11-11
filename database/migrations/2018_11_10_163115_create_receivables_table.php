@@ -15,6 +15,7 @@ class CreateReceivablesTable extends Migration
         Schema::create('receivables', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id');
+            $table->integer('account_id');
             $table->date('due_at');
             $table->string('currency_code', '3');
             $table->double('amount', 12, 2);
