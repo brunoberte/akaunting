@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         Commands\ModuleEnable::class,
         Commands\ModuleInstall::class,
         Commands\RecurringCheck::class,
+        Commands\ImportJfinancas::class,
     ];
 
     /**

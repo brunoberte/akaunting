@@ -913,3 +913,9 @@ input[type="number"] {
 .text-no-wrap {
     white-space: nowrap;
 }
+
+
+#forecast_table {
+    max-height: 400px;
+    overflow: scroll;
+}

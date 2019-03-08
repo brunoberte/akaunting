@@ -5,7 +5,7 @@
 @section('content')
     <!-- Default box -->
     <div class="box box-success">
-        {!! Form::open(['url' => 'common/companies', 'files' => true, 'role' => 'form', 'class' => 'form-loading-button']) !!}
+        {!! Form::open(['url' => 'common/companies', 'files' => true, 'role' => 'form', 'class' => 'form-loading-button', 'novalidate']) !!}
         <div class="box-body">
             {{ Form::textGroup('company_name', trans('general.name'), 'id-card-o') }}
 
