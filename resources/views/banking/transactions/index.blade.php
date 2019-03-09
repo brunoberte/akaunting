@@ -44,7 +44,7 @@
                         <td>{{ $item->type }}</td>
                         <td>{{ $item->category_name }}</td>
                         <td>{{ $item->description }}</td>
-                        <td class="text-right amount-space">@money($item->amount, $item->currency_code, true)</td>
+                        <td class="text-right amount-space">@money(floatval($item->amount), $item->currency_code, true)</td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -54,6 +54,7 @@
     <!-- /.box-body -->
 
     <div class="box-footer">
+        @include('partials.admin.pagination', ['items' => $transactions, 'type' => 'transactions'])
     </div>
     <!-- /.box-footer -->
 </div>

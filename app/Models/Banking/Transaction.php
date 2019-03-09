@@ -4,10 +4,12 @@ namespace App\Models\Banking;
 
 use App\Models\Expense\Payment;
 use App\Models\Income\Revenue;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Model;
 
 class Transaction extends Model
 {
+    protected $table = 'vw_transactions';
+
     public static function getUserTransactions($user_id, $type)
     {
         $transactions = array();

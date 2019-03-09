@@ -27,7 +27,7 @@
                                     $total += $balance;
                                 @endphp
                                 <tr>
-                                    <td class="text-left">{{ $item->name }}</td>
+                                    <td class="text-left"><a href="/banking/transactions?accounts%5B%5D={{ $item->id }}">{{ $item->name }}</a></td>
                                     <td class="text-right text-no-wrap">@money($balance, $item->currency_code, true)</td>
                                 </tr>
                             @endforeach
@@ -59,7 +59,6 @@
                         <div class="progress sm">
                             <div class="progress-bar progress-bar-aqua" style="width: {{ $total_incomes['progress'] }}%"></div>
                         </div>
-                        <span class="progress-text">{{ trans('dashboard.receivables') }}</span>
                     </div>
                 </div>
             </div>
@@ -76,7 +75,6 @@
                         <div class="progress sm">
                             <div class="progress-bar progress-bar-red" style="width: {{ $total_expenses['progress'] }}%"></div>
                         </div>
-                        <span class="progress-text">{{ trans('dashboard.payables') }}</span>
                     </div>
                 </div>
             </div>
@@ -93,8 +91,6 @@
                         <div class="progress sm">
                             <div class="progress-bar progress-bar-green" style="width: {{ $total_profit['progress'] }}%"></div>
                         </div>
-                        <span class="progress-text">{{ trans('general.upcoming') }}</span>
-                        <span class="progress-number">{{ $total_profit['open'] }} / {{ $total_profit['overdue'] }}</span>
                     </div>
                 </div>
             </div>
