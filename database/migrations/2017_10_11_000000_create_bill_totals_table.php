@@ -23,7 +23,7 @@ class CreateBillTotalsTable extends Migration
             $table->integer('bill_id');
             $table->string('code')->nullable();
             $table->string('name');
-            $table->double('amount', 15, 4);
+            $table->decimal('amount', 15, 4);
             $table->integer('sort_order');
             $table->timestamps();
             $table->softDeletes();

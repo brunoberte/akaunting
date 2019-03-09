@@ -18,7 +18,7 @@ class CreateReconciliationsTable extends Migration
             $table->integer('account_id');
             $table->dateTime('started_at');
             $table->dateTime('ended_at');
-            $table->double('closing_balance', 15, 4)->default('0.0000');
+            $table->decimal('closing_balance', 15, 4)->default('0.0000');
             $table->boolean('reconciled');
             $table->timestamps();
             $table->softDeletes();

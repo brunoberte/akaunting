@@ -18,8 +18,8 @@ class CreateItemsTable extends Migration
             $table->string('name');
             $table->string('sku');
             $table->text('description')->nullable();
-            $table->double('sale_price', 15, 4);
-            $table->double('purchase_price', 15, 4);
+            $table->decimal('sale_price', 15, 4);
+            $table->decimal('purchase_price', 15, 4);
             $table->integer('quantity');
             $table->integer('category_id')->nullable();
             $table->string('picture')->nullable();

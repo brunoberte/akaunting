@@ -18,7 +18,7 @@ class CreateReceivablesTable extends Migration
             $table->integer('account_id');
             $table->date('due_at');
             $table->string('currency_code', '3');
-            $table->double('amount', 12, 2);
+            $table->decimal('amount', 12, 2);
             $table->string('title');
             $table->integer('customer_id');
             $table->integer('category_id');
