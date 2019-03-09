@@ -12,6 +12,7 @@ use App\Models\Income\Receivable;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
 use Carbon\Carbon;
+use function GuzzleHttp\Psr7\str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Debug\Dumper;
 
@@ -31,10 +32,12 @@ class ImportJfinancas extends Command
      */
     public function handle()
     {
+        /** @var Company $company */
         $company = Company::query()->firstOrFail();
 
         $handle = fopen($this->argument('path'), 'r');
 
+        /** @var Account $current_account */
         $current_account = false;
         $start_pos = false;
 
@@ -80,8 +83,7 @@ class ImportJfinancas extends Command
                     strpos($row, 'Data'),
                     strpos($row, 'Favorecido') - 1,
                     strpos($row, 'Categoria') - 1,
-                    strpos($row, 'Valor') - 7 - 1,
-                    strpos($row, 'Saldo') - 6 - 1,
+                    strpos($row, 'Valor') - 7,
                 ];
                 continue;
             }
@@ -92,18 +94,30 @@ class ImportJfinancas extends Command
 
                 $date = Carbon::createFromFormat('!d/m/Y', trim(substr($row, $start_pos[0], 10)));
                 $favorecido = $this->fix_name(trim(substr($row, $start_pos[1], $start_pos[2] - $start_pos[1] - 1)));
-                $categoria = $this->fix_name(trim(substr($row, $start_pos[2], $start_pos[3] - $start_pos[2] - 1)));
-                $amount = $this->fix_amount(trim(substr($row, $start_pos[3], 15)));
-                $description = trim(substr($row, $start_pos[4], 13));
+                $categoria_raw = substr($row, $start_pos[2], $start_pos[3] - $start_pos[2] - 1);
+                $categoria = $this->fix_name(trim($categoria_raw));
                 $credit_debit = trim(substr(trim($row), -2, 1));
 
-                (new Dumper)->dump($row);
-                (new Dumper)->dump($date);
-                (new Dumper)->dump($favorecido);
-                (new Dumper)->dump($categoria);
-                (new Dumper)->dump($amount);
-                (new Dumper)->dump($description);
-                (new Dumper)->dump($credit_debit);
+                $row_1 = substr($row, $start_pos[2] + strlen($categoria_raw) + 1);
+                $row_2 = substr(trim($row_1), 0, -2);
+                $row_3 = explode(' ', preg_replace('/\s{2,}/', ' ', $row_2));
+
+                $amount = $this->fix_amount($row_3[0]);
+                $description = $row_3[1];
+
+                if (strpos($row, ' ' . $row_3[0] . ' ') === false) {
+                    dd($row, $row_1, $row_2, $row_3, $start_pos, $categoria_raw);
+                    throw new \Exception('asdlkajsdlkasjd');
+                }
+
+//                (new Dumper)->dump($row);
+//                (new Dumper)->dump($date);
+//                (new Dumper)->dump($favorecido);
+//                (new Dumper)->dump($categoria);
+//                (new Dumper)->dump($categoria_raw);
+//                (new Dumper)->dump($amount);
+//                (new Dumper)->dump($description);
+//                (new Dumper)->dump($credit_debit);
 
                 switch ($categoria) {
                     case 'Transferência':
@@ -121,7 +135,6 @@ class ImportJfinancas extends Command
                                 'payment_id' => $payment->id,
                                 'revenue_id' => $revenue->id,
                             ]);
-//                            dd('a');
                         }
                         break;
                     default:
