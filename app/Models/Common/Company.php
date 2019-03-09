@@ -31,31 +31,6 @@ class Company extends Eloquent
         return $this->hasMany('App\Models\Banking\Account');
     }
 
-    public function bill_histories()
-    {
-        return $this->hasMany('App\Models\Expense\BillHistory');
-    }
-
-    public function bill_items()
-    {
-        return $this->hasMany('App\Models\Expense\BillItem');
-    }
-
-    public function bill_payments()
-    {
-        return $this->hasMany('App\Models\Expense\BillPayment');
-    }
-
-    public function bill_statuses()
-    {
-        return $this->hasMany('App\Models\Expense\BillStatus');
-    }
-
-    public function bills()
-    {
-        return $this->hasMany('App\Models\Expense\Bill');
-    }
-
     public function categories()
     {
         return $this->hasMany('App\Models\Setting\Category');
@@ -69,31 +44,6 @@ class Company extends Eloquent
     public function customers()
     {
         return $this->hasMany('App\Models\Income\Customer');
-    }
-
-    public function invoice_histories()
-    {
-        return $this->hasMany('App\Models\Income\InvoiceHistory');
-    }
-
-    public function invoice_items()
-    {
-        return $this->hasMany('App\Models\Income\InvoiceItem');
-    }
-
-    public function invoice_payments()
-    {
-        return $this->hasMany('App\Models\Income\InvoicePayment');
-    }
-
-    public function invoice_statuses()
-    {
-        return $this->hasMany('App\Models\Income\InvoiceStatus');
-    }
-
-    public function invoices()
-    {
-        return $this->hasMany('App\Models\Income\Invoice');
     }
 
     public function items()

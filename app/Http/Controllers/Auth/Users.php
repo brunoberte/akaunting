@@ -240,29 +240,6 @@ class Users extends Controller
     }
 
     /**
-     * Mark overdue invoices notifications are read and redirect to invoices page.
-     *
-     * @param  User  $user
-     *
-     * @return Response
-     */
-    public function readOverdueInvoices(User $user)
-    {
-        // Mark invoice notifications as read
-        foreach ($user->unreadNotifications as $notification) {
-            // Not an invoice notification
-            if ($notification->getAttribute('type') != 'App\Notifications\Income\Invoice') {
-                continue;
-            }
-
-            $notification->markAsRead();
-        }
-
-        // Redirect to invoices
-        return redirect('incomes/invoices');
-    }
-
-    /**
      * Mark items out of stock notifications are read and redirect to items page.
      *
      * @param  User  $user

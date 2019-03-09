@@ -3,11 +3,7 @@
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
-use App\Models\Income\Invoice;
-use App\Models\Income\InvoicePayment;
 use App\Models\Income\Revenue;
-use App\Models\Expense\Bill;
-use App\Models\Expense\BillPayment;
 use App\Models\Expense\Payment;
 use App\Models\Setting\Category;
 use Charts;
@@ -93,44 +89,12 @@ class ProfitLoss extends Controller
             ];
         }
 
-        // Invoices
-        switch ($status) {
-            case 'paid':
-                $invoices = InvoicePayment::monthsOfYear('paid_at')->get();
-                $this->setAmount($totals, $compares, $invoices, 'invoice', 'paid_at');
-                break;
-            case 'upcoming':
-                $invoices = Invoice::accrued()->monthsOfYear('due_at')->get();
-                $this->setAmount($totals, $compares, $invoices, 'invoice', 'due_at');
-                break;
-            default:
-                $invoices = Invoice::accrued()->monthsOfYear('invoiced_at')->get();
-                $this->setAmount($totals, $compares, $invoices, 'invoice', 'invoiced_at');
-                break;
-        }
-
         // Revenues
         if ($status != 'upcoming') {
             $revenues = Revenue::monthsOfYear('paid_at')->isNotTransfer()->get();
             $this->setAmount($totals, $compares, $revenues, 'revenue', 'paid_at');
         }
 
-        // Bills
-        switch ($status) {
-            case 'paid':
-                $bills = BillPayment::monthsOfYear('paid_at')->get();
-                $this->setAmount($totals, $compares, $bills, 'bill', 'paid_at');
-                break;
-            case 'upcoming':
-                $bills = Bill::accrued()->monthsOfYear('due_at')->get();
-                $this->setAmount($totals, $compares, $bills, 'bill', 'due_at');
-                break;
-            default:
-                $bills = Bill::accrued()->monthsOfYear('billed_at')->get();
-                $this->setAmount($totals, $compares, $bills, 'bill', 'billed_at');
-                break;
-        }
-        
         // Payments
         if ($status != 'upcoming') {
             $payments = Payment::monthsOfYear('paid_at')->isNotTransfer()->get();
@@ -156,28 +120,15 @@ class ProfitLoss extends Controller
     private function setAmount(&$totals, &$compares, $items, $type, $date_field)
     {
         foreach ($items as $item) {
-            if ($item['table'] == 'bill_payments' || $item['table'] == 'invoice_payments') {
-                $type_item = $item->$type;
-
-                $item->category_id = $type_item->category_id;
-            }
-
             $date = Date::parse($item->$date_field)->quarter;
 
-            $group = (($type == 'invoice') || ($type == 'revenue')) ? 'income' : 'expense';
+            $group = ($type == 'revenue') ? 'income' : 'expense';
 
             if (!isset($compares[$group][$item->category_id])) {
                 continue;
             }
 
             $amount = $item->getConvertedAmount();
-
-            // Forecasting
-            if ((($type == 'invoice') || ($type == 'bill')) && ($date_field == 'due_at')) {
-                foreach ($item->payments as $payment) {
-                    $amount -= $payment->getConvertedAmount();
-                }
-            }
 
             $compares[$group][$item->category_id][$date]['amount'] += $amount;
             $compares[$group][$item->category_id][$date]['currency_code'] = $item->currency_code;

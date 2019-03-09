@@ -35,9 +35,6 @@
                                 <li class="header"><i class="fa fa-money"></i> &nbsp;<span style="font-weight: 600;">{{ trans_choice('general.incomes', 1) }}</span></li>
                                 <li>
                                     <ul class="menu">
-                                        @permission('create-incomes-invoices')
-                                        <li><a href="{{ url('incomes/invoices/create') }}">{{ trans_choice('general.invoices', 1) }}</a></li>
-                                        @endpermission
                                         @permission('create-incomes-revenues')
                                         <li><a href="{{ url('incomes/revenues/create') }}">{{ trans_choice('general.revenues', 1) }}</a></li>
                                         @endpermission
@@ -53,9 +50,6 @@
                                 <li class="header"><i class="fa fa-shopping-cart"></i> &nbsp;<span style="font-weight: 600;">{{ trans_choice('general.expenses', 1) }}</span></li>
                                 <li>
                                     <ul class="menu">
-                                        @permission('create-expenses-bills')
-                                        <li><a href="{{ url('expenses/bills/create') }}">{{ trans_choice('general.bills', 1) }}</a></li>
-                                        @endpermission
                                         @permission('create-expenses-payments')
                                         <li><a href="{{ url('expenses/payments/create') }}">{{ trans_choice('general.payments', 1) }}</a></li>
                                         @endpermission
@@ -109,20 +103,6 @@
                         <li>
                             <!-- inner menu: contains the actual data -->
                             <ul class="menu">
-                                @if (count($bills))
-                                <li>
-                                    <a href="{{ url('auth/users/' . $user->id . '/read-bills') }}">
-                                        <i class="fa fa-shopping-cart text-red"></i> {{ trans_choice('header.notifications.upcoming_bills', count($bills), ['count' => count($bills)]) }}
-                                    </a>
-                                </li>
-                                @endif
-                                @if (count($invoices))
-                                <li>
-                                    <a href="{{ url('auth/users/' . $user->id . '/read-invoices') }}">
-                                        <i class="fa fa-money text-green"></i> {{ trans_choice('header.notifications.overdue_invoices', count($invoices), ['count' => count($invoices)]) }}
-                                    </a>
-                                </li>
-                                @endif
                                 @if (count($items))
                                 <li>
                                     <a href="{{ url('auth/users/' . $user->id . '/read-items') }}">

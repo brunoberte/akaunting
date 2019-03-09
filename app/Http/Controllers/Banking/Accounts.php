@@ -188,9 +188,7 @@ class Accounts extends Controller
     public function destroy(Account $account)
     {
         $relationships = $this->countRelationships($account, [
-            'bill_payments' => 'bills',
             'payments' => 'payments',
-            'invoice_payments' => 'invoices',
             'revenues' => 'revenues',
         ]);
 

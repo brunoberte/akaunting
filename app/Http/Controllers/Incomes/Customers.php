@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Income\Customer as Request;
 use App\Models\Auth\User;
 use App\Models\Income\Customer;
-use App\Models\Income\Invoice;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Currency;
 use App\Utilities\Import;
@@ -29,7 +28,7 @@ class Customers extends Controller
     {
         $customers = Customer::collect();
 
-        return view('incomes.customers.index', compact('customers', 'emails'));
+        return view('incomes.customers.index', compact('customers'));
     }
 
     /**
@@ -48,45 +47,8 @@ class Customers extends Controller
         ];
 
         $counts = [
-            'invoices' => 0,
             'revenues' => 0,
         ];
-
-        // Handle invoices
-        $invoices = Invoice::with(['status', 'payments'])->where('customer_id', $customer->id)->get();
-
-        $counts['invoices'] = $invoices->count();
-
-        $invoice_payments = [];
-
-        $today = Date::today()->toDateString();
-
-        foreach ($invoices as $item) {
-            $payments = 0;
-
-            foreach ($item->payments as $payment) {
-                $payment->category = $item->category;
-
-                $invoice_payments[] = $payment;
-
-                $amount = $payment->getConvertedAmount();
-
-                $amounts['paid'] += $amount;
-
-                $payments += $amount;
-            }
-
-            if ($item->invoice_status_code == 'paid') {
-                continue;
-            }
-
-            // Check if it's open or overdue invoice
-            if ($item->due_at > $today) {
-                $amounts['open'] += $item->getConvertedAmount() - $payments;
-            } else {
-                $amounts['overdue'] += $item->getConvertedAmount() - $payments;
-            }
-        }
 
         // Handle revenues
         $revenues = Revenue::with(['account', 'category'])->where('customer_id', $customer->id)->get();
@@ -99,11 +61,10 @@ class Customers extends Controller
         });
 
         $limit = request('limit', setting('general.list_limit', '25'));
-        $transactions = $this->paginate($items->merge($invoice_payments)->sortByDesc('paid_at'), $limit);
-        $invoices = $this->paginate($invoices->sortByDesc('paid_at'), $limit);
+        $transactions = $this->paginate($items->sortByDesc('paid_at'), $limit);
         $revenues = $this->paginate($revenues->sortByDesc('paid_at'), $limit);
 
-        return view('incomes.customers.show', compact('customer', 'counts', 'amounts', 'transactions', 'invoices', 'revenues'));
+        return view('incomes.customers.show', compact('customer', 'counts', 'amounts', 'transactions', 'revenues'));
     }
 
     /**
@@ -305,7 +266,6 @@ class Customers extends Controller
     public function destroy(Customer $customer)
     {
         $relationships = $this->countRelationships($customer, [
-            'invoices' => 'invoices',
             'revenues' => 'revenues',
         ]);
 

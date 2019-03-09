@@ -108,9 +108,7 @@ class Categories extends Controller
     {
         $relationships = $this->countRelationships($category, [
             'items' => 'items',
-            'invoices' => 'invoices',
             'revenues' => 'revenues',
-            'bills' => 'bills',
             'payments' => 'payments',
         ]);
 
@@ -161,9 +159,7 @@ class Categories extends Controller
     {
         $relationships = $this->countRelationships($category, [
             'items' => 'items',
-            'invoices' => 'invoices',
             'revenues' => 'revenues',
-            'bills' => 'bills',
             'payments' => 'payments',
         ]);
 
@@ -205,9 +201,7 @@ class Categories extends Controller
 
         $relationships = $this->countRelationships($category, [
             'items' => 'items',
-            'invoices' => 'invoices',
             'revenues' => 'revenues',
-            'bills' => 'bills',
             'payments' => 'payments',
         ]);
 

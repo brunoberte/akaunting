@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Common;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banking\Account;
-use App\Models\Expense\Bill;
 use App\Models\Expense\Payable;
 use App\Models\Expense\Payment;
-use App\Models\Income\Invoice;
 use App\Models\Income\Receivable;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
@@ -75,19 +73,13 @@ class Dashboard extends Controller
 
     private function getTotals()
     {
-        list($incomes_amount, $open_invoice, $overdue_invoice, $expenses_amount, $open_bill, $overdue_bill) = $this->calculateAmounts();
+        list($incomes_amount, $expenses_amount) = $this->calculateAmounts();
 
         $incomes_progress = 100;
-
-        if (!empty($open_invoice) && !empty($overdue_invoice)) {
-            $incomes_progress = (int) ($open_invoice * 100) / ($open_invoice + $overdue_invoice);
-        }
 
         // Totals
         $total_incomes = array(
             'total'             => $incomes_amount,
-            'open_invoice'      => money($open_invoice, setting('general.default_currency'), true),
-            'overdue_invoice'   => money($overdue_invoice, setting('general.default_currency'), true),
             'progress'          => $incomes_progress
         );
 
@@ -99,14 +91,12 @@ class Dashboard extends Controller
 
         $total_expenses = array(
             'total'         => $expenses_amount,
-            'open_bill'     => money($open_bill, setting('general.default_currency'), true),
-            'overdue_bill'  => money($overdue_bill, setting('general.default_currency'), true),
             'progress'      => $expenses_progress
         );
 
         $amount_profit = $incomes_amount - $expenses_amount;
-        $open_profit = $open_invoice - $open_bill;
-        $overdue_profit = $overdue_invoice - $overdue_bill;
+        $open_profit = 0;
+        $overdue_profit = 0;
 
         $total_progress = 100;
 
@@ -410,39 +400,17 @@ class Dashboard extends Controller
         return array($donut_incomes, $donut_expenses);
     }
 
-    private function getLatestIncomes()
-    {
-        $invoices = collect(Invoice::orderBy('invoiced_at', 'desc')->accrued()->take(10)->get())->each(function ($item) {
-            $item->paid_at = $item->invoiced_at;
-        });
-
-        $revenues = collect(Revenue::orderBy('paid_at', 'desc')->isNotTransfer()->take(10)->get());
-
-        $latest = $revenues->merge($invoices)->take(5)->sortByDesc('paid_at');
-
-        return $latest;
-    }
-
-    private function getLatestExpenses()
-    {
-        $bills = collect(Bill::orderBy('billed_at', 'desc')->accrued()->take(10)->get())->each(function ($item) {
-            $item->paid_at = $item->billed_at;
-        });
-
-        $payments = collect(Payment::orderBy('paid_at', 'desc')->isNotTransfer()->take(10)->get());
-
-        $latest = $payments->merge($bills)->take(5)->sortByDesc('paid_at');
-
-        return $latest;
-    }
-
     private function calculateAmounts()
     {
-        $incomes_amount = $open_invoice = $overdue_invoice = 0;
-        $expenses_amount = $open_bill = $overdue_bill = 0;
+        $incomes_amount = 0;
+        $expenses_amount = 0;
 
         // Get categories
-        $categories = Category::with(['bills', 'invoices', 'payments', 'revenues'])->orWhere('type', 'income')->orWhere('type', 'expense')->enabled()->get();
+        $categories = Category::with(['payments', 'revenues'])
+            ->orWhere('type', 'income')
+            ->orWhere('type', 'expense')
+            ->enabled()
+            ->get();
 
         foreach ($categories as $category) {
             switch ($category->type) {
@@ -455,18 +423,6 @@ class Dashboard extends Controller
                     }
 
                     $incomes_amount += $amount;
-
-                    // Invoices
-                    $invoices = $category->invoices()->accrued()->get();
-                    foreach ($invoices as $invoice) {
-                        list($paid, $open, $overdue) = $this->calculateInvoiceBillTotals($invoice, 'invoice');
-
-                        $incomes_amount += $paid;
-                        $open_invoice += $open;
-                        $overdue_invoice += $overdue;
-
-                        $amount += $paid;
-                    }
 
                     $this->addToIncomeDonut($category->color, $amount, $category->name);
 
@@ -481,25 +437,13 @@ class Dashboard extends Controller
 
                     $expenses_amount += $amount;
 
-                    // Bills
-                    $bills = $category->bills()->accrued()->get();
-                    foreach ($bills as $bill) {
-                        list($paid, $open, $overdue) = $this->calculateInvoiceBillTotals($bill, 'bill');
-
-                        $expenses_amount += $paid;
-                        $open_bill += $open;
-                        $overdue_bill += $overdue;
-
-                        $amount += $paid;
-                    }
-
                     $this->addToExpenseDonut($category->color, $amount, $category->name);
 
                     break;
             }
         }
 
-        return array($incomes_amount, $open_invoice, $overdue_invoice, $expenses_amount, $open_bill, $overdue_bill);
+        return array($incomes_amount, $expenses_amount);
     }
 
     private function calculateCashFlowTotals($type, $start, $end, $period)
@@ -508,10 +452,8 @@ class Dashboard extends Controller
 
         if ($type == 'income') {
             $m1 = '\App\Models\Income\Revenue';
-            $m2 = '\App\Models\Income\InvoicePayment';
         } else {
             $m1 = '\App\Models\Expense\Payment';
-            $m2 = '\App\Models\Expense\BillPayment';
         }
 
         $date_format = 'Y-m';
@@ -549,9 +491,9 @@ class Dashboard extends Controller
 
         $this->setCashFlowTotals($totals, $items_1, $date_format, $period);
 
-        $items_2 = $m2::whereBetween('paid_at', [$start, $end])->get();
-
-        $this->setCashFlowTotals($totals, $items_2, $date_format, $period);
+//        $items_2 = $m2::whereBetween('paid_at', [$start, $end])->get();
+//
+//        $this->setCashFlowTotals($totals, $items_2, $date_format, $period);
 
         return $totals;
     }
@@ -586,36 +528,6 @@ class Dashboard extends Controller
         }
 
         return $profit;
-    }
-
-    private function calculateInvoiceBillTotals($item, $type)
-    {
-        $paid = $open = $overdue = 0;
-
-        $today = $this->today->toDateString();
-
-        $paid += $item->getConvertedAmount();
-
-        $code_field = $type . '_status_code';
-
-        if ($item->$code_field != 'paid') {
-            $payments = 0;
-
-            if ($item->$code_field == 'partial') {
-                foreach ($item->payments as $payment) {
-                    $payments += $payment->getConvertedAmount();
-                }
-            }
-
-            // Check if it's open or overdue invoice
-            if ($item->due_at > $today) {
-                $open += $item->getConvertedAmount() - $payments;
-            } else {
-                $overdue += $item->getConvertedAmount() - $payments;
-            }
-        }
-
-        return array($paid, $open, $overdue);
     }
 
     private function addToIncomeDonut($color, $amount, $text)

@@ -21,7 +21,8 @@ class Transfers extends ModelFilter
 
     public function toAccount($account_id)
     {
-        return $this->related('revenue', 'revenues.account_id', '=', $account_id);
+        return $this->where('revenues.account_id', $account_id);
+//        return $this->related('revenue', 'revenues.account_id', '=', $account_id);
     }
 
     public function date($date)

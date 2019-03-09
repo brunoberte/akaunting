@@ -3,11 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Common\Company;
-use App\Models\Expense\BillHistory;
-use App\Models\Income\InvoiceHistory;
-use App\Notifications\Expense\Bill as BillNotification;
-use App\Notifications\Income\Invoice as InvoiceNotification;
-use App\Traits\Incomes;
 use App\Utilities\Overrider;
 use Date;
 use Illuminate\Console\Command;
@@ -17,8 +12,6 @@ use Recurr\Transformer\ArrayTransformerConfig;
 
 class RecurringCheck extends Command
 {
-    use Incomes;
-
     /**
      * The name and signature of the console command.
      *
@@ -79,12 +72,6 @@ class RecurringCheck extends Command
                     }
 
                     switch ($recurring->recurable_type) {
-                        case 'App\Models\Expense\Bill':
-                            $this->recurBill($company, $model);
-                            break;
-                        case 'App\Models\Income\Invoice':
-                            $this->recurInvoice($company, $model);
-                            break;
                         case 'App\Models\Expense\Payment':
                         case 'App\Models\Income\Revenue':
                             $model->cloneable_relations = [];
@@ -104,87 +91,5 @@ class RecurringCheck extends Command
 
         // Unset company_id
         session()->forget('company_id');
-    }
-
-    protected function recurInvoice($company, $model)
-    {
-        $model->cloneable_relations = ['items', 'totals'];
-
-        // Create new record
-        $clone = $model->duplicate();
-
-        // Set original invoice id
-        $clone->parent_id = $model->id;
-
-        // Days between invoiced and due date
-        $diff_days = Date::parse($clone->due_at)->diffInDays(Date::parse($clone->invoiced_at));
-
-        // Update dates
-        $clone->invoiced_at = $this->today->format('Y-m-d');
-        $clone->due_at = $this->today->addDays($diff_days)->format('Y-m-d');
-        $clone->save();
-
-        // Add invoice history
-        InvoiceHistory::create([
-            'company_id' => session('company_id'),
-            'invoice_id' => $clone->id,
-            'status_code' => 'draft',
-            'notify' => 0,
-            'description' => trans('messages.success.added', ['type' => $clone->invoice_number]),
-        ]);
-
-        // Notify the customer
-        if ($clone->customer && !empty($clone->customer_email)) {
-            $clone->customer->notify(new InvoiceNotification($clone));
-        }
-
-        // Notify all users assigned to this company
-        foreach ($company->users as $user) {
-            if (!$user->can('read-notifications')) {
-                continue;
-            }
-
-            $user->notify(new InvoiceNotification($clone));
-        }
-
-        // Update next invoice number
-        $this->increaseNextInvoiceNumber();
-    }
-
-    protected function recurBill($company, $model)
-    {
-        $model->cloneable_relations = ['items', 'totals'];
-
-        // Create new record
-        $clone = $model->duplicate();
-
-        // Set original bill id
-        $clone->parent_id = $model->id;
-
-        // Days between invoiced and due date
-        $diff_days = Date::parse($clone->due_at)->diffInDays(Date::parse($clone->invoiced_at));
-
-        // Update dates
-        $clone->billed_at = $this->today->format('Y-m-d');
-        $clone->due_at = $this->today->addDays($diff_days)->format('Y-m-d');
-        $clone->save();
-
-        // Add bill history
-        BillHistory::create([
-            'company_id' => session('company_id'),
-            'bill_id' => $clone->id,
-            'status_code' => 'draft',
-            'notify' => 0,
-            'description' => trans('messages.success.added', ['type' => $clone->bill_number]),
-        ]);
-
-        // Notify all users assigned to this company
-        foreach ($company->users as $user) {
-            if (!$user->can('read-notifications')) {
-                continue;
-            }
-
-            $user->notify(new BillNotification($clone));
-        }
     }
 }

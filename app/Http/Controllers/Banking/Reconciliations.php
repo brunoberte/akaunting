@@ -165,9 +165,7 @@ class Reconciliations extends Controller
 
         $models = [
             'App\Models\Expense\Payment',
-            'App\Models\Expense\BillPayment',
             'App\Models\Income\Revenue',
-            'App\Models\Income\InvoicePayment',
         ];
 
         foreach ($models as $model) {
@@ -204,9 +202,7 @@ class Reconciliations extends Controller
 
         $models = [
             'App\Models\Expense\Payment',
-            'App\Models\Expense\BillPayment',
             'App\Models\Income\Revenue',
-            'App\Models\Income\InvoicePayment',
         ];
 
         $transactions = [];
@@ -217,18 +213,10 @@ class Reconciliations extends Controller
             $m::where('account_id', $account->id)->whereBetween('paid_at', [$started[0], $ended[0]])->each(function($item) use(&$transactions, $model) {
                 $item->model = $model;
 
-                if (($model == 'App\Models\Income\Invoice') || ($model == 'App\Models\Income\Revenue')) {
-                    if ($item->invoice) {
-                        $item->contact = $item->invoice->customer;
-                    } else {
-                        $item->contact = $item->customer;
-                    }
+                if ($model == 'App\Models\Income\Revenue') {
+                    $item->contact = $item->customer;
                 } else {
-                    if ($item->bill) {
-                        $item->contact = $item->bill->vendor;
-                    } else {
-                        $item->contact = $item->vendor;
-                    }
+                    $item->contact = $item->vendor;
                 }
 
                 $transactions[] = $item;
@@ -251,22 +239,10 @@ class Reconciliations extends Controller
         // Opening Balance
         $total = $account->opening_balance;
 
-        // Sum invoices
-        $invoice_payments = $account->invoice_payments()->whereDate('paid_at', '<', $started_at)->get();
-        foreach ($invoice_payments as $item) {
-            $total += $item->amount;
-        }
-
         // Sum revenues
         $revenues = $account->revenues()->whereDate('paid_at', '<', $started_at)->get();
         foreach ($revenues as $item) {
             $total += $item->amount;
-        }
-
-        // Subtract bills
-        $bill_payments = $account->bill_payments()->whereDate('paid_at', '<', $started_at)->get();
-        foreach ($bill_payments as $item) {
-            $total -= $item->amount;
         }
 
         // Subtract payments
@@ -293,7 +269,7 @@ class Reconciliations extends Controller
             foreach ($transactions as $key => $value) {
                 $model = explode('_', $key);
 
-                if (($model[1] == 'App\Models\Income\Invoice') || ($model[1] == 'App\Models\Income\Revenue')) {
+                if ($model[1] == 'App\Models\Income\Revenue') {
                     $income_total += $value;
                 } else {
                     $expense_total += $value;

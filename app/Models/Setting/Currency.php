@@ -33,29 +33,9 @@ class Currency extends Model
         return $this->hasMany('App\Models\Income\Customer', 'currency_code', 'code');
     }
 
-    public function invoices()
-    {
-        return $this->hasMany('App\Models\Income\Invoice', 'currency_code', 'code');
-    }
-
-    public function invoice_payments()
-    {
-        return $this->hasMany('App\Models\Income\InvoicePayment', 'currency_code', 'code');
-    }
-
     public function revenues()
     {
         return $this->hasMany('App\Models\Income\Revenue', 'currency_code', 'code');
-    }
-
-    public function bills()
-    {
-        return $this->hasMany('App\Models\Expense\Bill', 'currency_code', 'code');
-    }
-
-    public function bill_payments()
-    {
-        return $this->hasMany('App\Models\Expense\BillPayment', 'currency_code', 'code');
     }
 
     public function payments()

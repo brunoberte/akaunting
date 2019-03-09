@@ -51,16 +51,6 @@ class Item extends Model
         return $this->belongsTo('App\Models\Setting\Category');
     }
 
-    public function bill_items()
-    {
-        return $this->hasMany('App\Models\Expense\BillItem');
-    }
-
-    public function invoice_items()
-    {
-        return $this->hasMany('App\Models\Income\InvoiceItem');
-    }
-
     /**
      * Convert sale price to double.
      *

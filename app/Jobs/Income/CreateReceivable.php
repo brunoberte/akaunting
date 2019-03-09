@@ -6,13 +6,12 @@ use App\Events\ReceivableCreated;
 use App\Models\Income\Receivable;
 use App\Traits\Currencies;
 use App\Traits\DateTime;
-use App\Traits\Incomes;
 use App\Traits\Uploads;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 class CreateReceivable
 {
-    use Currencies, DateTime, Dispatchable, Incomes, Uploads;
+    use Currencies, DateTime, Dispatchable, Uploads;
 
     protected $request;
 

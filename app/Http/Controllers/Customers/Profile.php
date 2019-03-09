@@ -69,27 +69,4 @@ class Profile extends Controller
 
         return redirect('customers/profile/edit');
     }
-
-    /**
-     * Mark overdue invoices notifications are read and redirect to invoices page.
-     *
-     * @return Response
-     */
-    public function readOverdueInvoices()
-    {
-        $user = auth()->user();
-
-        // Mark invoice notifications as read
-        foreach ($user->unreadNotifications as $notification) {
-            // Not an invoice notification
-            if ($notification->getAttribute('type') != 'App\Notifications\Income\Invoice') {
-                continue;
-            }
-
-            $notification->markAsRead();
-        }
-
-        // Redirect to invoices
-        return redirect('customers/invoices');
-    }
 }

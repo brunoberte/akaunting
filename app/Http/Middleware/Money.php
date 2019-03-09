@@ -18,7 +18,6 @@ class Money
         if ($request->method() == 'POST' || $request->method() == 'PATCH') {
             $amount = $request->get('amount');
             $bill_number = $request->get('bill_number');
-            $invoice_number = $request->get('invoice_number');
             $sale_price = $request->get('sale_price');
             $purchase_price = $request->get('purchase_price');
             $opening_balance = $request->get('opening_balance');
@@ -35,7 +34,7 @@ class Money
                 $request->request->set('amount', $amount);
             }
 
-            if (isset($bill_number) || isset($invoice_number) || !empty($items)) {
+            if (!empty($items)) {
                 if (!empty($items)) {
                     foreach ($items as $key => $item) {
                         if (!isset($item['price'])) {

@@ -21,11 +21,6 @@ class Transactions extends ModelFilter
     
     public function categories($categories)
     {
-        // No category for bills/invoices
-        if (in_array($this->getModel()->getTable(), ['bill_payments', 'invoice_payments'])) {
-            return $this;
-        }
-
         return $this->whereIn('category_id', (array) $categories);
     }
 

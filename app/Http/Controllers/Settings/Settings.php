@@ -36,10 +36,6 @@ class Settings extends Controller
 
         $setting['company_logo'] = Media::find($company_logo);
 
-        $invoice_logo = $setting->pull('invoice_logo');
-
-        $setting['invoice_logo'] = Media::find($invoice_logo);
-
         $timezones = $this->getTimezones();
 
         $accounts = Account::enabled()->orderBy('name')->pluck('name', 'id');

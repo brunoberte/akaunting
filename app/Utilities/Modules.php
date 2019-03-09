@@ -74,6 +74,8 @@ class Modules
             Cache::put($cache_admin, $payment_methods, Date::now()->addHour(6));
         }
 
-        return ($payment_methods) ? $payment_methods : [];
+        return ($payment_methods) ? $payment_methods : [
+            'default' => 'Default',
+        ];
     }
 }

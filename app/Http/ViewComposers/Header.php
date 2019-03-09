@@ -20,8 +20,6 @@ class Header
     {
         $user = Auth::user();
 
-        $bills = [];
-        $invoices = [];
         $items = [];
         $notifications = 0;
         $company = null;
@@ -42,14 +40,6 @@ class Header
             $data = $underead->getAttribute('data');
 
             switch ($underead->getAttribute('type')) {
-                case 'App\Notifications\Expense\Bill':
-                    $bills[$data['bill_id']] = $data['amount'];
-                    $notifications++;
-                    break;
-                case 'App\Notifications\Income\Invoice':
-                    $invoices[$data['invoice_id']] = $data['amount'];
-                    $notifications++;
-                    break;
                 case 'App\Notifications\Common\Item':
                     $items[$data['item_id']] = $data['name'];
                     $notifications++;
@@ -62,8 +52,6 @@ class Header
         $view->with([
             'user' => $user,
             'notifications' => $notifications,
-            'bills' => $bills,
-            'invoices' => $invoices,
             'items' => $items,
             'company' => $company,
         ]);

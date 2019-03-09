@@ -130,9 +130,7 @@ class Currencies extends Controller
             $relationships = $this->countRelationships($currency, [
                 'accounts' => 'accounts',
                 'customers' => 'customers',
-                'invoices' => 'invoices',
                 'revenues' => 'revenues',
-                'bills' => 'bills',
                 'payments' => 'payments',
             ]);
 
@@ -200,9 +198,7 @@ class Currencies extends Controller
         $relationships = $this->countRelationships($currency, [
             'accounts' => 'accounts',
             'customers' => 'customers',
-            'invoices' => 'invoices',
             'revenues' => 'revenues',
-            'bills' => 'bills',
             'payments' => 'payments',
         ]);
 
@@ -240,9 +236,7 @@ class Currencies extends Controller
         $relationships = $this->countRelationships($currency, [
             'accounts' => 'accounts',
             'customers' => 'customers',
-            'invoices' => 'invoices',
             'revenues' => 'revenues',
-            'bills' => 'bills',
             'payments' => 'payments',
         ]);
 

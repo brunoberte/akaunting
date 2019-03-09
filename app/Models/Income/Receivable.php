@@ -5,7 +5,6 @@ namespace App\Models\Income;
 use App\Models\Model;
 use App\Traits\Currencies;
 use App\Traits\DateTime;
-use App\Traits\Incomes;
 use App\Traits\Media;
 use App\Traits\Recurring;
 use Bkwld\Cloner\Cloneable;
@@ -13,7 +12,7 @@ use Sofa\Eloquence\Eloquence;
 
 class Receivable extends Model
 {
-    use Cloneable, Currencies, DateTime, Eloquence, Incomes, Media, Recurring;
+    use Cloneable, Currencies, DateTime, Eloquence, Media, Recurring;
 
     protected $table = 'receivables';
 

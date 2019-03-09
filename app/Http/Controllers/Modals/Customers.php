@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Income\Customer as Request;
 use App\Models\Auth\User;
 use App\Models\Income\Customer;
-use App\Models\Income\Invoice;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Currency;
 use App\Utilities\Import;

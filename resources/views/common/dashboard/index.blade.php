@@ -55,12 +55,11 @@
                 <div class="info-box-content">
                     <span class="info-box-text">{{ trans('dashboard.total_incomes') }}</span>
                     <span class="info-box-number">@money($total_incomes['total'], setting('general.default_currency'), true)</span>
-                    <div class="progress-group" title="{{ trans('dashboard.open_invoices') }}: {{ $total_incomes['open_invoice'] }}<br>{{ trans('dashboard.overdue_invoices') }}: {{ $total_incomes['overdue_invoice'] }}" data-toggle="tooltip" data-html="true">
+                    <div class="progress-group">
                         <div class="progress sm">
                             <div class="progress-bar progress-bar-aqua" style="width: {{ $total_incomes['progress'] }}%"></div>
                         </div>
                         <span class="progress-text">{{ trans('dashboard.receivables') }}</span>
-                        <span class="progress-number">{{ $total_incomes['open_invoice'] }} / {{ $total_incomes['overdue_invoice'] }}</span>
                     </div>
                 </div>
             </div>
@@ -73,12 +72,11 @@
                     <span class="info-box-text">{{ trans('dashboard.total_expenses') }}</span>
                     <span class="info-box-number">@money($total_expenses['total'], setting('general.default_currency'), true)</span>
 
-                    <div class="progress-group" title="{{ trans('dashboard.open_bills') }}: {{ $total_expenses['open_bill'] }}<br>{{ trans('dashboard.overdue_bills') }}: {{ $total_expenses['overdue_bill'] }}" data-toggle="tooltip" data-html="true">
+                    <div class="progress-group" >
                         <div class="progress sm">
                             <div class="progress-bar progress-bar-red" style="width: {{ $total_expenses['progress'] }}%"></div>
                         </div>
                         <span class="progress-text">{{ trans('dashboard.payables') }}</span>
-                        <span class="progress-number">{{ $total_expenses['open_bill'] }} / {{ $total_expenses['overdue_bill'] }}</span>
                     </div>
                 </div>
             </div>

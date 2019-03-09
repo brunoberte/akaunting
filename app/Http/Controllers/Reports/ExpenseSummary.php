@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banking\Account;
-use App\Models\Expense\Bill;
-use App\Models\Expense\BillPayment;
 use App\Models\Expense\Payment;
 use App\Models\Expense\Vendor;
 use App\Models\Setting\Category;
@@ -65,29 +63,15 @@ class ExpenseSummary extends Controller
 
         switch ($status) {
             case 'paid':
-                // Bills
-                $bills = BillPayment::monthsOfYear('paid_at')->account(request('accounts'))->get();
-                $this->setAmount($expenses_graph, $totals, $expenses, $bills, 'bill', 'paid_at');
-
                 // Payments
                 $this->setAmount($expenses_graph, $totals, $expenses, $payments, 'payment', 'paid_at');
                 break;
             case 'upcoming':
-                // Bills
-                $bills = Bill::accrued()->monthsOfYear('due_at')->vendor(request('vendors'))->get();
-                Recurring::reflect($bills, 'bill', 'billed_at', $status);
-                $this->setAmount($expenses_graph, $totals, $expenses, $bills, 'bill', 'due_at');
-
                 // Payments
                 Recurring::reflect($payments, 'payment', 'paid_at', $status);
                 $this->setAmount($expenses_graph, $totals, $expenses, $payments, 'payment', 'paid_at');
                 break;
             default:
-                // Bills
-                $bills = Bill::accrued()->monthsOfYear('billed_at')->vendor(request('vendors'))->get();
-                Recurring::reflect($bills, 'bill', 'billed_at', $status);
-                $this->setAmount($expenses_graph, $totals, $expenses, $bills, 'bill', 'billed_at');
-
                 // Payments
                 Recurring::reflect($payments, 'payment', 'paid_at', $status);
                 $this->setAmount($expenses_graph, $totals, $expenses, $payments, 'payment', 'paid_at');

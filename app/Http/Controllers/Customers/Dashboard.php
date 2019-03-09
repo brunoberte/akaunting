@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Income\Invoice;
 use Charts;
 use Date;
 
@@ -17,8 +16,6 @@ class Dashboard extends Controller
     public function index()
     {
         $customer = auth()->user()->customer;
-
-        $invoices = Invoice::with('status')->accrued()->where('customer_id', $customer->id)->get();
 
         $start = Date::parse(request('start', Date::today()->startOfYear()->format('Y-m-d')));
         $end = Date::parse(request('end', Date::today()->endOfYear()->format('Y-m-d')));
@@ -38,24 +35,6 @@ class Dashboard extends Controller
         }
 
         $unpaid = $paid = $overdue = $partial_paid = [];
-
-        foreach ($invoices as $invoice) {
-            switch ($invoice->invoice_status_code) {
-                case 'paid':
-                    $paid[] = $invoice;
-                    break;
-                case 'partial':
-                    $partial_paid[] = $invoice;
-                    break;
-                case 'sent':
-                default:
-                    if (Date::today()->format('Y-m-d') > $invoice->due_at->format('Y-m-d')) {
-                        $overdue[] = $invoice;
-                    } else {
-                        $unpaid[] = $invoice;
-                    }
-            }
-        }
 
         $total = count($unpaid) + count($paid) + count($partial_paid) + count($overdue);
 
@@ -83,7 +62,7 @@ class Dashboard extends Controller
             ->credits(false)
             ->view('vendor.consoletvs.charts.chartjs.multi.line');
 
-        return view('customers.dashboard.index', compact('customer', 'invoices', 'progress', 'chart'));
+        return view('customers.dashboard.index', compact('customer', 'progress', 'chart'));
     }
 
     private function calculateTotals($items, $start, $end, $type)

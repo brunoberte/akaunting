@@ -52,19 +52,9 @@ class Account extends Model
         return $this->belongsTo('App\Models\Setting\Currency', 'currency_code', 'code');
     }
 
-    public function invoice_payments()
-    {
-        return $this->hasMany('App\Models\Income\InvoicePayment');
-    }
-
     public function revenues()
     {
         return $this->hasMany('App\Models\Income\Revenue');
-    }
-
-    public function bill_payments()
-    {
-        return $this->hasMany('App\Models\Expense\BillPayment');
     }
 
     public function payments()

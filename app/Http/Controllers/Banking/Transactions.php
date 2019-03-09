@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Banking;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banking\Account;
-use App\Models\Banking\Transaction;
-use App\Models\Expense\BillPayment;
 use App\Models\Expense\Payment;
-use App\Models\Income\InvoicePayment;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
 
@@ -37,12 +34,10 @@ class Transactions extends Controller
 
         if ($type != 'income') {
             $this->addTransactions(Payment::collect(['paid_at'=> 'desc']), trans_choice('general.expenses', 1));
-            $this->addTransactions(BillPayment::collect(['paid_at'=> 'desc']), trans_choice('general.expenses', 1));
         }
 
         if ($type != 'expense') {
             $this->addTransactions(Revenue::collect(['paid_at'=> 'desc']), trans_choice('general.incomes', 1));
-            $this->addTransactions(InvoicePayment::collect(['paid_at'=> 'desc']), trans_choice('general.incomes', 1));
         }
 
         $transactions = $this->getTransactions($request);
@@ -59,15 +54,7 @@ class Transactions extends Controller
     protected function addTransactions($items, $type)
     {
         foreach ($items as $item) {
-            if (!empty($item->category)) {
-                $category_name = $item->category->name;
-            } else {
-                if ($type == trans_choice('general.incomes', 1)) {
-                    $category_name = $item->invoice->category->name;
-                } else {
-                    $category_name = $item->bill->category->name;
-                }
-            }
+            $category_name = $item->category->name;
 
             $this->transactions[] = (object) [
                 'paid_at'           => $item->paid_at,

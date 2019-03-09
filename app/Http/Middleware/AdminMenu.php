@@ -70,6 +70,16 @@ class AdminMenu
                 ]);
             }
 
+            if ($user->can('read-banking-transfers')) {
+            // Transactions
+                $menu->add([
+                    'url' => '/banking/transfers',
+                    'title' => trans_choice('general.transfers', 2),
+                    'icon' => 'fa fa-money',
+                    'order' => 2,
+                ]);
+            }
+
             // Reports
             if ($user->can([
                 'read-reports-income-summary',

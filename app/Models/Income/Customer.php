@@ -41,11 +41,6 @@ class Customer extends Model
         'address' => 1,
     ];
 
-    public function invoices()
-    {
-        return $this->hasMany('App\Models\Income\Invoice');
-    }
-
     public function revenues()
     {
         return $this->hasMany('App\Models\Income\Revenue');
@@ -69,14 +64,6 @@ class Customer extends Model
     public function getUnpaidAttribute()
     {
         $amount = 0;
-
-        $invoices = $this->invoices()->accrued()->notPaid()->get();
-
-        foreach ($invoices as $invoice) {
-            $invoice_amount = $invoice->amount - $invoice->paid;
-
-            $amount += $this->dynamicConvert(setting('general.default_currency'), $invoice_amount, $invoice->currency_code, $invoice->currency_rate, false);
-        }
 
         return $amount;
     }

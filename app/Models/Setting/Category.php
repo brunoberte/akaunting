@@ -22,16 +22,6 @@ class Category extends Model
      */
     public $sortable = ['name', 'type', 'enabled'];
 
-    public function bills()
-    {
-        return $this->hasMany('App\Models\Expense\Bill');
-    }
-
-    public function invoices()
-    {
-        return $this->hasMany('App\Models\Income\Invoice');
-    }
-
     public function items()
     {
         return $this->hasMany('App\Models\Common\Item');

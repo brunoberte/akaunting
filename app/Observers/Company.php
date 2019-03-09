@@ -39,9 +39,9 @@ class Company
     public function deleted(Model $company)
     {
         $tables = [
-            'accounts', 'bill_histories', 'bill_items', 'bill_payments', 'bill_statuses', 'bills', 'categories',
-            'currencies', 'customers', 'invoice_histories', 'invoice_items', 'invoice_payments', 'invoice_statuses',
-            'invoices', 'items', 'payments', 'recurring', 'revenues', 'settings', 'transfers', 'vendors',
+            'accounts', 'categories',
+            'currencies', 'customers',
+            'items', 'payments', 'recurring', 'revenues', 'settings', 'transfers', 'vendors',
         ];
 
         foreach ($tables as $table) {

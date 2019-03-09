@@ -206,10 +206,7 @@ class Items extends Controller
      */
     public function destroy(Item $item)
     {
-        $relationships = $this->countRelationships($item, [
-            'invoice_items' => 'invoices',
-            'bill_items' => 'bills',
-        ]);
+        $relationships = $this->countRelationships($item, []);
 
         if (empty($relationships)) {
             $item->delete();
@@ -258,10 +255,6 @@ class Items extends Controller
             'name' => $query,
             'sku' => $query,
         ]);
-
-        if ($type == 'invoice') {
-            $autocomplete->quantity();
-        }
 
         $items = $autocomplete->get();
 
