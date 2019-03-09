@@ -71,7 +71,7 @@ class AdminMenu
             }
 
             if ($user->can('read-banking-transfers')) {
-            // Transactions
+            // Transfers
                 $menu->add([
                     'url' => '/banking/transfers',
                     'title' => trans_choice('general.transfers', 2),
