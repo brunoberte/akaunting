@@ -12,7 +12,7 @@ class BitbucketdeployController extends Controller
      *
      * @var string
      */
-    private $_branch = 'master';
+    private $_branch = '1.3-dev';
 
     /**
      * The name of the remote to pull from.
