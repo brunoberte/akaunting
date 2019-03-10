@@ -57,24 +57,18 @@
     "scripts": {
         "post-install-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan ide-helper:generate",
-            "php artisan ide-helper:meta",
             "php artisan clear-compiled",
             "php artisan optimize",
             "composer dump-autoload"
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php artisan ide-helper:generate",
-            "php artisan ide-helper:meta",
             "php artisan clear-compiled",
             "php artisan optimize",
             "composer dump-autoload"
         ],
         "post-create-project-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan ide-helper:generate",
-            "php artisan ide-helper:meta",
             "php artisan clear-compiled",
             "php artisan optimize",
             "composer dump-autoload"

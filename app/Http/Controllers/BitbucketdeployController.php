@@ -32,7 +32,7 @@ class BitbucketdeployController extends Controller
         try {
             $output = [];
 
-            $directory = app_path() . '/';
+            $directory = base_path() . '/';
 
             // Make sure we're in the right directory
             $change_dir = 'cd ' . $directory . ';';
