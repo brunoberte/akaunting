@@ -2,6 +2,18 @@
 
 @section('title', trans_choice('general.transactions', 2))
 
+@section('new_button')
+    @permission('create-expenses-payments')
+    <span class="new-button"><a href="{{ url('expenses/payments/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} payment</a></span>
+    @endpermission
+    @permission('create-incomes-revenues')
+    <span class="new-button"><a href="{{ url('incomes/revenues/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} revenue</a></span>
+    @endpermission
+    @permission('create-banking-transfers')
+    <span class="new-button"><a href="{{ url('banking/transfers/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} transfer</a></span>
+    @endpermission
+@endsection
+
 @section('content')
 <!-- Default box -->
 <div class="box box-success">
