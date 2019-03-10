@@ -6,9 +6,8 @@
     "license": "GPL-3.0+",
     "type": "project",
     "require": {
-        "php": ">=7.1.*",
+        "php": ">=7.1",
         "akaunting/language": "1.0.*",
-        "akaunting/money": "1.0.*",
         "akaunting/setting": "1.0.*",
         "akaunting/signed-url": "1.0.*",
         "akaunting/version": "1.0.*",

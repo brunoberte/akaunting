@@ -7,8 +7,6 @@ use App\Models\Income\Revenue as Payment;
 use App\Models\Setting\Category;
 use App\Models\Banking\Account;
 
-use App\Utilities\Modules;
-
 use Auth;
 
 class Payments extends Controller

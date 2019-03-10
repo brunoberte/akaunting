@@ -15,9 +15,6 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\CompanySeed::class,
         Commands\Install::class,
-        Commands\ModuleDisable::class,
-        Commands\ModuleEnable::class,
-        Commands\ModuleInstall::class,
         Commands\RecurringCheck::class,
         Commands\ImportJfinancas::class,
     ];

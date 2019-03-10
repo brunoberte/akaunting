@@ -3,12 +3,9 @@
 namespace App\Models\Banking;
 
 use App\Models\Model;
-use App\Traits\Currencies;
 
 class Transfer extends Model
 {
-    use Currencies;
-
     protected $table = 'transfers';
 
     /**

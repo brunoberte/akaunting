@@ -98,7 +98,7 @@ class Dashboard extends Controller
 
             $i = Date::parse($item->paid_at)->format($date_format);
 
-            $totals[$i] += $item->getConvertedAmount();
+            $totals[$i] += $item->amount;
         }
     }
 }

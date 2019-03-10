@@ -4,17 +4,15 @@ namespace App\Models\Income;
 
 use App\Models\Model;
 use App\Models\Setting\Category;
-use App\Traits\Currencies;
 use App\Traits\DateTime;
 use App\Traits\Media;
 use App\Traits\Recurring;
 use Bkwld\Cloner\Cloneable;
 use Sofa\Eloquence\Eloquence;
-use Date;
 
 class Revenue extends Model
 {
-    use Cloneable, Currencies, DateTime, Eloquence, Media, Recurring;
+    use Cloneable, DateTime, Eloquence, Media, Recurring;
 
     protected $table = 'revenues';
 
@@ -109,28 +107,6 @@ class Revenue extends Model
     public function scopeIsNotTransfer($query)
     {
         return $query->where('category_id', '<>', Category::transfer());
-    }
-
-    /**
-     * Convert amount to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setAmountAttribute($value)
-    {
-        $this->attributes['amount'] = (double) $value;
-    }
-
-    /**
-     * Convert currency rate to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setCurrencyRateAttribute($value)
-    {
-        $this->attributes['currency_rate'] = (double) $value;
     }
 
     public function scopeLatest($query)

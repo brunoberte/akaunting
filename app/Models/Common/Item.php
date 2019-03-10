@@ -3,14 +3,13 @@
 namespace App\Models\Common;
 
 use App\Models\Model;
-use App\Traits\Currencies;
 use Bkwld\Cloner\Cloneable;
 use Sofa\Eloquence\Eloquence;
 use App\Traits\Media;
 
 class Item extends Model
 {
-    use Cloneable, Currencies, Eloquence, Media;
+    use Cloneable, Eloquence, Media;
 
     protected $table = 'items';
 
@@ -49,28 +48,6 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo('App\Models\Setting\Category');
-    }
-
-    /**
-     * Convert sale price to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setSalePriceAttribute($value)
-    {
-        $this->attributes['sale_price'] = (double) $value;
-    }
-
-    /**
-     * Convert purchase price to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setPurchasePriceAttribute($value)
-    {
-        $this->attributes['purchase_price'] = (double) $value;
     }
 
     /**

@@ -157,30 +157,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('currencies', 'Settings\Currencies');
                 Route::get('settings', 'Settings\Settings@edit');
                 Route::patch('settings', 'Settings\Settings@update');
-                Route::get('apps/{alias}', 'Settings\Modules@edit');
-                Route::patch('apps/{alias}', 'Settings\Modules@update');
-            });
-
-            Route::group(['prefix' => 'apps'], function () {
-                Route::resource('token', 'Modules\Token');
-                Route::resource('home', 'Modules\Home');
-                Route::resource('my', 'Modules\My');
-                Route::get('categories/{alias}', 'Modules\Tiles@categoryModules');
-                Route::get('vendors/{alias}', 'Modules\Tiles@vendorModules');
-                Route::get('paid', 'Modules\Tiles@paidModules');
-                Route::get('new', 'Modules\Tiles@newModules');
-                Route::get('free', 'Modules\Tiles@freeModules');
-                Route::get('search', 'Modules\Tiles@searchModules');
-                Route::post('steps', 'Modules\Item@steps');
-                Route::post('download', 'Modules\Item@download');
-                Route::post('unzip', 'Modules\Item@unzip');
-                Route::post('install', 'Modules\Item@install');
-                Route::get('post/{alias}', 'Modules\Item@post');
-                Route::post('{alias}/reviews', 'Modules\Item@reviews');
-                Route::get('{alias}/uninstall', 'Modules\Item@uninstall');
-                Route::get('{alias}/enable', 'Modules\Item@enable');
-                Route::get('{alias}/disable', 'Modules\Item@disable');
-                Route::get('{alias}', 'Modules\Item@show');
             });
 
             Route::group(['as' => 'modals.', 'prefix' => 'modals'], function () {

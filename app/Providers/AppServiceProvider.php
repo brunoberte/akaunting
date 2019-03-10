@@ -16,6 +16,11 @@ class AppServiceProvider extends ServiceProvider
     {
         // Laravel db fix
         Schema::defaultStringLength(191);
+
+        \Blade::directive('money', function($expression) {
+            [$amount, $currency] = explode(', ', $expression);
+            return "<?php echo {$currency} . ' ' . number_format({$amount}, 2, ',', '.') ?>";
+        });
     }
 
     /**

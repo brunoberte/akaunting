@@ -4,14 +4,13 @@ namespace App\Jobs\Income;
 
 use App\Events\ReceivableCreated;
 use App\Models\Income\Receivable;
-use App\Traits\Currencies;
 use App\Traits\DateTime;
 use App\Traits\Uploads;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 class CreateReceivable
 {
-    use Currencies, DateTime, Dispatchable, Uploads;
+    use DateTime, Dispatchable, Uploads;
 
     protected $request;
 

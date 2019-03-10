@@ -12,7 +12,7 @@ use App\Models\Common\Media;
 use App\Traits\DateTime;
 use App\Traits\Uploads;
 use App\Utilities\Installer;
-use App\Utilities\Modules;
+
 
 class Settings extends Controller
 {

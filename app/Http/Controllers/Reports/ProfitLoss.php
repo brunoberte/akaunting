@@ -128,7 +128,7 @@ class ProfitLoss extends Controller
                 continue;
             }
 
-            $amount = $item->getConvertedAmount();
+            $amount = $item->amount;
 
             $compares[$group][$item->category_id][$date]['amount'] += $amount;
             $compares[$group][$item->category_id][$date]['currency_code'] = $item->currency_code;

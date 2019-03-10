@@ -4,12 +4,9 @@ namespace App\Http\ViewComposers;
 
 use Auth;
 use Illuminate\View\View;
-use App\Traits\Modules as RemoteModules;
 
 class Header
 {
-    use RemoteModules;
-
     /**
      * Bind data to the view.
      *
@@ -46,8 +43,6 @@ class Header
                     break;
             }
         }
-
-        $this->loadSuggestions();
 
         $view->with([
             'user' => $user,

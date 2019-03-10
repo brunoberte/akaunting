@@ -11,14 +11,13 @@ use App\Models\Income\Customer;
 use App\Models\Income\Receivable;
 use App\Models\Setting\Category;
 use App\Models\Setting\Currency;
-use App\Traits\Currencies;
 use App\Traits\DateTime;
 use App\Traits\Uploads;
 use Illuminate\Http\Response;
 
 class Receivables extends Controller
 {
-    use DateTime, Currencies, Uploads;
+    use DateTime, Uploads;
 
     /**
      * Display a listing of the resource.

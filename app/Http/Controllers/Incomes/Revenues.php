@@ -9,16 +9,14 @@ use App\Models\Income\Customer;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
 use App\Models\Setting\Currency;
-use App\Traits\Currencies;
 use App\Traits\DateTime;
 use App\Traits\Uploads;
 use App\Utilities\Import;
 use App\Utilities\ImportFile;
-use App\Utilities\Modules;
 
 class Revenues extends Controller
 {
-    use DateTime, Currencies, Uploads;
+    use DateTime, Uploads;
 
     /**
      * Display a listing of the resource.

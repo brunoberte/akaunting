@@ -56,7 +56,7 @@
                         <td>{{ $item->type }}</td>
                         <td>{{ $item->category_name }}</td>
                         <td>{{ $item->description }}</td>
-                        <td class="text-right amount-space">@money(floatval($item->amount), $item->currency_code, true)</td>
+                        <td class="text-right amount-space">@money($item->amount, $item->currency_code)</td>
                     </tr>
                 @endforeach
                 </tbody>

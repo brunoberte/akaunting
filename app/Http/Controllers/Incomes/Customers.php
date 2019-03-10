@@ -57,7 +57,7 @@ class Customers extends Controller
 
         // Prepare data
         $items = collect($revenues)->each(function ($item) use (&$amounts) {
-            $amounts['paid'] += $item->getConvertedAmount();
+            $amounts['paid'] += $item->amount;
         });
 
         $limit = request('limit', setting('general.list_limit', '25'));

@@ -63,11 +63,11 @@
                                     <td>{{ $item->description }}</td>
                                     <td>@if (!empty($item->contact)) {{ $item->contact->name }} @else {{ trans('general.na') }}@endif</td>
                                     @if (($item->model == 'App\Models\Income\Invoice') || ($item->model == 'App\Models\Income\Revenue'))
-                                    <td class="text-right">@money(floatval($item->amount), $item->currency_code, true)</td>
+                                    <td class="text-right">@money($item->amount, $item->currency_code)</td>
                                     <td>&nbsp;</td>
                                     @else
                                     <td>&nbsp;</td>
-                                    <td class="text-right">@money(floatval($item->amount), $item->currency_code, true)</td>
+                                    <td class="text-right">@money($item->amount, $item->currency_code)</td>
                                     @endif
                                     <td class="text-right">{{ Form::checkbox('transactions['. $item->id . '_'. $item->model . ']', $item->amount, $item->reconciled) }}</td>
                                 </tr>

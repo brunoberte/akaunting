@@ -4,13 +4,12 @@ namespace App\Models\Income;
 
 use App\Models\Model;
 use Bkwld\Cloner\Cloneable;
-use App\Traits\Currencies;
 use Illuminate\Notifications\Notifiable;
 use Sofa\Eloquence\Eloquence;
 
 class Customer extends Model
 {
-    use Cloneable, Currencies, Eloquence, Notifiable;
+    use Cloneable, Eloquence, Notifiable;
 
     protected $table = 'customers';
 

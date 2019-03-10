@@ -54,7 +54,7 @@
                         <td>{{ $item->customer->name }}</td>
                         <td>{{ $item->category->name }}</td>
                         <td>{{ $item->currency_code }}</td>
-                        <td class="text-right amount-space">@money(floatval($item->amount), $item->currency_code, true)</td>
+                        <td class="text-right amount-space">@money($item->amount, $item->currency_code)</td>
                         <td>{{ Date::parse($item->due_at)->format($date_format) }}</td>
                         <td>@if($item->recurring)
                             {{ $item->recurring->toString() }}

@@ -9,7 +9,6 @@ use App\Models\Expense\Payment;
 use App\Models\Income\Receivable;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
-use App\Traits\Currencies;
 use Carbon\Carbon;
 use Charts;
 use Date;
@@ -17,8 +16,6 @@ use Illuminate\Support\Facades\Response;
 
 class Dashboard extends Controller
 {
-    use Currencies;
-
     public $today;
 
     public $income_donut = ['colors' => [], 'labels' => [], 'values' => []];
@@ -421,7 +418,7 @@ class Dashboard extends Controller
 
                     // Revenues
                     foreach ($category->revenues as $revenue) {
-                        $amount += $revenue->getConvertedAmount();
+                        $amount += $revenue->amount;
                     }
 
                     $incomes_amount += $amount;
@@ -434,7 +431,7 @@ class Dashboard extends Controller
 
                     // Payments
                     foreach ($category->payments as $payment) {
-                        $amount += $payment->getConvertedAmount();
+                        $amount += $payment->amount;
                     }
 
                     $expenses_amount += $amount;
@@ -513,7 +510,7 @@ class Dashboard extends Controller
                 continue;
             }
 
-            $totals[$i] += $item->getConvertedAmount();
+            $totals[$i] += $item->amount;
         }
     }
 

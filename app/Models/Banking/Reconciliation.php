@@ -31,15 +31,4 @@ class Reconciliation extends Model
     {
         return $this->belongsTo('App\Models\Banking\Account');
     }
-
-    /**
-     * Convert closing balance to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setClosingBalanceAttribute($value)
-    {
-        $this->attributes['closing_balance'] = (double) $value;
-    }
 }

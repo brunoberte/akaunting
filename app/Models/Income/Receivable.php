@@ -3,7 +3,6 @@
 namespace App\Models\Income;
 
 use App\Models\Model;
-use App\Traits\Currencies;
 use App\Traits\DateTime;
 use App\Traits\Media;
 use App\Traits\Recurring;
@@ -12,7 +11,7 @@ use Sofa\Eloquence\Eloquence;
 
 class Receivable extends Model
 {
-    use Cloneable, Currencies, DateTime, Eloquence, Media, Recurring;
+    use Cloneable, DateTime, Eloquence, Media, Recurring;
 
     protected $table = 'receivables';
 
@@ -81,17 +80,6 @@ class Receivable extends Model
     public function scopeDue($query, $date)
     {
         return $query->where('due_at', '=', $date);
-    }
-
-    /**
-     * Convert amount to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setAmountAttribute($value)
-    {
-        $this->attributes['amount'] = (double) $value;
     }
 
     public function getAttachmentAttribute($value)

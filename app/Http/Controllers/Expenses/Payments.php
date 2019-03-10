@@ -12,7 +12,6 @@ use App\Models\Setting\Currency;
 use App\Traits\Uploads;
 use App\Utilities\Import;
 use App\Utilities\ImportFile;
-use App\Utilities\Modules;
 
 class Payments extends Controller
 {

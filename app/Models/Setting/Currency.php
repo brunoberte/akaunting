@@ -44,17 +44,6 @@ class Currency extends Model
     }
 
     /**
-     * Convert rate to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setRateAttribute($value)
-    {
-        $this->attributes['rate'] = (double) $value;
-    }
-
-    /**
      * Get the current precision.
      *
      * @return string

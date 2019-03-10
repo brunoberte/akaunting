@@ -4,14 +4,13 @@ namespace App\Jobs\Expense;
 
 use App\Events\PayableCreated;
 use App\Models\Expense\Payable;
-use App\Traits\Currencies;
 use App\Traits\DateTime;
 use App\Traits\Uploads;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 class CreatePayable
 {
-    use Currencies, DateTime, Dispatchable, Uploads;
+    use DateTime, Dispatchable, Uploads;
 
     protected $request;
 

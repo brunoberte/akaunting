@@ -63,17 +63,6 @@ class Account extends Model
     }
 
     /**
-     * Convert opening balance to double.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setOpeningBalanceAttribute($value)
-    {
-        $this->attributes['opening_balance'] = (double) $value;
-    }
-
-    /**
      * Get the current balance.
      *
      * @return string

@@ -140,12 +140,12 @@ class ExpenseSummary extends Controller
                 continue;
             }
 
-            $amount = $item->getConvertedAmount();
+            $amount = $item->amount;
 
             // Forecasting
             if (($type == 'bill') && ($date_field == 'due_at')) {
                 foreach ($item->payments as $payment) {
-                    $amount -= $payment->getConvertedAmount();
+                    $amount -= $payment->amount;
                 }
             }
 

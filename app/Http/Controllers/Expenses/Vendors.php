@@ -69,7 +69,7 @@ class Vendors extends Controller
 
                 $bill_payments[] = $payment;
 
-                $amount = $payment->getConvertedAmount();
+                $amount = $payment->amount;
 
                 $amounts['paid'] += $amount;
 
@@ -82,9 +82,9 @@ class Vendors extends Controller
 
             // Check if it's open or overdue invoice
             if ($item->due_at > $today) {
-                $amounts['open'] += $item->getConvertedAmount() - $payments;
+                $amounts['open'] += $item->amount - $payments;
             } else {
-                $amounts['overdue'] += $item->getConvertedAmount() - $payments;
+                $amounts['overdue'] += $item->amount - $payments;
             }
         }
 
@@ -95,7 +95,7 @@ class Vendors extends Controller
 
         // Prepare data
         $items = collect($payments)->each(function ($item) use (&$amounts) {
-            $amounts['paid'] += $item->getConvertedAmount();
+            $amounts['paid'] += $item->amount;
         });
 
         $limit = request('limit', setting('general.list_limit', '25'));

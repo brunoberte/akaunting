@@ -4,13 +4,12 @@ namespace App\Models\Expense;
 
 use App\Models\Model;
 use Bkwld\Cloner\Cloneable;
-use App\Traits\Currencies;
 use Sofa\Eloquence\Eloquence;
 use App\Traits\Media;
 
 class Vendor extends Model
 {
-    use Cloneable, Currencies, Eloquence, Media;
+    use Cloneable, Eloquence, Media;
 
     protected $table = 'vendors';
 

@@ -2,12 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Module\Module;
 use App\Events\AdminMenuCreated;
 use Auth;
 use Closure;
 use Menu;
-use Module as LaravelModule;
 
 class AdminMenu
 {
@@ -136,25 +134,6 @@ class AdminMenu
                         $sub->url('settings/currencies', trans_choice('general.currencies', 2), 3, $attr);
                     }
 
-                    // Modules
-                    $modules = Module::all();
-                    $position = 5;
-                    foreach ($modules as $module) {
-                        if (!$module->status) {
-                            continue;
-                        }
-
-                        $m = LaravelModule::findByAlias($module->alias);
-
-                        // Check if the module exists and has settings
-                        if (!$m || empty($m->get('settings'))) {
-                            continue;
-                        }
-
-                        $sub->url('settings/apps/' . $module->alias, title_case(str_replace('_', ' ', snake_case($m->getName()))), $position, $attr);
-
-                        $position++;
-                    }
                 }, 7, [
                     'title' => trans_choice('general.settings', 2),
                     'icon' => 'fa fa-gears',
