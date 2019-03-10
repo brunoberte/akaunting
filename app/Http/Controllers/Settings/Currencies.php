@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Settings;
 
-use Akaunting\Money\Currency as MoneyCurrency;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Setting\Currency as Request;
 use App\Models\Setting\Currency;

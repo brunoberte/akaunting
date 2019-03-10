@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Util;
 use Illuminate\Support\ServiceProvider;
 use Schema;
 
@@ -19,7 +20,8 @@ class AppServiceProvider extends ServiceProvider
 
         \Blade::directive('money', function($expression) {
             [$amount, $currency] = explode(', ', $expression);
-            return "<?php echo {$currency} . ' ' . number_format({$amount}, 2, ',', '.') ?>";
+
+            return "<?php echo \App\Util::money($amount, $currency); ?>";
         });
     }
 

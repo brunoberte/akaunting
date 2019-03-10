@@ -11,6 +11,7 @@ use App\Models\Expense\Payment;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
 use App\Models\Setting\Currency;
+use App\Util;
 use Date;
 
 class Transfers extends Controller
@@ -39,7 +40,7 @@ class Transfers extends Controller
             $name = trans('transfers.messages.delete', [
                 'from' => $payment->account->name,
                 'to' => $revenue->account->name,
-                'amount' => money($payment->amount, $payment->currency_code, true)
+                'amount' => Util::money($payment->amount, $payment->currency_code)
             ]);
 
             $transfers[] = (object)[
@@ -47,7 +48,7 @@ class Transfers extends Controller
                 'name' => $name,
                 'from_account' => $payment->account->name,
                 'to_account' => $revenue->account->name,
-                'amount' => $payment->amount,
+                'amount' => floatval($payment->amount),
                 'currency_code' => $payment->currency_code,
                 'paid_at' => $payment->paid_at,
             ];

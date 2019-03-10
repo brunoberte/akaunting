@@ -94,10 +94,6 @@ class AdminMenu
                         $sub->url('reports/expense-summary', trans('reports.summary.expense'), 2, $attr);
                     }
 
-                    if ($user->can('read-reports-income-expense-summary')) {
-                        $sub->url('reports/income-expense-summary', trans('reports.summary.income_expense'), 3, $attr);
-                    }
-
                     if ($user->can('read-reports-profit-loss')) {
                         $sub->url('reports/profit-loss', trans('reports.profit_loss'), 5, $attr);
                     }

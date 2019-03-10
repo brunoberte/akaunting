@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Wizard;
 
-use Akaunting\Money\Currency as MoneyCurrency;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Setting\Currency as Request;
-use App\Models\Banking\Account;
 use App\Models\Setting\Currency;
 
 class Currencies extends Controller

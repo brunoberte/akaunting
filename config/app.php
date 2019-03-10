@@ -185,7 +185,6 @@ return [
          * Vendor Service Providers...
          */
         Akaunting\Language\Provider::class,
-        Akaunting\Money\Provider::class,
         Akaunting\Setting\Provider::class,
         Akaunting\SignedUrl\Provider::class,
         Akaunting\Version\Provider::class,
@@ -203,7 +202,6 @@ return [
         Laratrust\LaratrustServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Nwidart\Menus\MenusServiceProvider::class,
-        Nwidart\Modules\LaravelModulesServiceProvider::class,
         Sofa\Eloquence\ServiceProvider::class,
         Plank\Mediable\MediableServiceProvider::class,
 
@@ -271,7 +269,6 @@ return [
         'Language' => Akaunting\Language\Facade::class,
         'Laratrust' => Laratrust\LaratrustFacade::class,
         'Menu' => Nwidart\Menus\Facades\Menu::class,
-        'Module' => Nwidart\Modules\Facades\Module::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Setting' => Akaunting\Setting\Facade::class,
         'SignedUrl' => Akaunting\SignedUrl\Facade::class,

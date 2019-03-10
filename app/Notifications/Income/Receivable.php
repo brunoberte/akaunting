@@ -2,6 +2,7 @@
 
 namespace App\Notifications\Income;
 
+use App\Util;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
@@ -47,7 +48,7 @@ class Receivable extends Notification
     public function toMail($notifiable)
     {
         $message = (new MailMessage)
-            ->line(trans('invoices.notification.message', ['amount' => money($this->receivable->amount, $this->receivable->currency_code, true), 'customer' => $this->receivable->customer_name]));
+            ->line(trans('invoices.notification.message', ['amount' => Util::money($this->receivable->amount, $this->receivable->currency_code), 'customer' => $this->receivable->customer_name]));
 
         // Override per company as Laravel doesn't read config
         $message->from(config('mail.from.address'), config('mail.from.name'));

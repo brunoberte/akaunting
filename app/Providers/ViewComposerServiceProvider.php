@@ -34,11 +34,6 @@ class ViewComposerServiceProvider extends ServiceProvider
             '*.index', 'App\Http\ViewComposers\Index'
         );
 
-        // Add Modules
-        View::composer(
-            'modules.*', 'App\Http\ViewComposers\Modules'
-        );
-
         // Add recurring
         View::composer(
             ['partials.form.recurring',], 'App\Http\ViewComposers\Recurring'

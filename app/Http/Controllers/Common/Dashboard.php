@@ -9,6 +9,7 @@ use App\Models\Expense\Payment;
 use App\Models\Income\Receivable;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
+use App\Util;
 use Carbon\Carbon;
 use Charts;
 use Date;
@@ -103,8 +104,8 @@ class Dashboard extends Controller
 
         $total_profit = array(
             'total'         => $amount_profit,
-            'open'          => money($open_profit, setting('general.default_currency'), true),
-            'overdue'       => money($overdue_profit, setting('general.default_currency'), true),
+            'open'          => Util::money($open_profit, setting('general.default_currency'), true),
+            'overdue'       => Util::money($overdue_profit, setting('general.default_currency'), true),
             'progress'      => $total_progress
         );
 
@@ -532,14 +533,14 @@ class Dashboard extends Controller
     private function addToIncomeDonut($color, $amount, $text)
     {
         $this->income_donut['colors'][] = $color;
-        $this->income_donut['labels'][] = money($amount, setting('general.default_currency'), true)->format() . ' - ' . $text;
+        $this->income_donut['labels'][] = Util::money($amount, setting('general.default_currency'), true) . ' - ' . $text;
         $this->income_donut['values'][] = (int) $amount;
     }
 
     private function addToExpenseDonut($color, $amount, $text)
     {
         $this->expense_donut['colors'][] = $color;
-        $this->expense_donut['labels'][] = money($amount, setting('general.default_currency'), true)->format() . ' - ' . $text;
+        $this->expense_donut['labels'][] = Util::money($amount, setting('general.default_currency'), true) . ' - ' . $text;
         $this->expense_donut['values'][] = (int) $amount;
     }
 }
