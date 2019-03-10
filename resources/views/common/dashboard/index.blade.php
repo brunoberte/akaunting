@@ -28,14 +28,14 @@
                                 @endphp
                                 <tr>
                                     <td class="text-left"><a href="/banking/transactions?accounts%5B%5D={{ $item->id }}">{{ $item->name }}</a></td>
-                                    <td class="text-right text-no-wrap">@money($balance, $item->currency_code, true)</td>
+                                    <td class="text-right text-no-wrap">@money(floatval($balance), $item->currency_code, true)</td>
                                 </tr>
                             @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th class="text-left">Total</th>
-                                    <th class="text-right text-no-wrap">@money($total, $item->currency_code, true)</th>
+                                    <th class="text-right text-no-wrap">@money(floatval($total), $item->currency_code, true)</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -54,7 +54,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">{{ trans('dashboard.total_incomes') }}</span>
-                    <span class="info-box-number">@money($total_incomes['total'], setting('general.default_currency'), true)</span>
+                    <span class="info-box-number">@money(floatval($total_incomes['total']), setting('general.default_currency'), true)</span>
                     <div class="progress-group">
                         <div class="progress sm">
                             <div class="progress-bar progress-bar-aqua" style="width: {{ $total_incomes['progress'] }}%"></div>
@@ -69,7 +69,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">{{ trans('dashboard.total_expenses') }}</span>
-                    <span class="info-box-number">@money($total_expenses['total'], setting('general.default_currency'), true)</span>
+                    <span class="info-box-number">@money(floatval($total_expenses['total']), setting('general.default_currency'), true)</span>
 
                     <div class="progress-group" >
                         <div class="progress sm">
@@ -85,7 +85,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">{{ trans('dashboard.total_profit') }}</span>
-                    <span class="info-box-number">@money($total_profit['total'], setting('general.default_currency'), true)</span>
+                    <span class="info-box-number">@money(floatval($total_profit['total']), setting('general.default_currency'), true)</span>
 
                     <div class="progress-group" title="{{ trans('dashboard.open_profit') }}: {{ $total_profit['open'] }}<br>{{ trans('dashboard.overdue_profit') }}: {{ $total_profit['overdue'] }}" data-toggle="tooltip" data-html="true">
                         <div class="progress sm">
@@ -146,8 +146,8 @@
                             <tr>
                                 <td class="text-left">{{ $date }}</td>
                                 <td class="text-left">{{ $item['title'] }}</td>
-                                <td class="text-right text-no-wrap">@money($item['amount'], $item['currency_code'], true)</td>
-                                <td class="text-right text-no-wrap">@money($balance, $item['currency_code'], true)</td>
+                                <td class="text-right text-no-wrap">@money(floatval($item['amount']), $item['currency_code'], true)</td>
+                                <td class="text-right text-no-wrap">@money(floatval($balance), $item['currency_code'], true)</td>
                             </tr>
                             @endforeach
                         @endforeach

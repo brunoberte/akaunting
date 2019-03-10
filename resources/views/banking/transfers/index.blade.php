@@ -46,7 +46,7 @@
                         <td><a href="{{ url('banking/transfers/' . $item->id . '/edit') }}">{{ Date::parse($item->paid_at)->format($date_format) }}</a></td>
                         <td>{{ $item->from_account }}</td>
                         <td>{{ $item->to_account }}</td>
-                        <td class="text-right amount-space">@money($item->amount, $item->currency_code, true)</td>
+                        <td class="text-right amount-space">@money(floatval($item->amount), $item->currency_code, true)</td>
                         <td class="text-center">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-toggle-position="left" aria-expanded="false">

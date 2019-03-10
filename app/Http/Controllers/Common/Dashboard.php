@@ -205,6 +205,8 @@ class Dashboard extends Controller
             ->get();
         $this->_addItemsToForecastTable($payables, $end, $forecast_table);
 
+        ksort($forecast_table);
+
         return $forecast_table;
     }
 

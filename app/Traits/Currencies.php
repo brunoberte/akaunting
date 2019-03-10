@@ -62,16 +62,16 @@ trait Currencies
 
     public function getConvertedAmount($format = false)
     {
-        return $this->convert($this->amount, $this->currency_code, $this->currency_rate, $format);
+        return $this->convert(floatval($this->amount), $this->currency_code, $this->currency_rate, $format);
     }
 
     public function getReverseConvertedAmount($format = false)
     {
-        return $this->reverseConvert($this->amount, $this->currency_code, $this->currency_rate, $format);
+        return $this->reverseConvert(floatval($this->amount), $this->currency_code, $this->currency_rate, $format);
     }
 
     public function getDynamicConvertedAmount($format = false)
     {
-        return $this->dynamicConvert($this->default_currency_code, $this->amount, $this->currency_code, $this->currency_rate, $format);
+        return $this->dynamicConvert($this->default_currency_code, floatval($this->amount), $this->currency_code, $this->currency_rate, $format);
     }
 }

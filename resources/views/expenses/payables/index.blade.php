@@ -19,7 +19,7 @@
             {!! Form::select('accounts[]', $accounts, request('accounts'), ['id' => 'filter-accounts', 'class' => 'form-control input-filter input-lg', 'multiple' => 'multiple']) !!}
             {!! Form::select('vendors[]', $vendors, request('vendors'), ['id' => 'filter-vendors', 'class' => 'form-control input-filter input-lg', 'multiple' => 'multiple']) !!}
             {!! Form::select('categories[]', $categories, request('categories'), ['id' => 'filter-categories', 'class' => 'form-control input-filter input-lg', 'multiple' => 'multiple']) !!}
-            {!! Form::dateRange('due_date', trans('payables.due_at'), 'calendar', []) !!}
+            {!! Form::dateRange('due_date', trans('receivables.due_at'), 'calendar', []) !!}
             {!! Form::button('<span class="fa fa-filter"></span> &nbsp;' . trans('general.filter'), ['type' => 'submit', 'class' => 'btn btn-sm btn-default btn-filter']) !!}
         </div>
         <div class="pull-right">
@@ -40,7 +40,7 @@
                         <th class="col-md-2">@sortablelink('category_name', trans_choice('general.categories', 1))</th>
                         <th class="col-md-1 text-center">{{ trans_choice('general.currencies', 1) }}</th>
                         <th class="col-md-2 text-right amount-space">@sortablelink('amount', trans('general.amount'))</th>
-                        <th class="col-md-2">@sortablelink('due_at', trans('payables.due_at'))</th>
+                        <th class="col-md-2">@sortablelink('due_at', trans('receivables.due_at'))</th>
                         <th class="col-md-1 text-center">{{ trans('recurring.recurring') }}</th>
                         <th class="col-md-1 text-center">{{ trans('general.actions') }}</th>
                     </tr>
@@ -54,7 +54,7 @@
                         <td>{{ $item->vendor->name }}</td>
                         <td>{{ $item->category->name }}</td>
                         <td>{{ $item->currency_code }}</td>
-                        <td class="text-right amount-space">@money($item->amount, $item->currency_code, true)</td>
+                        <td class="text-right amount-space">@money(floatval($item->amount), $item->currency_code, true)</td>
                         <td>{{ Date::parse($item->due_at)->format($date_format) }}</td>
                         <td>@if($item->recurring)
                             {{ $item->recurring->toString() }}
@@ -62,24 +62,17 @@
                         </td>
                         <td class="text-center">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-toggle-position="left" aria-expanded="false">
-                                    <i class="fa fa-ellipsis-h"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right">
-                                    @if (!$item->reconciled)
-                                    <li><a href="{{ url('expenses/payables/' . $item->id . '/edit') }}">{{ trans('general.edit') }}</a></li>
-                                    @endif
-                                    @permission('create-expenses-payables')
-                                    <li class="divider"></li>
-                                    <li><a href="{{ url('expenses/payables/' . $item->id . '/duplicate') }}">{{ trans('general.duplicate') }}</a></li>
-                                    @endpermission
-                                    @permission('delete-expenses-payables')
-                                    @if (!$item->reconciled)
-                                    <li class="divider"></li>
-                                    <li>{!! Form::deleteLink($item, 'expenses/payables') !!}</li>
-                                    @endif
-                                    @endpermission
-                                </ul>
+                                @if (!$item->reconciled)
+                                    <a class="btn btn-sm btn-default" href="{{ url('expenses/payables/' . $item->id . '/edit') }}"><i class="fa fa-edit"></i></a>
+                                @endif
+                                @permission('create-expenses-payables')
+                                    <a class="btn btn-sm btn-default" href="{{ url('expenses/payables/' . $item->id . '/duplicate') }}"><i class="fa fa-copy"></i></a>
+                                @endpermission
+                                @permission('delete-expenses-payables')
+                                @if (!$item->reconciled)
+                                    {!! Form::deleteLink($item, 'expenses/payables') !!}
+                                @endif
+                                @endpermission
                             </div>
                         </td>
                     </tr>

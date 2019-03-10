@@ -217,52 +217,6 @@
                 totalItem();
             });
 
-            var focus = false;
-
-            $(document).on('change', '#customer_id', function (e) {
-                $.ajax({
-                    url: '{{ url("incomes/customers/currency") }}',
-                    type: 'GET',
-                    dataType: 'JSON',
-                    data: 'customer_id=' + $(this).val(),
-                    success: function(data) {
-                        $('#customer_name').val(data.name);
-                        $('#customer_email').val(data.email);
-                        $('#customer_tax_number').val(data.tax_number);
-                        $('#customer_phone').val(data.phone);
-                        $('#customer_address').val(data.address);
-
-                        $('#currency_code').val(data.currency_code);
-                        $('#currency_rate').val(data.currency_rate);
-
-                        $('.input-price').each(function(){
-                            input_price_id = $(this).attr('id');
-                            input_currency_id = input_price_id.replace('price', 'currency');
-
-                            $('#' + input_currency_id).val(data.currency_code);
-
-                            amount = $(this).maskMoney('unmasked')[0];
-
-                            $(this).maskMoney({
-                                thousands : data.thousands_separator,
-                                decimal : data.decimal_mark,
-                                precision : data.precision,
-                                allowZero : true,
-                                prefix : (data.symbol_first) ? data.symbol : '',
-                                suffix : (data.symbol_first) ? '' : data.symbol
-                            });
-
-                            $(this).val(amount);
-
-                            $(this).trigger('focusout');
-                        });
-
-                        // This event Select2 Stylesheet
-                        $('#currency_code').trigger('change');
-                    }
-                });
-            });
-
             @if(old('item'))
                 totalItem();
             @endif
