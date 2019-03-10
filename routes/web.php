@@ -1,5 +1,8 @@
 <?php
 
+Route::get('/bitbucketdeploy', 'BitbucketdeployController@execute');
+Route::post('/bitbucketdeploy', 'BitbucketdeployController@execute');
+
 Route::group(['middleware' => 'language'], function () {
     Route::group(['middleware' => 'auth'], function () {
         Route::group(['prefix' => 'uploads'], function () {
