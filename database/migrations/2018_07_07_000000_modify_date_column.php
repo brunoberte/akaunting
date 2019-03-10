@@ -12,24 +12,6 @@ class ModifyDateColumn extends Migration
      */
     public function up()
     {
-        Schema::table('bills', function (Blueprint $table) {
-            $table->dateTime('billed_at')->change();
-            $table->dateTime('due_at')->change();
-        });
-
-        Schema::table('bill_payments', function (Blueprint $table) {
-            $table->dateTime('paid_at')->change();
-        });
-
-        Schema::table('invoices', function (Blueprint $table) {
-            $table->dateTime('invoiced_at')->change();
-            $table->dateTime('due_at')->change();
-        });
-
-        Schema::table('invoice_payments', function (Blueprint $table) {
-            $table->dateTime('paid_at')->change();
-        });
-
         Schema::table('payments', function (Blueprint $table) {
             $table->dateTime('paid_at')->change();
         });

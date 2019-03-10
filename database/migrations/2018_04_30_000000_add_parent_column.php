@@ -11,15 +11,7 @@ class AddParentColumn extends Migration
      */
     public function up()
     {
-        Schema::table('invoices', function ($table) {
-            $table->integer('parent_id')->default(0);
-        });
-
         Schema::table('revenues', function ($table) {
-            $table->integer('parent_id')->default(0);
-        });
-
-        Schema::table('bills', function ($table) {
             $table->integer('parent_id')->default(0);
         });
 
@@ -35,15 +27,7 @@ class AddParentColumn extends Migration
      */
     public function down()
     {
-        Schema::table('invoices', function ($table) {
-            $table->dropColumn('parent_id');
-        });
-
         Schema::table('revenues', function ($table) {
-            $table->dropColumn('parent_id');
-        });
-
-        Schema::table('bills', function ($table) {
             $table->dropColumn('parent_id');
         });
 

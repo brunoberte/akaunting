@@ -83,10 +83,6 @@ class Dashboard extends Controller
 
         $expenses_progress = 100;
 
-        if (!empty($open_bill) && !empty($overdue_bill)) {
-            $expenses_progress = (int) ($open_bill * 100) / ($open_bill + $overdue_bill);
-        }
-
         $total_expenses = array(
             'total'         => $expenses_amount,
             'progress'      => $expenses_progress

@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Expenses;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Expense\Vendor as Request;
-use App\Models\Expense\Bill;
 use App\Models\Expense\Payment;
 use App\Models\Expense\Vendor;
 use App\Models\Setting\Currency;
 use App\Traits\Uploads;
 use App\Utilities\Import;
 use App\Utilities\ImportFile;
-use Date;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -48,62 +46,18 @@ class Vendors extends Controller
         ];
 
         $counts = [
-            'bills' => 0,
             'payments' => 0,
         ];
-
-        // Handle bills
-        $bills = Bill::with(['status', 'payments'])->where('vendor_id', $vendor->id)->get();
-
-        $counts['bills'] = $bills->count();
-
-        $bill_payments = [];
-
-        $today = Date::today()->toDateString();
-
-        foreach ($bills as $item) {
-            $payments = 0;
-
-            foreach ($item->payments as $payment) {
-                $payment->category = $item->category;
-
-                $bill_payments[] = $payment;
-
-                $amount = $payment->amount;
-
-                $amounts['paid'] += $amount;
-
-                $payments += $amount;
-            }
-
-            if ($item->bill_status_code == 'paid') {
-                continue;
-            }
-
-            // Check if it's open or overdue invoice
-            if ($item->due_at > $today) {
-                $amounts['open'] += $item->amount - $payments;
-            } else {
-                $amounts['overdue'] += $item->amount - $payments;
-            }
-        }
 
         // Handle payments
         $payments = Payment::with(['account', 'category'])->where('vendor_id', $vendor->id)->get();
 
         $counts['payments'] = $payments->count();
 
-        // Prepare data
-        $items = collect($payments)->each(function ($item) use (&$amounts) {
-            $amounts['paid'] += $item->amount;
-        });
-
         $limit = request('limit', setting('general.list_limit', '25'));
-        $transactions = $this->paginate($items->merge($bill_payments)->sortByDesc('paid_at'), $limit);
-        $bills = $this->paginate($bills->sortByDesc('paid_at'), $limit);
         $payments = $this->paginate($payments->sortByDesc('paid_at'), $limit);
 
-        return view('expenses.vendors.show', compact('vendor', 'counts', 'amounts', 'transactions', 'bills', 'payments'));
+        return view('expenses.vendors.show', compact('vendor', 'counts', 'amounts', 'payments'));
     }
 
     /**

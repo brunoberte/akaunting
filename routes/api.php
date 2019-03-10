@@ -12,12 +12,9 @@ $api->version('v1', ['middleware' => ['api']], function($api) {
 
         // Incomes
         $api->resource('customers', 'Incomes\Customers');
-        $api->resource('invoices', 'Incomes\Invoices');
-        $api->resource('invoices.payments', 'Incomes\InvoicePayments');
         $api->resource('revenues', 'Incomes\Revenues');
 
         // Expenses
-        $api->resource('bills', 'Expenses\Bills');
         $api->resource('payments', 'Expenses\Payments');
         $api->resource('vendors', 'Expenses\Vendors');
 

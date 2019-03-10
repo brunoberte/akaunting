@@ -58,8 +58,6 @@ Route::group(['middleware' => 'language'], function () {
             Route::group(['prefix' => 'auth'], function () {
                 Route::get('logout', 'Auth\Login@destroy')->name('logout');
                 Route::get('users/autocomplete', 'Auth\Users@autocomplete');
-                Route::get('users/{user}/read-bills', 'Auth\Users@readUpcomingBills');
-                Route::get('users/{user}/read-invoices', 'Auth\Users@readOverdueInvoices');
                 Route::get('users/{user}/read-items', 'Auth\Users@readItemsOutOfStock');
                 Route::get('users/{user}/enable', 'Auth\Users@enable')->name('users.enable');
                 Route::get('users/{user}/disable', 'Auth\Users@disable')->name('users.disable');
@@ -73,18 +71,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('receivables', 'Incomes\Receivables', ['middleware' => ['dateformat']]);
                 Route::get('receivables/{receivable}/duplicate', 'Incomes\Receivables@duplicate');
 
-                Route::get('invoices/{invoice}/sent', 'Incomes\Invoices@markSent');
-                Route::get('invoices/{invoice}/email', 'Incomes\Invoices@emailInvoice');
-                Route::get('invoices/{invoice}/pay', 'Incomes\Invoices@markPaid');
-                Route::get('invoices/{invoice}/print', 'Incomes\Invoices@printInvoice');
-                Route::get('invoices/{invoice}/pdf', 'Incomes\Invoices@pdfInvoice');
-                Route::get('invoices/{invoice}/duplicate', 'Incomes\Invoices@duplicate');
-                Route::get('invoices/addItem', 'Incomes\Invoices@addItem')->name('invoice.add.item');
-                Route::post('invoices/payment', 'Incomes\Invoices@payment')->middleware(['dateformat'])->name('invoice.payment');
-                Route::delete('invoices/payment/{payment}', 'Incomes\Invoices@paymentDestroy');
-                Route::post('invoices/import', 'Incomes\Invoices@import')->name('invoices.import');
-                Route::get('invoices/export', 'Incomes\Invoices@export')->name('invoices.export');
-                Route::resource('invoices', 'Incomes\Invoices', ['middleware' => ['dateformat']]);
                 Route::get('revenues/{revenue}/duplicate', 'Incomes\Revenues@duplicate');
                 Route::post('revenues/import', 'Incomes\Revenues@import')->name('revenues.import');
                 Route::get('revenues/export', 'Incomes\Revenues@export')->name('revenues.export');
@@ -105,16 +91,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('payables', 'Expenses\Payables', ['middleware' => ['dateformat']]);
                 Route::get('payables/{payable}/duplicate', 'Expenses\Payables@duplicate');
 
-                Route::get('bills/{bill}/received', 'Expenses\Bills@markReceived');
-                Route::get('bills/{bill}/print', 'Expenses\Bills@printBill');
-                Route::get('bills/{bill}/pdf', 'Expenses\Bills@pdfBill');
-                Route::get('bills/{bill}/duplicate', 'Expenses\Bills@duplicate');
-                Route::get('bills/addItem', 'Expenses\Bills@addItem')->name('bill.add.item');
-                Route::post('bills/payment', 'Expenses\Bills@payment')->middleware(['dateformat'])->name('bill.payment');
-                Route::delete('bills/payment/{payment}', 'Expenses\Bills@paymentDestroy');
-                Route::post('bills/import', 'Expenses\Bills@import')->name('bills.import');
-                Route::get('bills/export', 'Expenses\Bills@export')->name('bills.export');
-                Route::resource('bills', 'Expenses\Bills', ['middleware' => ['dateformat']]);
                 Route::get('payments/{payment}/duplicate', 'Expenses\Payments@duplicate');
                 Route::post('payments/import', 'Expenses\Payments@import')->name('payments.import');
                 Route::get('payments/export', 'Expenses\Payments@export')->name('payments.export');
@@ -166,8 +142,6 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('categories', 'Modals\Categories');
                 Route::resource('customers', 'Modals\Customers');
                 Route::resource('vendors', 'Modals\Vendors');
-                Route::resource('invoices/{invoice}/payment', 'Modals\InvoicePayments', ['middleware' => ['dateformat']]);
-                Route::resource('bills/{bill}/payment', 'Modals\BillPayments', ['middleware' => ['dateformat']]);
             });
 
             /* @deprecated */
@@ -178,28 +152,12 @@ Route::group(['middleware' => 'language'], function () {
             Route::group(['prefix' => 'customers'], function () {
                 Route::get('/', 'Customers\Dashboard@index');
 
-                Route::get('invoices/{invoice}/print', 'Customers\Invoices@printInvoice');
-                Route::get('invoices/{invoice}/pdf', 'Customers\Invoices@pdfInvoice');
-                Route::post('invoices/{invoice}/payment', 'Customers\Invoices@payment');
-                Route::post('invoices/{invoice}/confirm', 'Customers\Invoices@confirm');
-                Route::resource('invoices', 'Customers\Invoices');
                 Route::resource('payments', 'Customers\Payments');
                 Route::resource('transactions', 'Customers\Transactions');
-                Route::get('profile/read-invoices', 'Customers\Profile@readOverdueInvoices');
                 Route::resource('profile', 'Customers\Profile');
 
                 Route::get('logout', 'Auth\Login@destroy')->name('customer_logout');
             });
-        });
-    });
-
-    Route::group(['middleware' => 'signed-url'], function () {
-        Route::group(['prefix' => 'links'], function () {
-            Route::get('invoices/{invoice}', 'Customers\Invoices@link');
-            Route::get('invoices/{invoice}/print', 'Customers\Invoices@printInvoice');
-            Route::get('invoices/{invoice}/pdf', 'Customers\Invoices@pdfInvoice');
-            Route::post('invoices/{invoice}/payment', 'Customers\Invoices@payment');
-            Route::post('invoices/{invoice}/confirm', 'Customers\Invoices@confirm');
         });
     });
 

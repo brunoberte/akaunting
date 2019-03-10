@@ -36,14 +36,6 @@ class CustomerMenu
                 'order' => 1,
             ]);
 
-            // Invoices
-            $menu->add([
-                'url'   => 'customers/invoices',
-                'title' => trans_choice('general.invoices', 2),
-                'icon'  => 'fa fa-wpforms',
-                'order' => 2,
-            ]);
-
             // Payments
             $menu->add([
                 'url'   => 'customers/payments',

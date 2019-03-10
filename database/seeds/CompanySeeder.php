@@ -12,10 +12,8 @@ class CompanySeeder extends Seeder
     public function run()
     {
         $this->call(Database\Seeds\Accounts::class);
-        $this->call(Database\Seeds\BillStatuses::class);
         $this->call(Database\Seeds\Categories::class);
         $this->call(Database\Seeds\Currencies::class);
-        $this->call(Database\Seeds\InvoiceStatuses::class);
         $this->call(Database\Seeds\Settings::class);
     }
 }

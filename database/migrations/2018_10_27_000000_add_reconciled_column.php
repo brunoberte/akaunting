@@ -11,14 +11,6 @@ class AddReconciledColumn extends Migration
      */
     public function up()
     {
-        Schema::table('bill_payments', function ($table) {
-            $table->boolean('reconciled')->default(0);
-        });
-
-        Schema::table('invoice_payments', function ($table) {
-            $table->boolean('reconciled')->default(0);
-        });
-
         Schema::table('payments', function ($table) {
             $table->boolean('reconciled')->default(0);
         });
@@ -35,14 +27,6 @@ class AddReconciledColumn extends Migration
 	 */
 	public function down()
 	{
-		Schema::table('bill_payments', function ($table) {
-			$table->dropColumn('reconciled');
-		});
-
-		Schema::table('invoice_payments', function ($table) {
-			$table->dropColumn('reconciled');
-		});
-
 		Schema::table('payments', function ($table) {
 			$table->dropColumn('reconciled');
 		});

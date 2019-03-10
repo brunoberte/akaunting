@@ -217,29 +217,6 @@ class Users extends Controller
     }
 
     /**
-     * Mark upcoming bills notifications are read and redirect to bills page.
-     *
-     * @param  User  $user
-     *
-     * @return Response
-     */
-    public function readUpcomingBills(User $user)
-    {
-        // Mark bill notifications as read
-        foreach ($user->unreadNotifications as $notification) {
-            // Not a bill notification
-            if ($notification->getAttribute('type') != 'App\Notifications\Expense\Bill') {
-                continue;
-            }
-
-            $notification->markAsRead();
-        }
-
-        // Redirect to bills
-        return redirect('expenses/bills');
-    }
-
-    /**
      * Mark items out of stock notifications are read and redirect to items page.
      *
      * @param  User  $user

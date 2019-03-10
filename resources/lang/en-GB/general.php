@@ -4,11 +4,9 @@ return [
 
     'items'                 => 'Item|Items',
     'incomes'               => 'Income|Incomes',
-    'invoices'              => 'Invoice|Invoices',
     'revenues'              => 'Revenue|Revenues',
     'customers'             => 'Customer|Customers',
     'expenses'              => 'Expense|Expenses',
-    'bills'                 => 'Bill|Bills',
     'payments'              => 'Payment|Payments',
     'vendors'               => 'Vendor|Vendors',
     'accounts'              => 'Account|Accounts',
