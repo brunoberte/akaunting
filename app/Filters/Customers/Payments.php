@@ -23,9 +23,4 @@ class Payments extends ModelFilter
     {
         return $this->where('category_id', $category);
     }
-
-    public function paymentMethod($payment_method)
-    {
-        return $this->where('payment_method', $payment_method);
-    }
 }

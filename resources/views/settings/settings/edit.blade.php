@@ -57,8 +57,6 @@
 
                         {{ Form::selectGroup('default_currency', trans('settings.default.currency'), 'exchange', $currencies, null, []) }}
 
-                        {{ Form::selectGroup('default_payment_method', trans('settings.default.payment'), 'credit-card', $payment_methods, setting('general.default_payment_method'), []) }}
-
                         {{ Form::selectGroup('default_locale', trans('settings.default.language'), 'flag', language()->allowed(), null, []) }}
                     </div>
 
@@ -161,10 +159,6 @@
 
             $("#default_currency").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.default.currency')]) }}"
-            });
-
-            $("#default_payment_method").select2({
-                placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.default.payment')]) }}"
             });
 
             $("#default_locale").select2({

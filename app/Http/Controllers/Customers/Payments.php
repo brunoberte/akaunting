@@ -23,15 +23,13 @@ class Payments extends Controller
     {
         $payments = Payment::with(['account', 'category'])->where('customer_id', '=', Auth::user()->customer->id)->paginate();
 
-        $payment_methods = Modules::getPaymentMethods('all');
-
         $categories = collect(Category::enabled()->type('income')->pluck('name', 'id'))
             ->prepend(trans('general.all_type', ['type' => trans_choice('general.categories', 2)]), '');
 
         $accounts = collect(Account::enabled()->pluck('name', 'id'))
             ->prepend(trans('general.all_type', ['type' => trans_choice('general.accounts', 2)]), '');
 
-        return view('customers.payments.index', compact('payments', 'payment_methods', 'categories', 'accounts'));
+        return view('customers.payments.index', compact('payments', 'categories', 'accounts'));
     }
 
     /**
@@ -43,8 +41,6 @@ class Payments extends Controller
      */
     public function show(Payment $payment)
     {
-        $payment_methods = Modules::getPaymentMethods();
-
-        return view('customers.payments.show', compact('payment', 'payment_methods'));
+        return view('customers.payments.show', compact('payment'));
     }
 }

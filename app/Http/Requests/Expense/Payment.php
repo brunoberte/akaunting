@@ -32,7 +32,6 @@ class Payment extends Request
             'currency_rate' => 'required',
             'vendor_id' => 'nullable|integer',
             'category_id' => 'required|integer',
-            'payment_method' => 'required|string',
             'attachment' => 'mimes:' . setting('general.file_types') . '|between:0,' . setting('general.file_size') * 1024,
         ];
     }

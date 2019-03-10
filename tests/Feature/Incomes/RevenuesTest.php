@@ -77,7 +77,6 @@ class RevenuesTest extends FeatureTestCase
             'description' => $this->faker->text(5),
             'category_id' => $this->company->categories()->type('income')->first()->id,
             'reference' => $this->faker->text(5),
-            'payment_method' => setting('general.default_payment_method'),
             'attachment' => $attachment,
         ];
     }

@@ -11,7 +11,6 @@
             <span class="title-filter hidden-xs">{{ trans('general.search') }}:</span>
             {!! Form::text('search', request('search'), ['class' => 'form-control input-filter input-sm', 'placeholder' => trans('general.search_placeholder')]) !!}
             {!! Form::select('category_id', $categories, request('category_id'), ['class' => 'form-control input-filter input-sm']) !!}
-            {!! Form::select('payment_method', $payment_methods, request('payment_method'), ['class' => 'form-control input-filter input-sm']) !!}
             {!! Form::button('<span class="fa fa-filter"></span> &nbsp;' . trans('general.filter'), ['type' => 'submit', 'class' => 'btn btn-sm btn-default btn-filter']) !!}
         </div>
         <div class="pull-right">
@@ -29,7 +28,6 @@
                         <th>@sortablelink('paid_at', trans('general.date'))</th>
                         <th>@sortablelink('amount', trans('general.amount'))</th>
                         <th>@sortablelink('category.name', trans_choice('general.categories', 1))</th>
-                        <th>@sortablelink('payment_method', trans_choice('general.payment_methods', 1))</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,7 +36,6 @@
                     <td><a href="{{ url('customers/payments/' . $item->id) }}">{{ Date::parse($item->paid_at)->format($date_format) }}</a></td>
                     <td>@money($item->amount, $item->currency_code, true)</td>
                     <td>{{ $item->category->name }}</td>
-                    <td>{{ $payment_methods[$item->payment_method] }}</td>
                 </tr>
                 @endforeach
                 </tbody>

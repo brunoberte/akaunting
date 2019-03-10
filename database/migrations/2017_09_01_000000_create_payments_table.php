@@ -23,7 +23,6 @@ class CreatePaymentsTable extends Migration
             $table->integer('vendor_id')->nullable();
             $table->text('description')->nullable();
             $table->integer('category_id');
-            $table->string('payment_method');
             $table->string('reference')->nullable();
             $table->string('attachment')->nullable();
             $table->timestamps();

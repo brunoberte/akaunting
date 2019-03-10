@@ -54,8 +54,6 @@
 
             {{ Form::recurring('edit', $payment) }}
 
-            {{ Form::selectGroup('payment_method', trans_choice('general.payment_methods', 1), 'credit-card', $payment_methods) }}
-
             {{ Form::textGroup('reference', trans('general.reference'), 'file-text-o',[]) }}
 
             {{ Form::fileGroup('attachment', trans('general.attachment')) }}
@@ -127,10 +125,6 @@
                     id: '-1', // the value of the option
                     text: "{{ trans('general.form.select.field', ['field' => trans_choice('general.vendors', 1)]) }}"
                 }
-            });
-
-            $("#payment_method").select2({
-                placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.payment_methods', 1)]) }}"
             });
 
             $('#attachment').fancyfile({

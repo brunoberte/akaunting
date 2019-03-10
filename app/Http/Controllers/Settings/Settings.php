@@ -42,8 +42,6 @@ class Settings extends Controller
 
         $currencies = Currency::enabled()->orderBy('name')->pluck('name', 'code');
 
-        $payment_methods = Modules::getPaymentMethods();
-
         $date_formats = [
             'd M Y' => '31 Dec 2017',
             'd F Y' => '31 December 2017',
@@ -95,7 +93,6 @@ class Settings extends Controller
             'timezones',
             'accounts',
             'currencies',
-            'payment_methods',
             'date_formats',
             'date_separators',
             'item_names',

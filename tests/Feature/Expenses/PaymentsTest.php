@@ -77,7 +77,6 @@ class PaymentsTest extends FeatureTestCase
             'currency_rate' => '1',
             'description' => $this->faker->text(5),
             'category_id' => $this->company->categories()->type('expense')->first()->id,
-            'payment_method' => setting('general.default_payment_method'),
             'reference' => $this->faker->text(5),
             'attachment' => $attachment,
         ];

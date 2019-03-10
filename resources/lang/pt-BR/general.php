@@ -29,7 +29,6 @@ return [
     'logos'                 => 'Logotipo | Logotipos',
     'pictures'              => 'Imagen|Imagens',
     'types'                 => 'Tipo|Tipos',
-    'payment_methods'       => 'Método de pagamento|Método de pagamentos',
     'compares'              => 'Receita vs Despesa|Receitas vs Despesas',
     'notes'                 => 'Nota|Notas',
     'totals'                => 'Total|Totais',

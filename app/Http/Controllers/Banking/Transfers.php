@@ -100,11 +100,9 @@ class Transfers extends Controller
     {
         $accounts = Account::enabled()->orderBy('name')->pluck('name', 'id');
 
-        $payment_methods = Modules::getPaymentMethods();
-
         $currency = Currency::where('code', '=', setting('general.default_currency', 'USD'))->first();
 
-        return view('banking.transfers.create', compact('accounts', 'payment_methods', 'currency'));
+        return view('banking.transfers.create', compact('accounts', 'currency'));
     }
 
     /**
@@ -131,7 +129,6 @@ class Transfers extends Controller
             'vendor_id' => 0,
             'description' => $request['description'],
             'category_id' => Category::transfer(), // Transfer Category ID
-            'payment_method' => $request['payment_method'],
             'reference' => $request['reference'],
         ];
 
@@ -176,7 +173,6 @@ class Transfers extends Controller
             'customer_id' => 0,
             'description' => $request['description'],
             'category_id' => Category::transfer(), // Transfer Category ID
-            'payment_method' => $request['payment_method'],
             'reference' => $request['reference'],
         ];
 
@@ -214,17 +210,14 @@ class Transfers extends Controller
         $transfer['transferred_at'] = Date::parse($payment->paid_at)->format('Y-m-d');
         $transfer['description'] = $payment->description;
         $transfer['amount'] = $payment->amount;
-        $transfer['payment_method'] = $payment->payment_method;
         $transfer['reference'] = $payment->reference;
 
         $account = Account::find($payment->account_id);
         $accounts = Account::enabled()->orderBy('name')->pluck('name', 'id');
 
-        $payment_methods = Modules::getPaymentMethods();
-
         $currency = Currency::where('code', '=', $account->currency_code)->first();
 
-        return view('banking.transfers.edit', compact('transfer', 'accounts', 'payment_methods', 'currency'));
+        return view('banking.transfers.edit', compact('transfer', 'accounts', 'currency'));
     }
 
     /**
@@ -255,7 +248,6 @@ class Transfers extends Controller
             'vendor_id' => 0,
             'description' => $request['description'],
             'category_id' => Category::transfer(), // Transfer Category ID
-            'payment_method' => $request['payment_method'],
             'reference' => $request['reference'],
         ];
 
@@ -300,7 +292,6 @@ class Transfers extends Controller
             'customer_id' => 0,
             'description' => $request['description'],
             'category_id' => Category::transfer(), // Transfer Category ID
-            'payment_method' => $request['payment_method'],
             'reference' => $request['reference'],
         ];
 

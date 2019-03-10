@@ -44,7 +44,6 @@
                         <thead>
                         <tr>
                             <th>{{ trans_choice('general.categories', 1) }}</th>
-                            <th>{{ trans_choice('general.payment_methods', 1) }}</th>
                             <th>{{ trans('general.reference') }}</th>
                             <th>{{ trans('general.amount') }}</th>
                         </tr>
@@ -52,7 +51,6 @@
                         <tbody>
                         <tr>
                             <td>{{ $payment->category->name }}</td>
-                            <td>{{ $payment_methods[$payment->payment_method] }}</td>
                             <td>{{ $payment->reference }}</td>
                             <td>@money($payment->amount, $payment->currency_code, true)</td>
                         </tr>

@@ -69,9 +69,7 @@ class Revenues extends Controller
 
         $categories = Category::enabled()->type('income')->orderBy('name')->pluck('name', 'id');
 
-        $payment_methods = Modules::getPaymentMethods();
-
-        return view('incomes.revenues.create', compact('accounts', 'currencies', 'account_currency_code', 'currency', 'customers', 'categories', 'payment_methods'));
+        return view('incomes.revenues.create', compact('accounts', 'currencies', 'account_currency_code', 'currency', 'customers', 'categories'));
     }
 
     /**
@@ -161,9 +159,7 @@ class Revenues extends Controller
 
         $categories = Category::enabled()->type('income')->orderBy('name')->pluck('name', 'id');
 
-        $payment_methods = Modules::getPaymentMethods();
-
-        return view('incomes.revenues.edit', compact('revenue', 'accounts', 'currencies', 'account_currency_code', 'currency', 'customers', 'categories', 'payment_methods'));
+        return view('incomes.revenues.edit', compact('revenue', 'accounts', 'currencies', 'account_currency_code', 'currency', 'customers', 'categories'));
     }
 
     /**

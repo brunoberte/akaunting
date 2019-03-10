@@ -29,7 +29,6 @@ return [
     'logos'                 => 'Logo|Logos',
     'pictures'              => 'Imagen | Imágenes',
     'types'                 => 'Tipo | Tipos',
-    'payment_methods'       => 'Método de Pago | Métodos de Pago',
     'compares'              => 'Ingreso vs Gasto | Ingresos vs Gastos',
     'notes'                 => 'Nota | Notas',
     'totals'                => 'Total | Totales',

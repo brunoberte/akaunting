@@ -33,7 +33,6 @@ class Revenue extends TransformerAbstract
             'customer_id' => $model->customer_id,
             'description' => $model->description,
             'category_id' => $model->category_id,
-            'payment_method' => $model->payment_method,
             'reference' => $model->reference,
             'attachment' => $model->attachment,
             'created_at' => $model->created_at->toIso8601String(),

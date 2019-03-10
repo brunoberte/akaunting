@@ -29,7 +29,6 @@ return [
     'logos'                 => 'Logo|Logos',
     'pictures'              => 'Picture|Pictures',
     'types'                 => 'Type|Types',
-    'payment_methods'       => 'Payment Method|Payment Methods',
     'compares'              => 'Income vs Expense|Incomes vs Expenses',
     'notes'                 => 'Note|Notes',
     'totals'                => 'Total|Totals',

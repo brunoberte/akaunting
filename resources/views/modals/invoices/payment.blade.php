@@ -28,8 +28,6 @@
 
                     {{ Form::textareaGroup('description', trans('general.description')) }}
 
-                    {{ Form::selectGroup('payment_method', trans_choice('general.payment_methods', 1), 'credit-card', $payment_methods, setting('general.default_payment_method')) }}
-
                     {{ Form::textGroup('reference', trans('general.reference'), 'file-text-o',[]) }}
 
                     {!! Form::hidden('invoice_id', $invoice->id, ['id' => 'invoice_id', 'class' => 'form-control', 'required' => 'required']) !!}
@@ -76,10 +74,6 @@
 
         $("#modal-add-payment #account_id").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.accounts', 1)]) }}"
-        });
-
-        $("#modal-add-payment #payment_method").select2({
-            placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.payment_methods', 1)]) }}"
         });
     });
 
@@ -168,10 +162,6 @@
 
                     if (errors.category_id) {
                         $('#modal-add-payment #category_id').parent().after('<p class="help-block">' + errors.category_id + '</p>');
-                    }
-
-                    if (errors.payment_method) {
-                        $('#modal-add-payment #payment_method').parent().after('<p class="help-block">' + errors.payment_method + '</p>');
                     }
                 }
             }
