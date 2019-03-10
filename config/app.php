@@ -13,6 +13,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Akaunting'),
+    'installed' => env('APP_INSTALLED', false),
 
     /*
     |--------------------------------------------------------------------------

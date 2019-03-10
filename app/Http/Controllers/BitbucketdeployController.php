@@ -74,7 +74,7 @@ class BitbucketdeployController extends Controller
 
         $change_dir = 'cd ' . base_path() . '/;';
         $commands = [
-            '~/composer.phar install --optimize-autoloader --no-dev',
+            'composer install --optimize-autoloader --no-dev',
             'php artisan config:cache',
             'php artisan route:cache',
         ];
