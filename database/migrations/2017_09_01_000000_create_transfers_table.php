@@ -21,6 +21,8 @@ class CreateTransfersTable extends Migration
             $table->softDeletes();
 
             $table->index('company_id');
+            $table->index('payment_id');
+            $table->index('revenue_id');
         });
     }
 
