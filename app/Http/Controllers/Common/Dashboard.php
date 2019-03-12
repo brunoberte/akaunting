@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Response;
 
 class Dashboard extends Controller
 {
+	/** @var Date */
     public $today;
 
     public $income_donut = ['colors' => [], 'labels' => [], 'values' => []];
@@ -110,35 +111,28 @@ class Dashboard extends Controller
 
     private function getCashFlow()
     {
-        $start = Date::parse(request('start', $this->today->startOfYear()->format('Y-m-d')));
-        $end = Date::parse(request('end', $this->today->endOfYear()->format('Y-m-d')));
-        $period = request('period', 'month');
-        $range = request('range', 'custom');
+        $start = Date::parse(request('start', $this->today->copy()->startOfYear()->format('Y-m-d')));
+        $end = Date::parse(request('end', $this->today->copy()->format('Y-m-d')));
+        $period = request('period', 'day');
 
-        $start_month = $start->month;
-        $end_month = $end->month;
-
-        // Monthly
         $labels = array();
 
         $s = clone $start;
 
-        if ($range == 'last_12_months') {
-            $end_month   = 12;
-            $start_month = 0;
-        } elseif ($range == 'custom') {
-            $end_month   = $end->diffInMonths($start);
-            $start_month = 0;
-        }
+        while ($s <= $end) {
 
-        for ($j = $end_month; $j >= $start_month; $j--) {
-            $labels[$end_month - $j] = $s->format('M Y');
-
-            if ($period == 'month') {
-                $s->addMonth();
-            } else {
-                $s->addMonths(3);
-                $j -= 2;
+            switch ($period) {
+                case 'day':
+                    $labels[] = $s->format('d M Y');
+                    $s->addDay();
+                    break;
+                case 'month':
+                    $labels[] = $s->format('M Y');
+                    $s->addMonth();
+                    break;
+                default:
+                    $labels[] = $s->format('M Y');
+                    $s->addMonths(3);
             }
         }
 
@@ -452,18 +446,27 @@ class Dashboard extends Controller
             $m1 = '\App\Models\Expense\Payment';
         }
 
-        $date_format = 'Y-m';
-
-        if ($period == 'month') {
-            $n = 1;
-            $start_date = $start->format($date_format);
-            $end_date = $end->format($date_format);
-            $next_date = $start_date;
-        } else {
-            $n = 3;
-            $start_date = $start->quarter;
-            $end_date = $end->quarter;
-            $next_date = $start_date;
+        switch ($period) {
+            case 'day':
+                $date_format = 'Y-m-d';
+                $n = 1;
+                $start_date = $start->format($date_format);
+                $end_date = $end->format($date_format);
+                $next_date = $start_date;
+                break;
+            case 'month':
+                $date_format = 'Y-m';
+                $n = 1;
+                $start_date = $start->format($date_format);
+                $end_date = $end->format($date_format);
+                $next_date = $start_date;
+                break;
+            default:
+                $n = 3;
+                $start_date = $start->quarter;
+                $end_date = $end->quarter;
+                $next_date = $start_date;
+                break;
         }
 
         $s = clone $start;
@@ -472,14 +475,20 @@ class Dashboard extends Controller
         while ($next_date <= $end_date) {
             $totals[$next_date] = 0;
 
-            if ($period == 'month') {
-                $next_date = $s->addMonths($n)->format($date_format);
-            } else {
-                if (isset($totals[4])) {
+            switch ($period) {
+                case 'day':
+                    $next_date = $s->addDay($n)->format($date_format);
                     break;
-                }
+                case 'month':
+                    $next_date = $s->addMonths($n)->format($date_format);
+                    break;
+                default:
+                    if (isset($totals[4])) {
+                        break;
+                    }
 
-                $next_date = $s->addMonths($n)->quarter;
+                    $next_date = $s->addMonths($n)->quarter;
+                    break;
             }
         }
 
@@ -497,11 +506,16 @@ class Dashboard extends Controller
     private function setCashFlowTotals(&$totals, $items, $date_format, $period)
     {
         foreach ($items as $item) {
-            if ($period == 'month') {
-                $i = Date::parse($item->paid_at)->format($date_format);
-            } else {
-                $i = Date::parse($item->paid_at)->quarter;
+            switch ($period) {
+                case 'day':
+                case 'month':
+                    $i = Date::parse($item->paid_at)->format($date_format);
+                    break;
+                default:
+                    $i = Date::parse($item->paid_at)->quarter;
+                    break;
             }
+
 
             if (!isset($totals[$i])) {
                 continue;

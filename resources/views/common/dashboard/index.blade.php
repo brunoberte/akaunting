@@ -165,9 +165,10 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ trans('dashboard.cash_flow') }}</h3>
                     <div class="box-tools pull-right">
+                        <button type="button" id="cashflow-daily" class="btn btn-default btn-sm">{{ trans('general.daily') }}</button>&nbsp;&nbsp;
                         <button type="button" id="cashflow-monthly" class="btn btn-default btn-sm">{{ trans('general.monthly') }}</button>&nbsp;&nbsp;
                         <button type="button" id="cashflow-quarterly" class="btn btn-default btn-sm">{{ trans('general.quarterly') }}</button>&nbsp;&nbsp;
-                        <input type="hidden" name="period" id="period" value="month" />
+                        <input type="hidden" name="period" id="period" value="day" />
                         <div class="btn btn-default btn-sm">
                             <div id="cashflow-range" class="pull-right">
                                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
@@ -238,7 +239,7 @@
 <script type="text/javascript">
     $(function() {
         var start = moment().startOf('year');
-        var end = moment().endOf('year');
+        var end = moment();
 
         function cb(start, end) {
             $('#cashflow-range span').html(start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY'));
@@ -270,6 +271,24 @@
                 type: 'get',
                 dataType: 'html',
                 data: 'period=' + period + '&start=' + picker.startDate.format('YYYY-MM-DD') + '&end=' + picker.endDate.format('YYYY-MM-DD') + '&range=' + range,
+                success: function(data) {
+                    $('#cashflow').html(data);
+                }
+            });
+        });
+
+        $('#cashflow-daily').on('click', function() {
+            var picker = $('#cashflow-range').data('daterangepicker');
+
+            $('#period').val('day');
+
+            range = getRange(picker);
+
+            $.ajax({
+                url: '{{ url("common/dashboard/cashflow") }}',
+                type: 'get',
+                dataType: 'html',
+                data: 'period=day&start=' + picker.startDate.format('YYYY-MM-DD') + '&end=' + picker.endDate.format('YYYY-MM-DD') + '&range=' + range,
                 success: function(data) {
                     $('#cashflow').html(data);
                 }
