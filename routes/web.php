@@ -44,13 +44,13 @@ Route::group(['middleware' => 'language'], function () {
                 Route::get('dashboard/cashflow', 'Common\Dashboard@cashFlow')->name('dashboard.cashflow');
                 Route::get('import/{group}/{type}', 'Common\Import@create')->name('import.create');
                 Route::get('items/autocomplete', 'Common\Items@autocomplete')->name('items.autocomplete');
-                Route::post('items/totalItem', 'Common\Items@totalItem')->name('items.total');
+                Route::post('items/totalItem', 'Common\Items@totalItem')->middleware(['money'])->name('items.total');
                 Route::get('items/{item}/duplicate', 'Common\Items@duplicate')->name('items.duplicate');
                 Route::post('items/import', 'Common\Items@import')->name('items.import');
                 Route::get('items/export', 'Common\Items@export')->name('items.export');
                 Route::get('items/{item}/enable', 'Common\Items@enable')->name('items.enable');
                 Route::get('items/{item}/disable', 'Common\Items@disable')->name('items.disable');
-                Route::resource('items', 'Common\Items');
+                Route::resource('items', 'Common\Items', ['middleware' => ['money']]);
                 Route::get('search/search', 'Common\Search@search')->name('search.search');
                 Route::resource('search', 'Common\Search');
             });
@@ -68,13 +68,13 @@ Route::group(['middleware' => 'language'], function () {
 
             Route::group(['prefix' => 'incomes'], function () {
 
-                Route::resource('receivables', 'Incomes\Receivables', ['middleware' => ['dateformat']]);
+                Route::resource('receivables', 'Incomes\Receivables', ['middleware' => ['dateformat', 'money']]);
                 Route::get('receivables/{receivable}/duplicate', 'Incomes\Receivables@duplicate');
 
                 Route::get('revenues/{revenue}/duplicate', 'Incomes\Revenues@duplicate');
                 Route::post('revenues/import', 'Incomes\Revenues@import')->name('revenues.import');
                 Route::get('revenues/export', 'Incomes\Revenues@export')->name('revenues.export');
-                Route::resource('revenues', 'Incomes\Revenues', ['middleware' => ['dateformat']]);
+                Route::resource('revenues', 'Incomes\Revenues', ['middleware' => ['dateformat', 'money']]);
                 Route::get('customers/currency', 'Incomes\Customers@currency');
                 Route::get('customers/{customer}/duplicate', 'Incomes\Customers@duplicate');
                 Route::post('customers/customer', 'Incomes\Customers@customer');
@@ -88,13 +88,13 @@ Route::group(['middleware' => 'language'], function () {
 
             Route::group(['prefix' => 'expenses'], function () {
 
-                Route::resource('payables', 'Expenses\Payables', ['middleware' => ['dateformat']]);
+                Route::resource('payables', 'Expenses\Payables', ['middleware' => ['dateformat', 'money']]);
                 Route::get('payables/{payable}/duplicate', 'Expenses\Payables@duplicate');
 
                 Route::get('payments/{payment}/duplicate', 'Expenses\Payments@duplicate');
                 Route::post('payments/import', 'Expenses\Payments@import')->name('payments.import');
                 Route::get('payments/export', 'Expenses\Payments@export')->name('payments.export');
-                Route::resource('payments', 'Expenses\Payments', ['middleware' => ['dateformat']]);
+                Route::resource('payments', 'Expenses\Payments', ['middleware' => ['dateformat', 'money']]);
                 Route::get('vendors/currency', 'Expenses\Vendors@currency');
                 Route::get('vendors/{vendor}/duplicate', 'Expenses\Vendors@duplicate');
                 Route::post('vendors/vendor', 'Expenses\Vendors@vendor');
@@ -109,12 +109,12 @@ Route::group(['middleware' => 'language'], function () {
                 Route::get('accounts/currency', 'Banking\Accounts@currency')->name('accounts.currency');
                 Route::get('accounts/{account}/enable', 'Banking\Accounts@enable')->name('accounts.enable');
                 Route::get('accounts/{account}/disable', 'Banking\Accounts@disable')->name('accounts.disable');
-                Route::resource('accounts', 'Banking\Accounts', ['middleware' => ['dateformat']]);
+                Route::resource('accounts', 'Banking\Accounts', ['middleware' => ['dateformat', 'money']]);
                 Route::resource('transactions', 'Banking\Transactions');
-                Route::resource('transfers', 'Banking\Transfers', ['middleware' => ['dateformat']]);
-                Route::post('reconciliations/calculate', 'Banking\Reconciliations@calculate');
-                Route::patch('reconciliations/calculate', 'Banking\Reconciliations@calculate');
-                Route::resource('reconciliations', 'Banking\Reconciliations', ['middleware' => ['dateformat']]);
+                Route::resource('transfers', 'Banking\Transfers', ['middleware' => ['dateformat', 'money']]);
+                Route::post('reconciliations/calculate', 'Banking\Reconciliations@calculate')->middleware(['money']);
+                Route::patch('reconciliations/calculate', 'Banking\Reconciliations@calculate')->middleware(['money']);
+                Route::resource('reconciliations', 'Banking\Reconciliations', ['middleware' => ['dateformat', 'money']]);
             });
 
             Route::group(['prefix' => 'reports'], function () {
