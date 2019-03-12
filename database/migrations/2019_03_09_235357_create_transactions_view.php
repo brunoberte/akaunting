@@ -43,9 +43,9 @@ CREATE VIEW `{$prefix}vw_transactions` AS
         a.name    as account_name,
         t.company_id,
         t.`deleted_at`
- from `0fc_payments` t
-        left join `0fc_categories` c on c.id = t.category_id
-        left join `0fc_accounts` a on a.id = t.account_id
+ from `{$prefix}payments` t
+        left join `{$prefix}categories` c on c.id = t.category_id
+        left join `{$prefix}accounts` a on a.id = t.account_id
  )
 union all
 (select 'Revenue' as type,
@@ -60,9 +60,9 @@ union all
         a.name    as account_name,
         t.company_id,
         t.`deleted_at`
- from `0fc_revenues` t
-        left join `0fc_categories` c on c.id = t.category_id
-        left join `0fc_accounts` a on a.id = t.account_id
+ from `{$prefix}revenues` t
+        left join `{$prefix}categories` c on c.id = t.category_id
+        left join `{$prefix}accounts` a on a.id = t.account_id
  )
 
 SQL;
