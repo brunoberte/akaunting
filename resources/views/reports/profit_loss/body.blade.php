@@ -19,6 +19,8 @@
             </thead>
             <tbody>
                 @foreach($compares['income'] as $category_id => $category)
+                    @if ($category['total']['amount'] == 0)
+                    @else
                     <tr>
                         <td class="col-sm-2">{{ $income_categories[$category_id] }}</td>
                         @foreach($category as $i => $item)
@@ -26,6 +28,7 @@
                             <td class="col-sm-2 text-right">@money($item['amount'], setting('general.default_currency'), true)</td>
                         @endforeach
                     </tr>
+                    @endif
                 @endforeach
             </tbody>
             <tfoot>
@@ -45,6 +48,8 @@
             </thead>
             <tbody>
                 @foreach($compares['expense'] as $category_id => $category)
+                    @if ($category['total']['amount'] == 0)
+                    @else
                     <tr>
                         <td class="col-sm-2">{{ $expense_categories[$category_id] }}</td>
                         @foreach($category as $i => $item)
@@ -52,6 +57,7 @@
                             <td class="col-sm-2 text-right">@money($item['amount'], setting('general.default_currency'), true)</td>
                         @endforeach
                     </tr>
+                    @endif
                 @endforeach
             </tbody>
             <tfoot>
