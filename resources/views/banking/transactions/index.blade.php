@@ -46,6 +46,7 @@
                         <th class="col-md-2">@sortablelink('category_name', trans_choice('general.categories', 1))</th>
                         <th class="col-md-2">@sortablelink('description', trans('general.description'))</th>
                         <th class="col-md-2 text-right amount-space">@sortablelink('amount', trans('general.amount'))</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,6 +58,16 @@
                         <td>{{ $item->category_name }}</td>
                         <td>{{ $item->description }}</td>
                         <td class="text-right amount-space">@money($item->amount, $item->currency_code)</td>
+                        <td>
+                            <div class="btn-group">
+                            @if ($item->type == 'Revenue')
+                            <a class="btn btn-sm btn-default" href="{{ url('incomes/revenues/' . $item->id . '/edit') }}"><i class="fa fa-edit"></i></a>
+                            @endif
+                            @if ($item->type == 'Payment')
+                            <a class="btn btn-sm btn-default" href="{{ url('expenses/payments/' . $item->id . '/edit') }}"><i class="fa fa-edit"></i></a>
+                            @endif
+                            </div>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
