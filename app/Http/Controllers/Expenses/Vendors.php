@@ -223,7 +223,6 @@ class Vendors extends Controller
     public function destroy(Vendor $vendor)
     {
         $relationships = $this->countRelationships($vendor, [
-            'bills' => 'bills',
             'payments' => 'payments',
         ]);
 
