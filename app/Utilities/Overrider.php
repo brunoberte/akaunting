@@ -76,7 +76,7 @@ class Overrider
         }
 
         // Set currencies with new settings
-//        \Akaunting\Money\Currency::setCurrencies(config('money'));
+        \Akaunting\Money\Currency::setCurrencies(config('money'));
     }
 
 }

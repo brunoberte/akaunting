@@ -8,20 +8,16 @@
     <div class="box-body">
         <div class="stepwizard">
             <div class="stepwizard-row setup-panel">
-                <div class="stepwizard-step col-xs-3">
+                <div class="stepwizard-step col-xs-4">
                     <a href="#step-1" type="button" class="btn btn-success btn-circle">1</a>
                     <p><small>{{ trans_choice('general.companies', 1) }}</small></p>
                 </div>
-                <div class="stepwizard-step col-xs-3">
+                <div class="stepwizard-step col-xs-4">
                     <button type="button" class="btn btn-default btn-circle" disabled="disabled">2</button>
                     <p><small>{{ trans_choice('general.currencies', 2) }}</small></p>
                 </div>
-                <div class="stepwizard-step col-xs-3">
+                <div class="stepwizard-step col-xs-4">
                     <button type="button" class="btn btn-default btn-circle" disabled="disabled">3</button>
-                    <p><small>{{ trans_choice('general.taxes', 2) }}</small></p>
-                </div>
-                <div class="stepwizard-step col-xs-3">
-                    <button type="button" class="btn btn-default btn-circle" disabled="disabled">4</button>
                     <p><small>{{ trans_choice('general.finish', 1) }}</small></p>
                 </div>
             </div>
