@@ -250,4 +250,21 @@ class Accounts extends Controller
 
         return response()->json($account);
     }
+
+    public function balance()
+    {
+        $account_id = (int) request('account_id');
+
+        if (empty($account_id)) {
+            return response()->json([]);
+        }
+
+        $account = Account::find($account_id);
+
+        if (empty($account)) {
+            return response()->json([]);
+        }
+
+        return response()->json(['balance' => $account->getBalanceAttribute()]);
+    }
 }

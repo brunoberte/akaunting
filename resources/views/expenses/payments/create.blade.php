@@ -25,6 +25,7 @@
                         {!! Form::text('currency', $account_currency_code, ['id' => 'currency', 'class' => 'form-control', 'required' => 'required', 'disabled' => 'disabled']) !!}
                     </div>
                 </div>
+                <p class="help-block" id="account-balance"></p>
             </div>
             @stack('account_id_input_end')
 
@@ -105,6 +106,19 @@
             });
 
             $('#amount').trigger('focus');
+
+            $('#account_id').on('change', function (e) {
+                $('#account-balance').html('...');
+                $.ajax({
+                    url: '{{ url("banking/accounts/balance") }}?account_id=' + $('#account_id').val(),
+                    type: 'GET',
+                    dataType: 'JSON',
+                    data: {type: 'expense'},
+                    success: function(json) {
+                        $('#account-balance').html('Current balance: ' + json['balance']);
+                    }
+                });
+            });
 
             $('#account_id').trigger('change');
 
