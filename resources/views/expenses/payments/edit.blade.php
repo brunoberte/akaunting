@@ -43,6 +43,7 @@
                         {!! Form::text('currency', $account_currency_code, ['id' => 'currency', 'class' => 'form-control', 'required' => 'required', 'disabled' => 'disabled']) !!}
                     </div>
                 </div>
+                <p class="help-block" id="account-balance"></p>
             </div>
             @stack('account_id_input_end')
 
@@ -173,16 +174,21 @@
 
                     amount = $('#amount').maskMoney('unmasked')[0];
 
+                    prefix = (data.symbol_first) ? data.symbol + ' ' : '';
+                    suffix = (data.symbol_first) ? '' : ' ' + data.symbol;
+
                     $("#amount").maskMoney({
                         thousands : data.thousands_separator,
                         decimal : data.decimal_mark,
                         precision : data.precision,
                         allowZero : true,
-                        prefix : (data.symbol_first) ? data.symbol : '',
-                        suffix : (data.symbol_first) ? '' : data.symbol
+                        prefix : prefix,
+                        suffix : suffix
                     });
 
                     $('#amount').val(amount);
+
+                    $('#account-balance').html('Current balance: ' + prefix + data.balance.toFixed(data.precision) + suffix);
 
                     $('#amount').trigger('focus');
                 }
