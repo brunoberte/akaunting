@@ -4,7 +4,7 @@
 @section('message', trans('auth.login_to'))
 
 @section('content')
-<form role="form" method="POST" action="{{ url('auth/login') }}">
+<form role="form" method="POST" action="{{ url('auth/login') }}" novalidate>
     {{ csrf_field() }}
 
     @stack('email_input_start')
