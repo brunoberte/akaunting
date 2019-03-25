@@ -40,11 +40,6 @@ class Vendor extends Model
         'address' => 1,
     ];
 
-    public function bills()
-    {
-        return $this->hasMany('App\Models\Expense\Bill');
-    }
-
     public function payments()
     {
         return $this->hasMany('App\Models\Expense\Payment');
