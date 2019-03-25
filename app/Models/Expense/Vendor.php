@@ -70,13 +70,13 @@ class Vendor extends Model
     {
         $amount = 0;
 
-        $bills = $this->bills()->accrued()->notPaid()->get();
+//         $bills = $this->bills()->accrued()->notPaid()->get();
 
-        foreach ($bills as $bill) {
-            $bill_amount = $bill->amount - $bill->paid;
+//         foreach ($bills as $bill) {
+//             $bill_amount = $bill->amount - $bill->paid;
 
-            $amount += $this->dynamicConvert(setting('general.default_currency'), $bill_amount, $bill->currency_code, $bill->currency_rate, false);
-        }
+//             $amount += $this->dynamicConvert(setting('general.default_currency'), $bill_amount, $bill->currency_code, $bill->currency_rate, false);
+//         }
 
         return $amount;
     }
