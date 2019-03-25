@@ -107,19 +107,6 @@
 
             $('#amount').trigger('focus');
 
-            $('#account_id').on('change', function (e) {
-                $('#account-balance').html('...');
-                $.ajax({
-                    url: '{{ url("banking/accounts/balance") }}?account_id=' + $('#account_id').val(),
-                    type: 'GET',
-                    dataType: 'JSON',
-                    data: {type: 'expense'},
-                    success: function(json) {
-                        $('#account-balance').html('Current balance: ' + json['balance']);
-                    }
-                });
-            });
-
             $('#account_id').trigger('change');
 
             //Date picker
@@ -167,16 +154,21 @@
 
                     amount = $('#amount').maskMoney('unmasked')[0];
 
+                    prefix = (data.symbol_first) ? data.symbol + ' ' : '';
+                    suffix = (data.symbol_first) ? '' : ' ' + data.symbol;
+
                     $("#amount").maskMoney({
                         thousands : data.thousands_separator,
                         decimal : data.decimal_mark,
                         precision : data.precision,
                         allowZero : true,
-                        prefix : (data.symbol_first) ? data.symbol : '',
-                        suffix : (data.symbol_first) ? '' : data.symbol
+                        prefix : prefix,
+                        suffix : suffix
                     });
 
                     $('#amount').val(amount);
+
+                    $('#account-balance').html('Current balance: ' + prefix + data.balance.toFixed(data.precision) + suffix);
 
                     $('#amount').trigger('focus');
                 }
