@@ -530,11 +530,14 @@ class Dashboard extends Controller
         $profit = [];
 
         foreach ($incomes as $key => $income) {
+            $profit[$key] = $income - $expenses[$key];
+            /*
             if ($income > 0 && $income > $expenses[$key]) {
                 $profit[$key] = $income - $expenses[$key];
             } else {
                 $profit[$key] = 0;
             }
+            */
         }
 
         return $profit;
