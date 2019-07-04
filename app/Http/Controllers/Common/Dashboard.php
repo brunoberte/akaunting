@@ -140,6 +140,7 @@ class Dashboard extends Controller
         $expense = $this->calculateCashFlowTotals('expense', $start, $end, $period);
 
         $profit = $this->calculateCashFlowProfit($income, $expense);
+        $balance = $this->calculateCashFlowBalance($income, $expense);
 
         $chart = Charts::multi('line', 'chartjs')
             ->dimensions(0, 300)
@@ -147,6 +148,7 @@ class Dashboard extends Controller
             ->dataset(trans_choice('general.profits', 1), $profit)
             ->dataset(trans_choice('general.incomes', 1), $income)
             ->dataset(trans_choice('general.expenses', 1), $expense)
+            ->dataset(trans_choice('general.balance', 1), $balance)
             ->labels($labels)
             ->credits(false)
             ->view('vendor.consoletvs.charts.chartjs.multi.line');
@@ -538,6 +540,19 @@ class Dashboard extends Controller
                 $profit[$key] = 0;
             }
             */
+        }
+
+        return $profit;
+    }
+
+    private function calculateCashFlowBalance($incomes, $expenses)
+    {
+        $balance = 0;
+        $profit = [];
+
+        foreach ($incomes as $key => $income) {
+            $balance += ($income - $expenses[$key]);
+            $profit[$key] = $balance;
         }
 
         return $profit;
