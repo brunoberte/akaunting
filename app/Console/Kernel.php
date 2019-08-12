@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
             return;
         }
 
-        $schedule->command('recurring:check')->dailyAt(setting('general.schedule_time', '09:00'));
+//        $schedule->command('recurring:check')->dailyAt(setting('general.schedule_time', '09:00'));
     }
 
     /**
