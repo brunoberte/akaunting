@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', trans('general.title.new', ['type' => trans_choice('general.receivables', 1)]))
+@section('title', trans((isset($receivable) ? 'general.title.edit' : 'general.title.new'), ['type' => trans_choice('general.receivables', 1)]))
 
 @section('content')
 <!-- Default box -->
@@ -35,7 +35,11 @@
 
         {{ Form::textGroup('amount', trans('receivables.amount'), 'money', ['required' => 'required', 'autofocus' => 'autofocus', 'class' => 'form-control input-price']) }}
 
-        {{ Form::textGroup('due_at', trans('receivables.due_date'), 'calendar',['id' => 'due_at', 'class' => 'form-control', 'required' => 'required', 'data-inputmask' => '\'alias\': \'yyyy/mm/dd\'', 'data-mask' => '', 'autocomplete' => 'off']) }}
+        @if (isset($receivable))
+        {{ Form::textGroup('due_at', trans('receivables.due_date'), 'calendar',['id' => 'due_at', 'class' => 'form-control', 'required' => 'required', 'data-inputmask' => '\'alias\': \'yyyy-mm-dd\'', 'data-mask' => '', 'autocomplete' => 'off'], Date::parse($receivable->due_at)->toDateString()) }}
+        @else
+        {{ Form::textGroup('due_at', trans('receivables.due_date'), 'calendar',['id' => 'due_at', 'class' => 'form-control', 'required' => 'required', 'data-inputmask' => '\'alias\': \'yyyy-mm-dd\'', 'data-mask' => '', 'autocomplete' => 'off']) }}
+        @endif
 
         {{ Form::textareaGroup('notes', trans_choice('general.notes', 2)) }}
 
