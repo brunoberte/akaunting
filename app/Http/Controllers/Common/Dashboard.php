@@ -401,7 +401,7 @@ class Dashboard extends Controller
         $categories = Category::with(['payments', 'revenues'])
             ->orWhere('type', 'income')
             ->orWhere('type', 'expense')
-            ->enabled()
+//            ->enabled()
             ->get();
 
         foreach ($categories as $category) {
@@ -410,7 +410,7 @@ class Dashboard extends Controller
                     $amount = 0;
 
                     // Revenues
-                    foreach ($category->revenues as $revenue) {
+                    foreach ($category->revenues_last90days as $revenue) {
                         $amount += $revenue->amount;
                     }
 
@@ -423,7 +423,7 @@ class Dashboard extends Controller
                     $amount = 0;
 
                     // Payments
-                    foreach ($category->payments as $payment) {
+                    foreach ($category->payments_last90days as $payment) {
                         $amount += $payment->amount;
                     }
 

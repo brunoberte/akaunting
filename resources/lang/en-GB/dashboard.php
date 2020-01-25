@@ -19,5 +19,8 @@ return [
     'forecast'                  => 'Forecast',
     'chart'                     => 'Chart',
     'table'                     => 'Table',
+    'incomes_last_90'           => 'Incomes last 90 days',
+    'expenses_last_90'          => 'Expenses last 90 days',
+    'profit_last_90'            => 'Profit last 90 days',
 
 ];

@@ -3,6 +3,7 @@
 namespace App\Models\Setting;
 
 use App\Models\Model;
+use Carbon\Carbon;
 
 class Category extends Model
 {
@@ -31,10 +32,20 @@ class Category extends Model
     {
         return $this->hasMany('App\Models\Expense\Payment');
     }
+    public function payments_last90days()
+    {
+        return $this->hasMany('App\Models\Expense\Payment')
+            ->where('paid_at', '>=', Carbon::now()->startOfDay()->addDays(-90));
+    }
 
     public function revenues()
     {
         return $this->hasMany('App\Models\Income\Revenue');
+    }
+    public function revenues_last90days()
+    {
+        return $this->hasMany('App\Models\Income\Revenue')
+            ->where('paid_at', '>=', Carbon::now()->startOfDay()->addDays(-90));
     }
 
     /**
