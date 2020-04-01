@@ -112,7 +112,7 @@ class Dashboard extends Controller
     private function getCashFlow()
     {
         $start = Date::parse(request('start', $this->today->copy()->startOfYear()->format('Y-m-d')));
-        $end = Date::parse(request('end', $this->today->copy()->endOfDay()->format('Y-m-d H:i:s')));
+        $end = Date::parse(request('end', $this->today->copy()->format('Y-m-d H:i:s')))->endOfDay();
         $period = request('period', 'day');
 
         $labels = array();
