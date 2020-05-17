@@ -61,9 +61,9 @@ class Recurring extends Model
             $this->temp_current_date = Carbon::parse($this->started_at)->startOfDay();
         }
 
-        if ($this->count > 0) {
+        if ($this->count > 1) {
             // check
-            if ($this->temp_count === 0) {
+            if ($this->temp_count === 1) {
                 return false;
             }
             $this->temp_count--;

@@ -99,6 +99,6 @@ class Kernel extends HttpKernel
         'company.settings' => \App\Http\Middleware\LoadSettings::class,
         'company.currencies' => \App\Http\Middleware\LoadCurrencies::class,
         'dateformat' => \App\Http\Middleware\DateFormat::class,
-		'money' => \App\Http\Middleware\Money::class,
+        'money' => \App\Http\Middleware\Money::class,
     ];
 }
