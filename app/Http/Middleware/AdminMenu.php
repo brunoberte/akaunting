@@ -41,7 +41,7 @@ class AdminMenu
             if ($user->can('read-incomes-receivables')) {
             // Receivables
                 $menu->add([
-                    'url' => '/incomes/receivables',
+                    'url' => 'incomes/receivables',
                     'title' => trans_choice('general.receivables', 2),
                     'icon' => 'fa fa-money',
                     'order' => 2,
@@ -51,7 +51,7 @@ class AdminMenu
             if ($user->can('read-expenses-payables')) {
             // Payables
                 $menu->add([
-                    'url' => '/expenses/payables',
+                    'url' => 'expenses/payables',
                     'title' => trans_choice('general.payables', 2),
                     'icon' => 'fa fa-money',
                     'order' => 2,
@@ -61,7 +61,7 @@ class AdminMenu
             if ($user->can('read-banking-transactions')) {
             // Transactions
                 $menu->add([
-                    'url' => '/banking/transactions',
+                    'url' => 'banking/transactions',
                     'title' => trans_choice('general.transactions', 2),
                     'icon' => 'fa fa-money',
                     'order' => 2,
@@ -71,7 +71,7 @@ class AdminMenu
             if ($user->can('read-banking-transfers')) {
             // Transfers
                 $menu->add([
-                    'url' => '/banking/transfers',
+                    'url' => 'banking/transfers',
                     'title' => trans_choice('general.transfers', 2),
                     'icon' => 'fa fa-money',
                     'order' => 2,
