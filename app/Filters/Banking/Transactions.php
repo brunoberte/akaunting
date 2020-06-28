@@ -13,12 +13,12 @@ class Transactions extends ModelFilter
      * @var array
      */
     public $relations = [];
-    
-    public function accounts($accounts)
+
+    public function account($id)
     {
-        return $this->whereIn('account_id', (array) $accounts);
+        return $this->where('account_id', $id);
     }
-    
+
     public function categories($categories)
     {
         return $this->whereIn('category_id', (array) $categories);

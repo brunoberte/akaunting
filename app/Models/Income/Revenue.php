@@ -18,6 +18,16 @@ class Revenue extends Model
 
     protected $dates = ['deleted_at', 'paid_at'];
 
+    protected $appends = ['type', 'is_transfer'];
+    public function getTypeAttribute()
+    {
+        return 'Revenue';
+    }
+    public function getIsTransferAttribute()
+    {
+        return $this->category->id == Category::transfer();
+    }
+
     /**
      * Attributes that should be mass-assignable.
      *
@@ -85,6 +95,11 @@ class Revenue extends Model
     public function transfers()
     {
         return $this->hasMany('App\Models\Banking\Transfer');
+    }
+
+    public function transfer()
+    {
+        return $this->hasOne('App\Models\Banking\Transfer');
     }
 
     /**

@@ -154,7 +154,7 @@ Route::group(['middleware' => 'language'], function () {
                 Route::get('/', 'Customers\Dashboard@index');
 
                 Route::resource('payments', 'Customers\Payments');
-                Route::resource('transactions', 'Customers\Transactions');
+                Route::get('transactions', 'Customers\Transactions@index')->name('customers.transactions');
                 Route::resource('profile', 'Customers\Profile');
 
                 Route::get('logout', 'Auth\Login@destroy')->name('customer_logout');

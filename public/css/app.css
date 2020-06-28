@@ -96,7 +96,7 @@ div.required .control-label:not(span):after, td.required:after {
 }
 
 .form-group .select2-container {
-    width: 100% !important;  
+    width: 100% !important;
 }
 
 .form-group .select2-container--default .select2-selection--single {
@@ -816,4 +816,9 @@ input[type="number"] {
 #forecast_table {
     max-height: 400px;
     overflow: scroll;
+}
+
+.money-column {
+    text-align: right;
+    white-space: nowrap;
 }

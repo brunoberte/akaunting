@@ -67,7 +67,7 @@
         <!-- /.box-body -->
 
         <div class="box-footer">
-            {{ Form::saveButtons('expenses/payments') }}
+            {{ Form::saveButtons('banking/transactions') }}
         </div>
         <!-- /.box-footer -->
 

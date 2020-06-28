@@ -22,14 +22,8 @@
         <div id="items" class="pull-left box-filter">
             <span class="title-filter hidden-xs">{{ trans('general.search') }}:</span>
             {!! Form::dateRange('date', trans('general.date'), 'calendar', []) !!}
-            {!! Form::select('accounts[]', $accounts, request('accounts'), ['id' => 'filter-accounts', 'class' => 'form-control input-filter input-lg', 'multiple' => 'multiple']) !!}
-            {!! Form::select('type', $types, request('type'), ['class' => 'form-control input-filter input-sm']) !!}
-            {!! Form::select('categories[]', $categories, request('categories'), ['id' => 'filter-categories', 'class' => 'form-control input-filter input-lg', 'multiple' => 'multiple']) !!}
+            {!! Form::select('account_id', $accounts, request('account_id'), ['id' => 'filter-accounts', 'class' => 'form-control input-filter input-lg']) !!}
             {!! Form::button('<span class="fa fa-filter"></span> &nbsp;' . trans('general.filter'), ['type' => 'submit', 'class' => 'btn btn-sm btn-default btn-filter']) !!}
-        </div>
-        <div class="pull-right">
-            <span class="title-filter hidden-xs">{{ trans('general.show') }}:</span>
-            {!! Form::select('limit', $limits, request('limit', setting('general.list_limit', '25')), ['class' => 'form-control input-filter input-sm', 'onchange' => 'this.form.submit()']) !!}
         </div>
         {!! Form::close() !!}
     </div>
@@ -45,25 +39,63 @@
                         <th class="col-md-2">@sortablelink('type', trans_choice('general.types', 1))</th>
                         <th class="col-md-2">@sortablelink('category_name', trans_choice('general.categories', 1))</th>
                         <th class="col-md-2">@sortablelink('description', trans('general.description'))</th>
-                        <th class="col-md-2 text-right amount-space">@sortablelink('amount', trans('general.amount'))</th>
+                        <th class="col-md-2 text-right">Credit</th>
+                        <th class="col-md-2 text-right">Debit</th>
+                        <th class="col-md-2 text-right">Balance</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
+                <tr>
+                    <td colspan="7" class="text-right">Open balance:</td>
+                    <td class="money-column">@money($balance, $account->currency_code)</td>
+                    <td></td>
+                </tr>
                 @foreach($transactions as $item)
                     <tr>
                         <td>{{ Date::parse($item->paid_at)->format($date_format) }}</td>
-                        <td>{{ $item->account_name }}</td>
+                        <td>{{ $item->account->name }}</td>
                         <td>{{ $item->type }}</td>
-                        <td>{{ $item->category_name }}</td>
+                        <td>
+                            {{ $item->category->name }}
+                            @if($item->is_transfer && $item->type === 'Revenue')
+                                to {{ $item->transfer->payment->account->name }}
+                            @endif
+                            @if($item->is_transfer && $item->type === 'Payment')
+                                to {{ $item->transfer->revenue->account->name }}
+                            @endif
+                        </td>
                         <td>{{ $item->description }}</td>
-                        <td class="text-right amount-space">@money($item->amount, $item->currency_code)</td>
+                        <td class="text-right money-column">
+                            @if($item->type === 'Revenue')
+                            @money($item->amount, $item->currency_code)
+                            @else
+                            -
+                            @endif
+                        </td>
+                        <td class="text-right money-column">
+                            @if($item->type === 'Payment')
+                            @money($item->amount, $item->currency_code)
+                            @else
+                            -
+                            @endif
+                        </td>
+                        <td class="text-right money-column">
+                            @if($item->type === 'Payment')
+                                @money($balance -= $item->amount, $item->currency_code)
+                            @else
+                                @money($balance += $item->amount, $item->currency_code)
+                            @endif
+                        </td>
                         <td>
                             <div class="btn-group">
-                            @if ($item->type == 'Revenue')
+                            @if ($item->is_transfer)
+                            <a class="btn btn-sm btn-default" href="{{ url('banking/transfers/' . $item->transfer->id . '/edit') }}"><i class="fa fa-edit"></i></a>
+                            @endif
+                            @if (!$item->is_transfer && $item->type == 'Revenue')
                             <a class="btn btn-sm btn-default" href="{{ url('incomes/revenues/' . $item->id . '/edit') }}"><i class="fa fa-edit"></i></a>
                             @endif
-                            @if ($item->type == 'Payment')
+                            @if (!$item->is_transfer && $item->type == 'Payment')
                             <a class="btn btn-sm btn-default" href="{{ url('expenses/payments/' . $item->id . '/edit') }}"><i class="fa fa-edit"></i></a>
                             @endif
                             </div>
@@ -71,15 +103,18 @@
                     </tr>
                 @endforeach
                 </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="7" class="text-right">Final balance:</td>
+                    <td class="money-column">@money($balance, $account->currency_code)</td>
+                    <td></td>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
     <!-- /.box-body -->
 
-    <div class="box-footer">
-        @include('partials.admin.pagination', ['items' => $transactions, 'type' => 'transactions'])
-    </div>
-    <!-- /.box-footer -->
 </div>
 <!-- /.box -->
 @endsection

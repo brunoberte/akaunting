@@ -5,6 +5,7 @@ namespace App\Models\Banking;
 use App\Models\Expense\Payment;
 use App\Models\Income\Revenue;
 use App\Models\Model;
+use Carbon\Carbon;
 use Sofa\Eloquence\Eloquence;
 
 class Account extends Model
@@ -82,6 +83,26 @@ class Account extends Model
         // Subtract payments
         $total -= Payment::query()
             ->where('account_id', $this->id)
+            ->sum('amount');
+
+        return $total;
+    }
+
+    public function getBalanceOnDate(Carbon $date)
+    {
+        // Opening Balance
+        $total = $this->opening_balance;
+
+        // Sum revenues
+        $total += Revenue::query()
+            ->where('account_id', $this->id)
+            ->where('paid_at', '<=', $date->endOfDay()->format('Y-m-d'))
+            ->sum('amount');
+
+        // Subtract payments
+        $total -= Payment::query()
+            ->where('account_id', $this->id)
+            ->where('paid_at', '<=', $date->endOfDay()->format('Y-m-d'))
             ->sum('amount');
 
         return $total;

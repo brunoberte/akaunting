@@ -202,6 +202,7 @@ class Dashboard extends Controller
 
     private function _addItemsToForecastTable($list, Carbon $date_limit, &$forecast_table)
     {
+        /** @var Receivable $item */
         foreach($list as $item) {
             if ($item->due_at <= $date_limit) {
                 $dt_formatted = $item->due_at->format('Y-m-d');
@@ -219,7 +220,7 @@ class Dashboard extends Controller
                 //check recurring
                 if ($item->recurring) {
                     $next_date = $item->recurring->getNextDate();
-                    while($next_date !== false && $next_date < $date_limit) {
+                    while($next_date !== false && $next_date <= $date_limit) {
                         $dt_formatted = $next_date->format('Y-m-d');
                         if (!isset($forecast_table[$dt_formatted])) {
                             $forecast_table[$dt_formatted] = [];

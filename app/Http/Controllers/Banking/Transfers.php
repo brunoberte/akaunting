@@ -189,7 +189,7 @@ class Transfers extends Controller
 
         flash($message)->success();
 
-        return redirect('banking/transfers');
+        return redirect()->route('transactions.index', ['accounts' => [$payment->account_id]]);
     }
 
     /**
@@ -308,7 +308,7 @@ class Transfers extends Controller
 
         flash($message)->success();
 
-        return redirect('banking/transfers');
+        return redirect()->route('transactions.index', ['accounts' => [$payment->account_id]]);
     }
 
     /**

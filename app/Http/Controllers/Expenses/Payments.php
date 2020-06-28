@@ -94,7 +94,7 @@ class Payments extends Controller
 
         flash($message)->success();
 
-        return redirect('expenses/payments');
+        return redirect()->route('transactions.index', ['accounts' => [$payment->account_id]]);
     }
 
     /**
@@ -185,7 +185,7 @@ class Payments extends Controller
 
         flash($message)->success();
 
-        return redirect('expenses/payments');
+        return redirect()->route('transactions.index', ['accounts' => [$payment->account_id]]);
     }
 
     /**

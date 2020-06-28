@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Banking;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banking\Account;
-use App\Models\Banking\Transaction;
+use App\Models\Banking\Transfer;
 use App\Models\Expense\Payment;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
+use Carbon\Carbon;
 
 class Transactions extends Controller
 {
@@ -19,29 +20,37 @@ class Transactions extends Controller
      *
      * @return Response
      */
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $request = request();
-
         $accounts = collect(Account::enabled()->pluck('name', 'id'));
 
-        $types = collect(['expense' => 'Expense', 'income' => 'Income'])
-            ->prepend(trans('general.all_type', ['type' => trans_choice('general.types', 2)]), '');
-
-        $type = $request->get('type');
-
-        $type_cats = empty($type) ? ['income', 'expense'] : $type;
-        $categories = collect(Category::enabled()->type($type_cats)->pluck('name', 'id'));
+        if (!$request->exists('date')) {
+            $start = Carbon::today()->subDays(60)->format('Y-m-d');
+            $end = Carbon::today()->format('Y-m-d');
+            $request->merge(['date' => "{$start}_{$end}"]);
+        }
+        if (!$request->exists('account_id')) {
+            $account_id = setting()->get('general.default_account');
+            $request->merge(['account_id' => $account_id]);
+        }
+        $account = Account::query()->find($request->get('account_id'));
+        $date = Carbon::createFromFormat('Y-m-d', explode('_', $request->get('date'))[0])->subDay();
+        $balance = $account->getBalanceOnDate($date);
 
         $input = $request->input();
-        $limit = $request->get('limit', setting('general.list_limit', '25'));
 
-        $transactions = Transaction::query()
+        $payments = Payment::query()
             ->filter($input)
-            ->orderBy('paid_at', 'desc')
-            ->paginate($limit);
+            ->get();
 
-        return view('banking.transactions.index', compact('transactions', 'accounts', 'types', 'categories'));
+        $revenues = Revenue::query()
+            ->filter($input)
+            ->get();
+
+        $transactions = $payments->concat($revenues)
+            ->sortBy('paid_at');
+
+        return view('banking.transactions.index', compact('transactions', 'accounts', 'balance', 'account'));
     }
 
 }

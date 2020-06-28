@@ -19,6 +19,16 @@ class Payment extends Model
 
     protected $dates = ['deleted_at', 'paid_at'];
 
+    protected $appends = ['type', 'is_transfer'];
+    public function getTypeAttribute()
+    {
+        return 'Payment';
+    }
+    public function getIsTransferAttribute()
+    {
+        return $this->category->id == Category::transfer();
+    }
+
     /**
      * Attributes that should be mass-assignable.
      *
@@ -72,9 +82,14 @@ class Payment extends Model
         return $this->morphOne('App\Models\Common\Recurring', 'recurable');
     }
 
-    public function transfers()
+//    public function transfers()
+//    {
+//        return $this->hasMany('App\Models\Banking\Transfer');
+//    }
+
+    public function transfer()
     {
-        return $this->hasMany('App\Models\Banking\Transfer');
+        return $this->hasOne('App\Models\Banking\Transfer');
     }
 
     public function vendor()

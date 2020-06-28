@@ -27,7 +27,7 @@
                                     $total += $balance;
                                 @endphp
                                 <tr>
-                                    <td class="text-left"><a href="/banking/transactions?accounts%5B%5D={{ $item->id }}">{{ $item->name }}</a></td>
+                                    <td class="text-left"><a href="/banking/transactions?account_id={{ $item->id }}">{{ $item->name }}</a></td>
                                     <td class="text-right text-no-wrap">@money($balance, $item->currency_code, true)</td>
                                 </tr>
                             @endforeach
