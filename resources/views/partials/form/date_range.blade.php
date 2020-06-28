@@ -17,6 +17,8 @@
                     '{{ trans("general.date_range.last_days", ["day" => "7"]) }}' : [moment().subtract(6, 'days'), moment()],
                     '{{ trans("general.date_range.last_days", ["day" => "30"]) }}': [moment().subtract(29, 'days'), moment()],
                     '{{ trans("general.date_range.last_days", ["day" => "60"]) }}': [moment().subtract(59, 'days'), moment()],
+                    '{{ trans("general.date_range.last_days", ["day" => "180"]) }}': [moment().subtract(179, 'days'), moment()],
+                    '{{ trans("general.date_range.this_year") }}'  : [moment().startOf('year'), moment()],
                     '{{ trans("general.date_range.this_month") }}'  : [moment().startOf('month'), moment().endOf('month')],
                     '{{ trans("general.date_range.last_month") }}'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 },
