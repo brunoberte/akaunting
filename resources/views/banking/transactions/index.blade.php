@@ -18,11 +18,11 @@
 <!-- Default box -->
 <div class="box box-success">
     <div class="box-header with-border">
-        {!! Form::open(['url' => 'banking/transactions', 'role' => 'form', 'method' => 'GET']) !!}
+        {!! Form::open(['url' => 'banking/transactions', 'role' => 'form', 'method' => 'GET', 'id' => 'frm-filter']) !!}
         <div id="items" class="pull-left box-filter">
             <span class="title-filter hidden-xs">{{ trans('general.search') }}:</span>
             {!! Form::dateRange('date', trans('general.date'), 'calendar', []) !!}
-            {!! Form::select('account_id', $accounts, request('account_id'), ['id' => 'filter-accounts', 'class' => 'form-control input-filter input-sm']) !!}
+            {!! Form::select('account_id', $accounts, request('account_id'), ['id' => 'filter-account', 'class' => 'form-control input-filter input-sm']) !!}
             {!! Form::button('<span class="fa fa-filter"></span> &nbsp;' . trans('general.filter'), ['type' => 'submit', 'class' => 'btn btn-sm btn-default btn-filter']) !!}
         </div>
         {!! Form::close() !!}
@@ -133,3 +133,15 @@
 <link rel="stylesheet" href="{{ asset('vendor/almasaeed2010/adminlte/plugins/datepicker/datepicker3.css') }}">
 @endpush
 
+@push('scripts')
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#filter-account").change(function(){
+                $("#frm-filter").submit();
+            });
+            $('.date-range-btn').on('apply.daterangepicker', function(ev, picker) {
+                $("#frm-filter").submit();
+            });
+        });
+    </script>
+@endpush
