@@ -22,7 +22,7 @@ class Transactions extends Controller
      */
     public function index(\Illuminate\Http\Request $request)
     {
-        $accounts = collect(Account::enabled()->pluck('name', 'id'));
+        $accounts = collect(Account::enabled()->orderBy('name')->pluck('name', 'id'));
 
         if (!$request->exists('date')) {
             $start = Carbon::today()->subDays(60)->format('Y-m-d');
