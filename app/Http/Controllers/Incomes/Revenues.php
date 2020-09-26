@@ -210,7 +210,7 @@ class Revenues extends Controller
 
         flash($message)->success();
 
-        return redirect('incomes/revenues');
+        return redirect()->route('transactions.index', ['account_id' => $revenue->account_id]);
     }
 
     /**

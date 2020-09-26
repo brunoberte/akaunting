@@ -88,7 +88,23 @@
                             @endif
                         </td>
                         <td>
-                            <div class="btn-group">
+                            @php
+                            if ($item->is_transfer) {
+                                $url = url('banking/transfers/' . $item->transfer->id);
+                            } else {
+                                if ($item->type == 'Revenue') {
+                                    $url = url('incomes/revenues/' . $item->id);
+                                }
+                                if ($item->type == 'Payment') {
+                                    $url = url('expenses/payments/' . $item->id);
+                                }
+                            }
+                            @endphp
+                            {!! Form::open([
+                                'method' => 'DELETE',
+                                'url' => $url,
+                            ]) !!}
+                            <div class="btn-group" style="width: 70px;">
                             @if ($item->is_transfer)
                             <a class="btn btn-sm btn-default" href="{{ url('banking/transfers/' . $item->transfer->id . '/edit') }}"><i class="fa fa-edit"></i></a>
                             @endif
@@ -98,7 +114,11 @@
                             @if (!$item->is_transfer && $item->type == 'Payment')
                             <a class="btn btn-sm btn-default" href="{{ url('expenses/payments/' . $item->id . '/edit') }}"><i class="fa fa-edit"></i></a>
                             @endif
+                            <button type="submit"
+                                    class="btn btn-sm btn-default"
+                                    onclick="if(!confirm('Tem certeza?')) { return false; }"><i class="fa fa-trash"></i></button>
                             </div>
+                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach
