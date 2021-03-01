@@ -36,7 +36,6 @@
                         <th class="col-md-3">@sortablelink('name', trans('general.name'))</th>
                         <th class="col-md-3 hidden-xs">@sortablelink('email', trans('general.email'))</th>
                         <th class="col-md-2">@sortablelink('phone', trans('general.phone'))</th>
-                        <th class="col-md-2 hidden-xs">@sortablelink('unpaid', trans('general.unpaid'))</th>
                         <th class="col-md-1 hidden-xs">@sortablelink('enabled', trans_choice('general.statuses', 1))</th>
                         <th class="col-md-1 text-center">{{ trans('general.actions') }}</th>
                     </tr>
@@ -47,7 +46,6 @@
                         <td><a href="{{ url('incomes/customers/' . $item->id) }}">{{ $item->name }}</a></td>
                         <td class="hidden-xs">{{ !empty($item->email) ? $item->email : trans('general.na') }}</td>
                         <td>{{ $item->phone }}</td>
-                        <td>@money($item->unpaid, setting('general.default_currency'), true)</td>
                         <td class="hidden-xs">
                             @if ($item->enabled)
                                 <span class="label label-success">{{ trans('general.enabled') }}</span>
