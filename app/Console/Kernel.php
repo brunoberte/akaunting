@@ -15,7 +15,6 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\CompanySeed::class,
         Commands\Install::class,
-        Commands\RecurringCheck::class,
         Commands\ImportJfinancas::class,
     ];
 
@@ -31,8 +30,6 @@ class Kernel extends ConsoleKernel
         if (!env('APP_INSTALLED')) {
             return;
         }
-
-//        $schedule->command('recurring:check')->dailyAt(setting('general.schedule_time', '09:00'));
     }
 
     /**
