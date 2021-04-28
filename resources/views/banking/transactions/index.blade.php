@@ -34,11 +34,11 @@
             <table class="table table-striped table-hover" id="tbl-transactions">
                 <thead>
                     <tr>
-                        <th class="col-md-2">@sortablelink('paid_at', trans('general.date'))</th>
-                        <th class="col-md-2">@sortablelink('account_name', trans('accounts.account_name'))</th>
-                        <th class="col-md-2">@sortablelink('type', trans_choice('general.types', 1))</th>
-                        <th class="col-md-2">@sortablelink('category_name', trans_choice('general.categories', 1))</th>
-                        <th class="col-md-2">@sortablelink('description', trans('general.description'))</th>
+                        <th class="col-md-2">Date <i class="fa fa-long-arrow-down sort-icon"></i></th>
+                        <th class="col-md-2">Account Name</th>
+                        <th class="col-md-2">Type</th>
+                        <th class="col-md-2">Category</th>
+                        <th class="col-md-2">Description</th>
                         <th class="col-md-2 text-right">Credit</th>
                         <th class="col-md-2 text-right">Debit</th>
                         <th class="col-md-2 text-right">Balance</th>
@@ -55,16 +55,18 @@
                     <tr>
                         <td>{{ Date::parse($item->paid_at)->format($date_format) }}</td>
                         <td>{{ $item->account->name }}</td>
-                        <td>{{ $item->type }}</td>
                         <td>
-                            {{ $item->category->name }}
+                            @if(!$item->is_transfer)
+                                {{ $item->type }}
+                            @endif
                             @if($item->is_transfer && $item->type === 'Revenue')
-                                to {{ $item->transfer->payment->account->name }}
+                                Transfer from {{ $item->transfer->payment->account->name }}
                             @endif
                             @if($item->is_transfer && $item->type === 'Payment')
-                                to {{ $item->transfer->revenue->account->name }}
+                                Transfer to {{ $item->transfer->revenue->account->name }}
                             @endif
                         </td>
+                        <td>{{ $item->category->name }}</td>
                         <td>{{ $item->description }}</td>
                         <td class="text-right money-column">
                             @if($item->type === 'Revenue')

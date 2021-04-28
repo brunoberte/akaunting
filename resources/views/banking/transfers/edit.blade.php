@@ -32,7 +32,7 @@
 
         @permission('update-banking-transfers')
         <div class="box-footer">
-            {{ Form::saveButtons('banking/transfers') }}
+            {{ Form::saveButtons('banking/transactions') }}
         </div>
         <!-- /.box-footer -->
         @endpermission
