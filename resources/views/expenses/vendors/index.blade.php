@@ -7,7 +7,7 @@
 <span class="new-button"><a href="{{ url('expenses/vendors/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }}</a></span>
 <span><a href="{{ url('common/import/expenses/vendors') }}" class="btn btn-default btn-sm"><span class="fa fa-download"></span> &nbsp;{{ trans('import.import') }}</a></span>
 @endpermission
-<span><a href="{{ route('vendors.export', request()->input()) }}" class="btn btn-default btn-sm"><span class="fa fa-upload"></span> &nbsp;{{ trans('general.export') }}</a></span>
+<span><a href="{{ route('expenses.vendors.export', request()->input()) }}" class="btn btn-default btn-sm"><span class="fa fa-upload"></span> &nbsp;{{ trans('general.export') }}</a></span>
 @endsection
 
 @section('content')
@@ -61,9 +61,9 @@
                                 <ul class="dropdown-menu dropdown-menu-right">
                                     <li><a href="{{ url('expenses/vendors/' . $item->id) }}">{{ trans('general.show') }}</a></li>
                                     <li><a href="{{ url('expenses/vendors/' . $item->id . '/edit') }}">{{ trans('general.edit') }}</a></li>@if ($item->enabled)
-                                    <li><a href="{{ route('vendors.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
+                                    <li><a href="{{ route('expenses.vendors.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
                                     @else
-                                    <li><a href="{{ route('vendors.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
+                                    <li><a href="{{ route('expenses.vendors.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
                                     @endif
                                     @permission('create-expenses-vendors')
                                     <li class="divider"></li>

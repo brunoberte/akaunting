@@ -7,7 +7,7 @@
 <span class="new-button"><a href="{{ url('incomes/customers/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }}</a></span>
 <span><a href="{{ url('common/import/incomes/customers') }}" class="btn btn-default btn-sm"><span class="fa fa-download"></span> &nbsp;{{ trans('import.import') }}</a></span>
 @endpermission
-<span><a href="{{ route('customers.export', request()->input()) }}" class="btn btn-default btn-sm"><span class="fa fa-upload"></span> &nbsp;{{ trans('general.export') }}</a></span>
+<span><a href="{{ route('incomes.customers.export', request()->input()) }}" class="btn btn-default btn-sm"><span class="fa fa-upload"></span> &nbsp;{{ trans('general.export') }}</a></span>
 @endsection
 
 @section('content')
@@ -62,9 +62,9 @@
                                     <li><a href="{{ url('incomes/customers/' . $item->id) }}">{{ trans('general.show') }}</a></li>
                                     <li><a href="{{ url('incomes/customers/' . $item->id . '/edit') }}">{{ trans('general.edit') }}</a></li>
                                     @if ($item->enabled)
-                                    <li><a href="{{ route('customers.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
+                                    <li><a href="{{ route('incomes.customers.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
                                     @else
-                                    <li><a href="{{ route('customers.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
+                                    <li><a href="{{ route('incomes.customers.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
                                     @endif
                                     @permission('create-incomes-customers')
                                     <li class="divider"></li>
