@@ -56,20 +56,20 @@
     "scripts": {
         "post-install-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php7.4 artisan clear-compiled",
-            "php7.4 artisan optimize",
+            "php7.2 artisan clear-compiled",
+            "php7.2 artisan optimize",
             "composer dump-autoload"
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php7.4 artisan clear-compiled",
-            "php7.4 artisan optimize",
+            "php7.2 artisan clear-compiled",
+            "php7.2 artisan optimize",
             "composer dump-autoload"
         ],
         "post-create-project-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php7.4 artisan clear-compiled",
-            "php7.4 artisan optimize",
+            "php7.2 artisan clear-compiled",
+            "php7.2 artisan optimize",
             "composer dump-autoload"
         ]
     },

@@ -57,12 +57,12 @@ class BitbucketdeployController extends Controller
     {
         $change_dir = 'cd ' . base_path() . '/;';
         $commands = [
-            'php7.4 /usr/local/bin/composer install --optimize-autoloader --no-dev',
-            //            'php7.4 artisan config:cache',
-            //            'php7.4 artisan route:cache',
-            'php7.4 artisan cache:clear',
-            'php7.4 artisan view:clear',
-            'php7.4 artisan queue:restart',
+            'php7.2 /usr/local/bin/composer install --optimize-autoloader --no-dev',
+            //            'php7.2 artisan config:cache',
+            //            'php7.2 artisan route:cache',
+            'php7.2 artisan cache:clear',
+            'php7.2 artisan view:clear',
+            'php7.2 artisan queue:restart',
         ];
         foreach ($commands as $command) {
             $cmd = $change_dir . $command;
