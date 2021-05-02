@@ -189,7 +189,6 @@ return [
         Akaunting\Setting\Provider::class,
         Akaunting\SignedUrl\Provider::class,
         Akaunting\Version\Provider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
         Bkwld\Cloner\ServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         ConsoleTVs\Charts\ChartsServiceProvider::class,
@@ -263,7 +262,6 @@ return [
          */
         //'Api' => Dingo\Api\Facade\API,
         'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
-        'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'Date' => Jenssegers\Date\Date::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Form' => Collective\Html\FormFacade::class,
@@ -272,7 +270,6 @@ return [
         'Language' => Akaunting\Language\Facade::class,
         'Laratrust' => Laratrust\LaratrustFacade::class,
         'Menu' => Nwidart\Menus\Facades\Menu::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
         'Setting' => Akaunting\Setting\Facade::class,
         'SignedUrl' => Akaunting\SignedUrl\Facade::class,
         'Version' => Akaunting\Version\Facade::class,
