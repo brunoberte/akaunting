@@ -94,7 +94,7 @@ class Payments extends Controller
 
         flash($message)->success();
 
-        return redirect()->route('transactions.index', ['account_id' => $payment->account_id]);
+        return redirect()->route('banking.transactions.index', ['account_id' => $payment->account_id]);
     }
 
     /**
@@ -185,7 +185,7 @@ class Payments extends Controller
 
         flash($message)->success();
 
-        return redirect()->route('transactions.index', ['account_id' => $payment->account_id]);
+        return redirect()->route('banking.transactions.index', ['account_id' => $payment->account_id]);
     }
 
     /**
@@ -209,7 +209,7 @@ class Payments extends Controller
 
         flash($message)->success();
 
-        return redirect()->route('transactions.index', ['account_id' => $payment->account_id]);
+        return redirect()->route('banking.transactions.index', ['account_id' => $payment->account_id]);
     }
 
     /**

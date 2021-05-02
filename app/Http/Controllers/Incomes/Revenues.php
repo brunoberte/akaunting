@@ -95,7 +95,7 @@ class Revenues extends Controller
 
         flash($message)->success();
 
-        return redirect()->route('transactions.index', ['account_id' => $revenue->account_id]);
+        return redirect()->route('banking.transactions.index', ['account_id' => $revenue->account_id]);
     }
 
     /**
@@ -186,7 +186,7 @@ class Revenues extends Controller
 
         flash($message)->success();
 
-        return redirect()->route('transactions.index', ['account_id' => $revenue->account_id]);
+        return redirect()->route('banking.transactions.index', ['account_id' => $revenue->account_id]);
     }
 
     /**
@@ -210,7 +210,7 @@ class Revenues extends Controller
 
         flash($message)->success();
 
-        return redirect()->route('transactions.index', ['account_id' => $revenue->account_id]);
+        return redirect()->route('banking.transactions.index', ['account_id' => $revenue->account_id]);
     }
 
     /**

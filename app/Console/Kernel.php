@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         Commands\CompanySeed::class,
         Commands\Install::class,
         Commands\ImportJfinancas::class,
+        Commands\RollbarNotifyDeploy::class,
     ];
 
     /**
