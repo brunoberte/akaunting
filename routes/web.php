@@ -66,7 +66,7 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('permissions', 'Auth\Permissions');
             });
 
-            Route::group(['prefix' => 'incomes'], function () {
+            Route::name('incomes.')->prefix('incomes')->group(function () {
 
                 Route::resource('receivables', 'Incomes\Receivables', ['middleware' => ['dateformat', 'money']]);
                 Route::get('receivables/{receivable}/duplicate', 'Incomes\Receivables@duplicate');
@@ -86,7 +86,7 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('customers', 'Incomes\Customers');
             });
 
-            Route::group(['prefix' => 'expenses'], function () {
+            Route::name('expenses.')->prefix('expenses')->group(function () {
 
                 Route::resource('payables', 'Expenses\Payables', ['middleware' => ['dateformat', 'money']]);
                 Route::get('payables/{payable}/duplicate', 'Expenses\Payables@duplicate');
@@ -105,7 +105,7 @@ Route::group(['middleware' => 'language'], function () {
                 Route::resource('vendors', 'Expenses\Vendors');
             });
 
-            Route::group(['prefix' => 'banking'], function () {
+            Route::name('banking.')->prefix('banking')->group(function () {
                 Route::get('accounts/currency', 'Banking\Accounts@currency')->name('accounts.currency');
                 Route::get('accounts/balance', 'Banking\Accounts@balance')->name('accounts.balance');
                 Route::get('accounts/{account}/enable', 'Banking\Accounts@enable')->name('accounts.enable');
@@ -150,7 +150,7 @@ Route::group(['middleware' => 'language'], function () {
         });
 
         Route::group(['middleware' => ['customermenu', 'permission:read-customer-panel']], function () {
-            Route::group(['prefix' => 'customers'], function () {
+            Route::name('customers.')->prefix('customers')->group(function () {
                 Route::get('/', 'Customers\Dashboard@index');
 
                 Route::resource('payments', 'Customers\Payments');

@@ -4,10 +4,10 @@
 
 @section('new_button')
     @permission('create-expenses-payments')
-    <span class="new-button"><a href="{{ url('expenses/payments/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} payment</a></span>
+    <span class="new-button"><a href="{{ route('expenses.payments.create', ['account_id' => request('account_id')]) }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} payment</a></span>
     @endpermission
     @permission('create-incomes-revenues')
-    <span class="new-button"><a href="{{ url('incomes/revenues/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} revenue</a></span>
+    <span class="new-button"><a href="{{ route('incomes.revenues.create', ['account_id' => request('account_id')]) }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} revenue</a></span>
     @endpermission
     @permission('create-banking-transfers')
     <span class="new-button"><a href="{{ url('banking/transfers/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }} transfer</a></span>
