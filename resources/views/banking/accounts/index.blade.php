@@ -41,7 +41,7 @@
                 <tbody>
                 @foreach($accounts as $item)
                     <tr>
-                        <td><a href="{{ route('accounts.edit', $item->id) }}">{{ $item->name }}</a></td>
+                        <td><a href="{{ route('banking.accounts.edit', $item->id) }}">{{ $item->name }}</a></td>
                         <td class="hidden-xs">{{ $item->number }}</td>
                         <td class="text-right amount-space">@money($item->balance, $item->currency_code)</td>
                         <td class="hidden-xs">
@@ -57,11 +57,11 @@
                                     <i class="fa fa-ellipsis-h"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right">
-                                    <li><a href="{{ route('accounts.edit', $item->id) }}">{{ trans('general.edit') }}</a></li>
+                                    <li><a href="{{ route('banking.accounts.edit', $item->id) }}">{{ trans('general.edit') }}</a></li>
                                     @if ($item->enabled)
-                                    <li><a href="{{ route('accounts.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
+                                    <li><a href="{{ route('banking.accounts.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
                                     @else
-                                    <li><a href="{{ route('accounts.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
+                                    <li><a href="{{ route('banking.accounts.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
                                     @endif
                                     @permission('delete-banking-accounts')
                                     <li class="divider"></li>
