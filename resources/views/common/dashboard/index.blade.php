@@ -16,7 +16,14 @@
                 </div>
                 <div class="box-body">
                     @php
-                    $total = 0;
+                    $totals = [];
+                    foreach($accounts as $item)
+                    {
+                        if(!isset($totals[$item->currency_code]))
+                        {
+                            $totals[$item->currency_code] = 0;
+                        }
+                    }
                     @endphp
                     @if ($accounts->count())
                         <table class="table table-striped">
@@ -24,18 +31,26 @@
                             @foreach($accounts as $item)
                                 @php
                                     $balance = $item->balance;
-                                    $total += $balance;
+                                    $totals[$item->currency_code] += $balance;
                                 @endphp
                                 <tr>
                                     <td class="text-left"><a href="/banking/transactions?account_id={{ $item->id }}">{{ $item->name }}</a></td>
-                                    <td class="text-right text-no-wrap">@money($balance, $item->currency_code, true)</td>
+                                    @foreach($totals as $currency_code => $total)
+                                        @if($currency_code == $item->currency_code)
+                                            <td class="text-right text-no-wrap">@money($balance, $currency_code, true)</td>
+                                        @else
+                                            <td></td>
+                                        @endif
+                                    @endforeach
                                 </tr>
                             @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th class="text-left">Total</th>
-                                    <th class="text-right text-no-wrap">@money($total, $item->currency_code, true)</th>
+                                    @foreach($totals as $currency_code => $total)
+                                    <th class="text-right text-no-wrap">@money($total, $currency_code, true)</th>
+                                    @endforeach
                                 </tr>
                             </tfoot>
                         </table>
