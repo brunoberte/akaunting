@@ -96,13 +96,13 @@ class Account extends Model
         // Sum revenues
         $total += Revenue::query()
             ->where('account_id', $this->id)
-            ->where('paid_at', '<=', $date->endOfDay()->format('Y-m-d'))
+            ->where('paid_at', '<=', $date->endOfDay()->format('Y-m-d H:i:s'))
             ->sum('amount');
 
         // Subtract payments
         $total -= Payment::query()
             ->where('account_id', $this->id)
-            ->where('paid_at', '<=', $date->endOfDay()->format('Y-m-d'))
+            ->where('paid_at', '<=', $date->endOfDay()->format('Y-m-d H:i:s'))
             ->sum('amount');
 
         return $total;
