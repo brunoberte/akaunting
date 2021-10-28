@@ -39,16 +39,18 @@ class Transactions extends Controller
 
         $input = $request->input();
 
+        /** @var \Illuminate\Database\Eloquent\Collection $payments */
         $payments = Payment::query()
             ->filter($input)
             ->get();
 
+        /** @var \Illuminate\Database\Eloquent\Collection $revenues */
         $revenues = Revenue::query()
             ->filter($input)
             ->get();
 
         $transactions = $payments->concat($revenues)
-            ->sortBy('paid_at');
+            ->sortBy('paid_at, id');
 
         return view('banking.transactions.index', compact('transactions', 'accounts', 'balance', 'account'));
     }
