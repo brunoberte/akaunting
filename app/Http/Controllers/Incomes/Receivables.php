@@ -146,7 +146,7 @@ class Receivables extends Controller
      */
     public function destroy(Receivable $receivable)
     {
-        $this->deleteRelationships($receivable, ['recurring']);
+//        $this->deleteRelationships($receivable, ['recurring']);
         $receivable->delete();
 
         $message = trans('messages.success.deleted', ['type' => trans_choice('general.receivables', 1)]);

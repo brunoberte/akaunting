@@ -146,7 +146,7 @@ class Payables extends Controller
      */
     public function destroy(Payable $payable)
     {
-        $this->deleteRelationships($payable, ['recurring']);
+//        $this->deleteRelationships($payable, ['recurring']);
         $payable->delete();
 
         $message = trans('messages.success.deleted', ['type' => trans_choice('general.payables', 1)]);
