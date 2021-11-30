@@ -34,7 +34,10 @@
                                     $totals[$item->currency_code] += $balance;
                                 @endphp
                                 <tr>
-                                    <td class="text-left"><a href="/banking/transactions?account_id={{ $item->id }}">{{ $item->name }}</a></td>
+                                    <td class="text-left">
+                                        <a href="/banking/transactions?account_id={{ $item->id }}">{{ $item->name }}</a>
+                                        <a href="/banking/accounts/{{ $item->id }}/edit"><i class="fa fa-edit"></i></a>
+                                    </td>
                                     @foreach($totals as $currency_code => $total)
                                         @if($currency_code == $item->currency_code)
                                             <td class="text-right text-no-wrap">@money($balance, $currency_code, true)</td>

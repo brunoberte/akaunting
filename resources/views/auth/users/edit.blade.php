@@ -80,6 +80,7 @@
             $("#locale").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.languages', 1)]) }}"
             });
+            fix_select2_focus('#locale');
 
             @if (setting('general.use_gravatar', '0') != '1')
             $('#picture').fancyfile({
@@ -105,9 +106,9 @@
                 picture_html += '    </a>';
                 picture_html += '    {!! Form::close() !!}';
                 picture_html += '</span>';
-    
+
                 $('.fancy-file .fake-file').append(picture_html);
-    
+
                 $(document).on('click', '#remove-picture', function (e) {
                     confirmDelete("#picture-{!! $user->picture->id !!}", "{!! trans('general.attachment') !!}", "{!! trans('general.delete_confirm', ['name' => '<strong>' . $user->picture->basename . '</strong>', 'type' => strtolower(trans('general.attachment'))]) !!}", "{!! trans('general.cancel') !!}", "{!! trans('general.delete')  !!}");
                 });

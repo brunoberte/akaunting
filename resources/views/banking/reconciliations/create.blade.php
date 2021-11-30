@@ -141,6 +141,7 @@
             $("#account_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.accounts', 1)]) }}"
             });
+            fix_select2_focus('#account_id');
 
             //Date picker
             $('#started_at').datepicker({

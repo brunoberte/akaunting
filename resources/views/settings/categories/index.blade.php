@@ -95,6 +95,7 @@
         $("#filter-types").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.types', 1)]) }}"
         });
+        fix_select2_focus('#filter-types');
     });
 </script>
 @endpush

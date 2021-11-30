@@ -105,6 +105,7 @@
         $("#filter-categories").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"
         });
+        fix_select2_focus('#filter-categories');
     });
 </script>
 @endpush

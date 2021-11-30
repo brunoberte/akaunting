@@ -59,6 +59,7 @@
             $("#locale").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.languages', 1)]) }}"
             });
+            fix_select2_focus('#locale');
 
             $('#picture').fancyfile({
                 text  : '{{ trans('general.form.select.file') }}',

@@ -52,6 +52,7 @@
             $("#code").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('currencies.code')]) }}"
             });
+            fix_select2_focus('#code');
 
             $('#code').change(function() {
                 $.ajax({

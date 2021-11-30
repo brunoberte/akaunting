@@ -71,6 +71,7 @@
             $("#currency_code").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.currencies', 1)]) }}"
             });
+            fix_select2_focus('#currency_code');
 
             $('#create_user').iCheck({
                 checkboxClass: 'icheckbox_square-green',

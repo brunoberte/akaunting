@@ -71,6 +71,7 @@
             $("#locale").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.languages', 1)]) }}"
             });
+            fix_select2_focus('#locale');
 
             @if (setting('general.use_gravatar', '0') != '1')
             $('#picture').fancyfile({

@@ -49,6 +49,7 @@
             $("#default_currency").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.currencies', 1)]) }}"
             });
+            fix_select2_focus('#default_currency');
 
             $('#company_logo').fancyfile({
                 text  : '{{ trans('general.form.select.file') }}',

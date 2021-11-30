@@ -88,6 +88,7 @@
             $("#category_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"
             });
+            fix_select2_focus('#category_id');
 
             $('#picture').fancyfile({
                 text  : '{{ trans('general.form.select.file') }}',
@@ -112,9 +113,9 @@
                 picture_html += '    </a>';
                 picture_html += '    {!! Form::close() !!}';
                 picture_html += '</span>';
-    
+
                 $('.fancy-file .fake-file').append(picture_html);
-    
+
                 $(document).on('click', '#remove-picture', function (e) {
                     confirmDelete("#picture-{!! $item->picture->id !!}", "{!! trans('general.attachment') !!}", "{!! trans('general.delete_confirm', ['name' => '<strong>' . $item->picture->basename . '</strong>', 'type' => strtolower(trans('general.attachment'))]) !!}", "{!! trans('general.cancel') !!}", "{!! trans('general.delete')  !!}");
                 });

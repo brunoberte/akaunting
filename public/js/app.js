@@ -1,4 +1,21 @@
+function fix_select2_focus(select_id) {
+    console.log(select_id);
+    // steal focus during close - only capture once and stop propogation
+    $(select_id).on('select2:closing', function (e) {
+        $(e.target).data("select2").$selection.one('focus focusin', function (e) {
+            console.log(e);
+            e.stopPropagation();
+        });
+    });
+}
+
 $(document).ready(function () {
+
+    // on first focus (bubbles up to document), open the menu
+    $(document).on('focus', '.select2-selection.select2-selection--single', function (e) {
+        $(this).closest(".select2-container").siblings('select:enabled').select2('open');
+    });
+
     // Live Search
     $.fn.liveSearch = function (option) {
         return this.each(function () {

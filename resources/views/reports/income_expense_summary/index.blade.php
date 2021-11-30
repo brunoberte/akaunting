@@ -34,18 +34,22 @@
         $("#filter-accounts").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.accounts', 1)]) }}"
         });
+        fix_select2_focus('#filter-accounts');
 
         $("#filter-customers").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.customers', 1)]) }}"
         });
+        fix_select2_focus('#filter-customers');
 
         $("#filter-vendors").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.vendors', 1)]) }}"
         });
+        fix_select2_focus('#filter-vendors');
 
         $("#filter-categories").select2({
             placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"
         });
+        fix_select2_focus('#filter-categories');
     });
 </script>
 @endpush

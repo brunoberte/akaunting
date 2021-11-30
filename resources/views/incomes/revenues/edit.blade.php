@@ -116,10 +116,12 @@
             $("#account_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.accounts', 1)]) }}"
             });
+            fix_select2_focus('#account_id');
 
             $("#category_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"
             });
+            fix_select2_focus('#category_id');
 
             $("#customer_id").select2({
                 placeholder: {
@@ -127,6 +129,7 @@
                     text: "{{ trans('general.form.select.field', ['field' => trans_choice('general.customers', 1)]) }}"
                 }
             });
+            fix_select2_focus('#customer_id');
 
             $('#attachment').fancyfile({
                 text  : '{{ trans('general.form.select.file') }}',

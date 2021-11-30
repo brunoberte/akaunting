@@ -160,18 +160,22 @@
             $("#account_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.accounts', 1)]) }}"
             });
+            fix_select2_focus('#account_id');
 
             $("#vendor_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.vendors', 1)]) }}"
             });
+            fix_select2_focus('#vendor_id');
 
             $("#currency_code").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.currencies', 1)]) }}"
             });
+            fix_select2_focus('#currency_code');
 
             $("#category_id").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"
             });
+            fix_select2_focus('#category_id');
 
             $('#attachment').fancyfile({
                 text  : '{{ trans('general.form.select.file') }}',

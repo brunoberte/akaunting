@@ -140,46 +140,57 @@
             $("#date_format").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.localisation.date.format')]) }}"
             });
+            fix_select2_focus('#date_format');
 
             $("#date_separator").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.localisation.date.separator')]) }}"
             });
+            fix_select2_focus('#date_separator');
 
             $("#timezone").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.localisation.timezone')]) }}"
             });
+            fix_select2_focus('#timezone');
 
             $("#percent_position").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.localisation.percent.title')]) }}"
             });
+            fix_select2_focus('#percent_position');
 
             $("#default_account").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.default.account')]) }}"
             });
+            fix_select2_focus('#default_account');
 
             $("#default_currency").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.default.currency')]) }}"
             });
+            fix_select2_focus('#default_currency');
 
             $("#default_locale").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.default.language')]) }}"
             });
+            fix_select2_focus('#default_locale');
 
             $("#admin_theme").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.appearance.theme')]) }}"
             });
+            fix_select2_focus('#admin_theme');
 
             $("#email_protocol").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.email.protocol')]) }}"
             });
+            fix_select2_focus('#email_protocol');
 
             $("#list_limit").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.appearance.list_limit')]) }}"
             });
+            fix_select2_focus('#list_limit');
 
             $("#session_handler").select2({
                 placeholder: "{{ trans('general.form.select.field', ['field' => trans('settings.system.session.handler')]) }}"
             });
+            fix_select2_focus('#session_handler');
 
             $('#company_logo').fancyfile({
                 text  : '{{ trans('general.form.select.file') }}',
@@ -207,9 +218,9 @@
                 company_logo_html += '    <input type="hidden" name="value" value="{{ $setting['company_logo']->id }}" />';
                 company_logo_html += '    {!! Form::close() !!}';
                 company_logo_html += '</span>';
-    
+
                 $('#company .fancy-file .fake-file').append(company_logo_html);
-    
+
                 $(document).on('click', '#remove-company_logo', function (e) {
                     confirmDelete("#company_logo-{!! $setting['company_logo']->id !!}", "{!! trans('general.attachment') !!}", "{!! trans('general.delete_confirm', ['name' => '<strong>' . $setting['company_logo']->basename . '</strong>', 'type' => strtolower(trans('general.attachment'))]) !!}", "{!! trans('general.cancel') !!}", "{!! trans('general.delete')  !!}");
                 });
