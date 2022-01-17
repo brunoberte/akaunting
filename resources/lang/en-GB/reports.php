@@ -6,6 +6,8 @@ return [
     'previous_year'         => 'Previous Year',
     'this_quarter'          => 'This Quarter',
     'previous_quarter'      => 'Previous Quarter',
+    'last_3_months'         => 'Last 3 Months',
+    'last_6_months'         => 'Last 6 Months',
     'last_12_months'        => 'Last 12 Months',
     'profit_loss'           => 'Profit & Loss',
     'gross_profit'          => 'Gross Profit',

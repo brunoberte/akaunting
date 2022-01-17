@@ -6,6 +6,8 @@ return [
     'previous_year'         => 'Año Anterior',
     'this_quarter'          => 'Este Trimestre',
     'previous_quarter'      => 'Trimestre Anterior',
+    'last_3_months'         => 'Últimos 3 Meses',
+    'last_6_months'         => 'Últimos 6 Meses',
     'last_12_months'        => 'Últimos 12 Meses',
     'profit_loss'           => 'Ganancias y Pérdidas',
     'gross_profit'          => 'Ganancia Bruta',

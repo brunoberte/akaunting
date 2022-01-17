@@ -256,8 +256,8 @@
 @push('scripts')
 <script type="text/javascript">
     $(function() {
-        var start = moment().startOf('year');
-        var end = moment();
+        var start = moment().subtract(5, 'months').startOf('month');
+        var end = moment().endOf('month');
 
         function cb(start, end) {
             $('#cashflow-range span').html(start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY'));
@@ -271,6 +271,8 @@
                 '{{ trans("reports.previous_year") }}': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
                 '{{ trans("reports.this_quarter") }}': [moment().subtract(2, 'months').startOf('month'), moment().endOf('month')],
                 '{{ trans("reports.previous_quarter") }}': [moment().subtract(5, 'months').startOf('month'), moment().subtract(3, 'months').endOf('month')],
+                '{{ trans("reports.last_3_months") }}': [moment().subtract(2, 'months').startOf('month'), moment().endOf('month')],
+                '{{ trans("reports.last_6_months") }}': [moment().subtract(5, 'months').startOf('month'), moment().endOf('month')],
                 '{{ trans("reports.last_12_months") }}': [moment().subtract(11, 'months').startOf('month'), moment().endOf('month')]
             }
         }, cb);

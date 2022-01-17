@@ -11,13 +11,11 @@ use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
 use App\Util;
 use Carbon\Carbon;
-use Charts;
-use Date;
 use Illuminate\Support\Facades\Response;
 
 class Dashboard extends Controller
 {
-	/** @var Date */
+    /** @var \Jenssegers\Date\Date */
     public $today;
 
     public $income_donut = ['colors' => [], 'labels' => [], 'values' => []];
@@ -31,7 +29,7 @@ class Dashboard extends Controller
      */
     public function index()
     {
-        $this->today = Date::today();
+        $this->today = \Jenssegers\Date\Date::today();
 
         list($total_incomes, $total_expenses, $total_profit) = $this->getTotals();
 
@@ -61,7 +59,7 @@ class Dashboard extends Controller
 
     public function cashFlow()
     {
-        $this->today = Date::today();
+        $this->today = \Jenssegers\Date\Date::today();
 
         $content = $this->getCashFlow()->render();
 
@@ -111,8 +109,8 @@ class Dashboard extends Controller
 
     private function getCashFlow()
     {
-        $start = Date::parse(request('start', $this->today->copy()->startOfYear()->format('Y-m-d')));
-        $end = Date::parse(request('end', $this->today->copy()->format('Y-m-d H:i:s')))->endOfDay();
+        $start = \Jenssegers\Date\Date::parse(request('start', $this->today->copy()->subMonths(6)->startOfMonth()->startOfDay()->format('Y-m-d')));
+        $end = \Jenssegers\Date\Date::parse(request('end', $this->today->copy()->endOfMonth()->endOfDay()->format('Y-m-d H:i:s')));
         $period = request('period', 'day');
 
         $labels = array();
@@ -142,7 +140,7 @@ class Dashboard extends Controller
         $profit = $this->calculateCashFlowProfit($income, $expense);
         $balance = $this->calculateCashFlowBalance($income, $expense);
 
-        $chart = Charts::multi('line', 'chartjs')
+        $chart = \ConsoleTVs\Charts\Facades\Charts::multi('line', 'chartjs')
             ->dimensions(0, 300)
             ->colors(['#6da252', '#00c0ef', '#F56954', '#176375'])
             ->dataset(trans_choice('general.profits', 1), $profit)
@@ -331,7 +329,7 @@ class Dashboard extends Controller
 
         ksort($values);
 
-        $chart = Charts::multi('line', 'chartjs')
+        $chart = \ConsoleTVs\Charts\Facades\Charts::multi('line', 'chartjs')
             ->dimensions(0, 300)
             ->colors(['#6da252'])
             ->dataset(trans_choice('general.balance', 1), $values)
@@ -359,7 +357,7 @@ class Dashboard extends Controller
             $labels[$id] = $this->income_donut['labels'][$id];
         }
 
-        $donut_incomes = Charts::create('donut', 'chartjs')
+        $donut_incomes = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs')
             ->colors($colors)
             ->labels($labels)
             ->values($values)
@@ -382,7 +380,7 @@ class Dashboard extends Controller
             $labels[$id] = $this->expense_donut['labels'][$id];
         }
 
-        $donut_expenses = Charts::create('donut', 'chartjs')
+        $donut_expenses = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs')
             ->colors($colors)
             ->labels($labels)
             ->values($values)
@@ -512,10 +510,10 @@ class Dashboard extends Controller
             switch ($period) {
                 case 'day':
                 case 'month':
-                    $i = Date::parse($item->paid_at)->format($date_format);
+                    $i = \Jenssegers\Date\Date::parse($item->paid_at)->format($date_format);
                     break;
                 default:
-                    $i = Date::parse($item->paid_at)->quarter;
+                    $i = \Jenssegers\Date\Date::parse($item->paid_at)->quarter;
                     break;
             }
 
