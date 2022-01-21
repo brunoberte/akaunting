@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/bitbucketdeploy', 'BitbucketdeployController@execute');
 Route::post('/bitbucketdeploy', 'BitbucketdeployController@execute');
 
