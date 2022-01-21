@@ -120,7 +120,7 @@ Route::group(['middleware' => 'language'], function () {
 
             Route::group(['prefix' => 'reports'], function () {
 //                Route::resource('income-summary', 'Reports\IncomeSummary');
-//                Route::resource('expense-summary', 'Reports\ExpenseSummary');
+                Route::resource('expense-summary', 'Reports\ExpenseSummary');
 //                Route::resource('income-expense-summary', 'Reports\IncomeExpenseSummary');
                 Route::resource('profit-loss', 'Reports\ProfitLoss');
             });
