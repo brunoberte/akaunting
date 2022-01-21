@@ -25,7 +25,11 @@ class ExpenseSummary extends Controller
         $status = request('status');
         $year = request('year', Date::now()->year);
 
-        $categories = Category::enabled()->type('expense')->pluck('name', 'id')->toArray();
+        $categories = Category::enabled()
+            ->type('expense')
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
 
         if ($categories_filter = request('categories')) {
             $cats = collect($categories)->filter(function ($value, $key) use ($categories_filter) {
@@ -61,28 +65,9 @@ class ExpenseSummary extends Controller
 
         $payments = Payment::monthsOfYear('paid_at')->account(request('accounts'))->vendor(request('vendors'))->isNotTransfer()->get();
 
-        switch ($status) {
-            case 'paid':
-                // Payments
-                $this->setAmount($expenses_graph, $totals, $expenses, $payments, 'payment', 'paid_at');
-                break;
-            case 'upcoming':
-                // Payments
-                Recurring::reflect($payments, 'payment', 'paid_at', $status);
-                $this->setAmount($expenses_graph, $totals, $expenses, $payments, 'payment', 'paid_at');
-                break;
-            default:
-                // Payments
-                Recurring::reflect($payments, 'payment', 'paid_at', $status);
-                $this->setAmount($expenses_graph, $totals, $expenses, $payments, 'payment', 'paid_at');
-                break;
-        }
+        $this->setAmount($expenses_graph, $totals, $expenses, $payments, 'payment', 'paid_at');
 
-        $statuses = collect([
-            'all' => trans('general.all'),
-            'paid' => trans('invoices.paid'),
-            'upcoming' => trans('dashboard.payables'),
-        ]);
+        $this->removeNotUsedCategories($expenses);
 
         $accounts = Account::enabled()->pluck('name', 'id')->toArray();
         $vendors = Vendor::enabled()->pluck('name', 'id')->toArray();
@@ -105,7 +90,18 @@ class ExpenseSummary extends Controller
             ->credits(false)
             ->view($chart_template);
 
-        return view($view_template, compact('chart', 'dates', 'categories', 'statuses', 'accounts', 'vendors', 'expenses', 'totals'));
+        return view($view_template, compact('chart', 'dates', 'categories', 'accounts', 'vendors', 'expenses', 'totals'));
+    }
+
+    private function removeNotUsedCategories(&$expenses)
+    {
+        $expenses = array_filter($expenses, function ($item) {
+            $t = 0;
+            foreach($item as $i) {
+                $t += $i['amount'];
+            }
+            return $t != '0';
+        });
     }
 
     private function setAmount(&$graph, &$totals, &$expenses, $items, $type, $date_field)
