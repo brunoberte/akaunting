@@ -60,6 +60,7 @@ class BitbucketdeployController extends Controller
             'php7.2 /usr/local/bin/composer install --optimize-autoloader --no-dev',
             //            'php7.2 artisan config:cache',
             //            'php7.2 artisan route:cache',
+            'php7.2 artisan route:clear',
             'php7.2 artisan cache:clear',
             'php7.2 artisan view:clear',
             'php7.2 artisan queue:restart',
