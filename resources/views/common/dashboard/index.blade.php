@@ -5,7 +5,7 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-7">
             <!-- Account Balance List-->
             <div class="box box-success">
                 <div class="box-header with-border">
@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-5">
 
             <!---Income-->
             <div class="info-box">
@@ -110,6 +110,29 @@
                             <div class="progress-bar progress-bar-green" style="width: {{ $total_profit['progress'] }}%"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ trans('dashboard.incomes_by_category') }}</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    {!! $donut_incomes->render() !!}
+                </div>
+            </div>
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ trans('dashboard.expenses_by_category') }}</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    {!! $donut_expenses->render() !!}
                 </div>
             </div>
 
@@ -202,40 +225,6 @@
         </div>
     </div>
 
-    <div class="row">
-
-
-        <div class="col-md-6">
-            <div class="box box-success">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ trans('dashboard.incomes_by_category') }}</h3>
-                    <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                    </div>
-                </div>
-                <div class="box-body">
-                    {!! $donut_incomes->render() !!}
-                </div>
-            </div>
-        </div>
-
-
-        <div class="col-md-6">
-            <div class="box box-success">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ trans('dashboard.expenses_by_category') }}</h3>
-                    <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                    </div>
-                </div>
-                <div class="box-body">
-                    {!! $donut_expenses->render() !!}
-                </div>
-            </div>
-        </div>
-
-
-    </div>
 @endsection
 
 @push('css')
