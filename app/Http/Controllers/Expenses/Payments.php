@@ -144,7 +144,10 @@ class Payments extends Controller
      */
     public function edit(Payment $payment)
     {
-        $accounts = Account::enabled()->orderBy('name')->pluck('name', 'id');
+        $accounts = Account::query()->enabled()->orderBy('name')->pluck('name', 'id')->toArray();
+        if (!isset($accounts[$payment->account_id])) {
+            $accounts[$payment->account_id] = Account::query()->where('id', $payment->account_id)->value('name');
+        }
 
         $currencies = Currency::enabled()->orderBy('name')->pluck('name', 'code')->toArray();
 

@@ -145,7 +145,10 @@ class Revenues extends Controller
      */
     public function edit(Revenue $revenue)
     {
-        $accounts = Account::enabled()->orderBy('name')->pluck('name', 'id');
+        $accounts = Account::enabled()->orderBy('name')->pluck('name', 'id')->toArray();
+        if (!isset($accounts[$revenue->account_id])) {
+            $accounts[$revenue->account_id] = Account::query()->where('id', $revenue->account_id)->value('name');
+        }
 
         $currencies = Currency::enabled()->orderBy('name')->pluck('name', 'code')->toArray();
 

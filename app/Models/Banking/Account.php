@@ -8,6 +8,21 @@ use App\Models\Model;
 use Carbon\Carbon;
 use Sofa\Eloquence\Eloquence;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string $number
+ * @property string $currency_code
+ * @property float $opening_balance
+ * @property string $bank_name
+ * @property string $bank_phone
+ * @property string $bank_address
+ * @property bool $enabled
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon|null $deleted_at
+ */
 class Account extends Model
 {
     use Eloquence;

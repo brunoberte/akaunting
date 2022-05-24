@@ -8,9 +8,28 @@ use App\Traits\DateTime;
 use App\Traits\Media;
 use App\Traits\Recurring;
 use Bkwld\Cloner\Cloneable;
+use Carbon\Carbon;
 use Sofa\Eloquence\Eloquence;
 use Date;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $account_id
+ * @property Carbon $paid_at
+ * @property float $amount
+ * @property string $currency_code
+ * @property float $currency_rate
+ * @property int $vendor_id
+ * @property string $description
+ * @property int $category_id
+ * @property string $reference
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon|null $deleted_at
+ * @property int $parent_id
+ * @property bool $reconciled
+ */
 class Payment extends Model
 {
     use Cloneable, DateTime, Eloquence, Media, Recurring;
