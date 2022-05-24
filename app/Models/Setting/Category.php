@@ -4,9 +4,26 @@ namespace App\Models\Setting;
 
 use App\Models\Model;
 use Carbon\Carbon;
+use Sofa\Eloquence\Eloquence;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string $type
+ * @property string $color
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon|null $deleted_at
+ */
 class Category extends Model
 {
+    use Eloquence;
+
+    protected $searchableColumns = [
+        'name' => 10,
+    ];
+
     protected $table = 'categories';
 
     /**
@@ -32,6 +49,7 @@ class Category extends Model
     {
         return $this->hasMany('App\Models\Expense\Payment');
     }
+
     public function payments_last90days()
     {
         return $this->hasMany('App\Models\Expense\Payment')
@@ -42,6 +60,7 @@ class Category extends Model
     {
         return $this->hasMany('App\Models\Income\Revenue');
     }
+
     public function revenues_last90days()
     {
         return $this->hasMany('App\Models\Income\Revenue')

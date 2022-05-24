@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Setting\Category as Request;
+use App\Models\Expense\Payment;
+use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
 
 class Categories extends Controller
@@ -12,7 +14,7 @@ class Categories extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function index()
     {
@@ -33,17 +35,49 @@ class Categories extends Controller
     /**
      * Show the form for viewing the specified resource.
      *
-     * @return Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
-    public function show()
+    public function show(Category $category)
     {
-        return redirect('settings/categories');
+        $limit = request('limit', setting('general.list_limit', '25'));
+
+        $total_amount = 0;
+        $list = [];
+        switch ($category->type) {
+            case 'income':
+                $list = Revenue::query()
+                    ->where('category_id', $category->id)
+                    ->orderBy('paid_at')
+                    ->paginate($limit);
+                $total_amount = Revenue::query()
+                    ->where('category_id', $category->id)
+                    ->sum('amount');
+                break;
+            case 'expense':
+                $list = Payment::query()
+                    ->where('category_id', $category->id)
+                    ->orderBy('paid_at')
+                    ->paginate($limit);
+                $total_amount = Payment::query()
+                    ->where('category_id', $category->id)
+                    ->sum('amount');
+                break;
+            case 'other':
+                break;
+            case 'item':
+                break;
+        }
+
+        return view(
+            'settings.categories.show',
+            compact('category', 'list', 'total_amount')
+        );
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function create()
     {

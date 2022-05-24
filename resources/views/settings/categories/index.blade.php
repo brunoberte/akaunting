@@ -42,7 +42,7 @@
                 <tbody>
                 @foreach($categories as $item)
                     <tr>
-                        <td><a href="{{ url('settings/categories/' . $item->id . '/edit') }}">{{ $item->name }}</a></td>
+                        <td><a href="{{ url('settings/categories/' . $item->id) }}">{{ $item->name }}</a></td>
                         <td>{{ $types[$item->type] }}</td>
                         <td class="hidden-xs"><i class="fa fa-2x fa-circle" style="color:{{ $item->color }};"></i></td>
                         <td class="hidden-xs">

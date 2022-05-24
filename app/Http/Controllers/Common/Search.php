@@ -7,13 +7,14 @@ use App\Models\Banking\Account;
 use App\Models\Expense\Vendor;
 use App\Models\Income\Customer;
 use App\Models\Common\Item;
+use App\Models\Setting\Category;
 
 class Search extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function index()
     {
@@ -25,7 +26,7 @@ class Search extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function search()
     {
@@ -47,16 +48,24 @@ class Search extends Controller
             }
         }
 
-        $items = Item::enabled()->search($keyword)->get();
+        $categories = Category::enabled()->search($keyword)->get();
 
-        if ($items->count()) {
-            foreach ($items as $item) {
+        if ($categories->count()) {
+            $category_types = collect(
+                [
+                    'expense' => trans_choice('general.expenses', 1),
+                    'income'  => trans_choice('general.incomes', 1),
+                    'item'    => trans_choice('general.items', 1),
+                    'other'   => trans_choice('general.others', 1),
+                ]
+            );
+            foreach ($categories as $category) {
                 $results[] = (object)[
-                    'id'    => $item->id,
-                    'name'  => $item->name,
-                    'type'  => trans_choice('general.items', 1),
-                    'color' => '#f5bd65',
-                    'href'  => url('common/items/' . $item->id . '/edit'),
+                    'id'    => $category->id,
+                    'name'  => htmlentities($category->name),
+                    'type'  => 'Category for ' . $category_types[$category->type],
+                    'color' => '#337ab7',
+                    'href'  => url('settings/categories/' . $category->id),
                 ];
             }
         }
@@ -69,7 +78,7 @@ class Search extends Controller
             foreach ($customers as $customer) {
                 $results[] = (object)[
                     'id'    => $customer->id,
-                    'name'  => $customer->name,
+                    'name'  => htmlentities($customer->name),
                     'type'  => trans_choice('general.customers', 1),
                     'color' => '#03d876',
                     'href'  => url('incomes/customers/' . $customer->id),
@@ -85,7 +94,7 @@ class Search extends Controller
             foreach ($vendors as $vendor) {
                 $results[] = (object)[
                     'id'    => $vendor->id,
-                    'name'  => $vendor->name,
+                    'name'  => htmlentities($vendor->name),
                     'type'  => trans_choice('general.vendors', 1),
                     'color' => '#ff8373',
                     'href'  => url('expenses/vendors/' . $vendor->id),
