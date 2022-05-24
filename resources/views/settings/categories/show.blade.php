@@ -37,8 +37,15 @@
                 <table class="table table-striped table-hover" id="tbl-revenues">
                     <thead>
                     <tr>
-                        <th class="col-md-3 hidden-xs">{{ trans_choice('general.accounts', 1) }}</th>
                         <th class="col-md-3">{{ trans('general.date') }}</th>
+                        <th class="col-md-3 hidden-xs">{{ trans_choice('general.accounts', 1) }}</th>
+                        <th class="col-md-3">{{ trans('general.description') }}</th>
+                        @if($category->type == 'income')
+                        <th class="col-md-3">{{ trans_choice('general.customers', 1) }}</th>
+                        @endif
+                        @if($category->type == 'expense')
+                        <th class="col-md-3">{{ trans_choice('general.vendors', 1) }}</th>
+                        @endif
                         <th class="col-md-3 text-right amount-space">{{ trans('general.amount') }}</th>
                         <th width="1%"></th>
                     </tr>
@@ -46,9 +53,17 @@
                     <tbody>
                     @foreach($list as $item)
                         <tr>
-                            <td class="hidden-xs">{{ $item->account->name }}</td>
                             <td>{{ Date::parse($item->paid_at)->format($date_format) }}</td>
-                            <td class="text-right amount-space">@money($item->amount, $item->currency_code, true)</td>
+                            <td class="hidden-xs">{{ $item->account->name }}</td>
+                            <td class="hidden-xs">{{ $item->description }}</td>
+                            @if($category->type == 'income')
+                            <td class="hidden-xs">{{ $item->customer ? $item->customer->name : '' }}</td>
+                            @endif
+                            @if($category->type == 'expense')
+                            <td class="hidden-xs">{{ $item->vendor ? $item->vendor->name : '' }}</td>
+                            @endif
+
+                            <td class="text-right money-column amount-space">@money($item->amount, $item->currency_code, true)</td>
                             <td>
                                 @php
                                     $url = false;

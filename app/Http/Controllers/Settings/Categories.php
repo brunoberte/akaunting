@@ -46,6 +46,7 @@ class Categories extends Controller
         switch ($category->type) {
             case 'income':
                 $list = Revenue::query()
+                    ->with(['customer'])
                     ->where('category_id', $category->id)
                     ->orderBy('paid_at')
                     ->paginate($limit);
@@ -55,6 +56,7 @@ class Categories extends Controller
                 break;
             case 'expense':
                 $list = Payment::query()
+                    ->with(['vendor'])
                     ->where('category_id', $category->id)
                     ->orderBy('paid_at')
                     ->paginate($limit);

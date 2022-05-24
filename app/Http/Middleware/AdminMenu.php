@@ -3,9 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Events\AdminMenuCreated;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Closure;
-use Menu;
+use Nwidart\Menus\Facades\Menu;
+use Nwidart\Menus\MenuBuilder;
 
 class AdminMenu
 {
@@ -24,7 +25,7 @@ class AdminMenu
         }
 
         // Setup the admin menu
-        Menu::create('AdminMenu', function ($menu) {
+        Menu::create('AdminMenu', function (MenuBuilder $menu) {
             $menu->style('adminlte');
 
             $user = Auth::user();
