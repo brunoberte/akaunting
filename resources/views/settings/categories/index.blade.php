@@ -36,6 +36,7 @@
                         <th class="col-md-3">@sortablelink('type', trans_choice('general.types', 1))</th>
                         <th class="col-md-2 hidden-xs">{{ trans('general.color') }}</th>
                         <th class="col-md-1 hidden-xs">@sortablelink('enabled', trans_choice('general.statuses', 1))</th>
+                        <th class="col-md-1 hidden-xs">Qty transactions</th>
                         <th class="col-md-1 text-center">{{ trans('general.actions') }}</th>
                     </tr>
                 </thead>
@@ -52,6 +53,7 @@
                                 <span class="label label-danger">{{ trans('general.disabled') }}</span>
                             @endif
                         </td>
+                        <td>{{ $item->qty_transactions }}</td>
                         <td class="text-center">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-toggle-position="left" aria-expanded="false">

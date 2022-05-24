@@ -18,7 +18,20 @@ class Categories extends Controller
      */
     public function index()
     {
-        $categories = Category::collect();
+        $table_prefix = env('DB_PREFIX', 'ak_');
+        $table_name = (new Category())->getTable();
+
+        $categories = Category::query()
+            ->selectRaw("
+            id, name, type, color, enabled,
+            case
+                when type = 'income' then (select count(1) from 0fc_revenues where category_id = {$table_prefix}{$table_name}.id)
+                when type = 'expense' then (select count(1) from 0fc_payments where category_id = {$table_prefix}{$table_name}.id)
+                when type = 'other' then (select count(1) from 0fc_payments where category_id = {$table_prefix}{$table_name}.id)
+                else 0
+            end as qty_transactions
+            ")
+            ->collect();
 
         $transfer_id = Category::transfer();
 
