@@ -9,6 +9,7 @@ use App\Models\Expense\Payment;
 use App\Models\Income\Receivable;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
+use App\Models\Setting\Currency;
 use App\Util;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
@@ -31,7 +32,7 @@ class Dashboard extends Controller
     {
         $this->today = \Jenssegers\Date\Date::today();
 
-        list($total_incomes, $total_expenses, $total_profit) = $this->getTotals();
+        [$total_incomes, $total_expenses, $total_profit] = $this->getTotals();
 
         $cashflow = $this->getCashFlow();
 
@@ -39,7 +40,7 @@ class Dashboard extends Controller
         $forecast_table = $this->getForecastTable();
         $forecast_chart = $this->getForecastChart($forecast_table, $current_balance);
 
-        list($donut_incomes, $donut_expenses) = $this->getDonuts();
+        [$donut_incomes, $donut_expenses] = $this->getDonuts();
 
         $accounts = Account::enabled()->orderBy('name')->get();
 
@@ -70,7 +71,7 @@ class Dashboard extends Controller
 
     private function getTotals()
     {
-        list($incomes_amount, $expenses_amount) = $this->calculateAmounts();
+        [$incomes_amount, $expenses_amount] = $this->calculateAmounts();
 
         $incomes_progress = 100;
 
@@ -407,6 +408,9 @@ class Dashboard extends Controller
 //            ->enabled()
             ->get();
 
+        $default_currency = setting('general.default_currency');
+        $rates[$default_currency] = 1;
+
         foreach ($categories as $category) {
             switch ($category->type) {
                 case 'income':
@@ -414,7 +418,15 @@ class Dashboard extends Controller
 
                     // Revenues
                     foreach ($category->revenues_last90days as $revenue) {
-                        $amount += $revenue->amount;
+                        if (!isset($rates[$revenue->currency_code])) {
+                            /** @var Currency $c */
+                            $c = Currency::query()
+                                ->whereNull('deleted_at')
+                                ->where('code', $revenue->currency_code)
+                                ->first();
+                            $rates[$revenue->currency_code] = $c->rate;
+                        }
+                        $amount += round($revenue->amount * $rates[$revenue->currency_code], 2);
                     }
 
                     $incomes_amount += $amount;
@@ -427,7 +439,15 @@ class Dashboard extends Controller
 
                     // Payments
                     foreach ($category->payments_last90days as $payment) {
-                        $amount += $payment->amount;
+                        if (!isset($rates[$payment->currency_code])) {
+                            /** @var Currency $c */
+                            $c = Currency::query()
+                                ->whereNull('deleted_at')
+                                ->where('code', $payment->currency_code)
+                                ->first();
+                            $rates[$payment->currency_code] = $c->rate;
+                        }
+                        $amount += round($payment->amount * $rates[$payment->currency_code], 2);
                     }
 
                     $expenses_amount += $amount;

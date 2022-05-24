@@ -3,7 +3,24 @@
 namespace App\Models\Setting;
 
 use App\Models\Model;
+use Carbon\Carbon;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string $code
+ * @property float $rate
+ * @property bool $enabled
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon|null $deleted_at
+ * @property string $precision
+ * @property string $symbol
+ * @property string $symbol_first
+ * @property string $decimal_mark
+ * @property string $thousands_separator
+ */
 class Currency extends Model
 {
 
