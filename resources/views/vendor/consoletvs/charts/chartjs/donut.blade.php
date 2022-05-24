@@ -36,9 +36,13 @@
             responsive: {{ $model->responsive || !$model->width ? 'true' : 'false' }},
             maintainAspectRatio: false,
             legend: {
-                display: true,
+                display: {{ $model->legend ? 'true' : 'false' }},
                 fullWidth: true,
                 position: 'right',
+                maxWidth: 20,
+                labels: {
+                    boxWidth: 10
+                }
             },
             tooltips: {
                 callbacks: {

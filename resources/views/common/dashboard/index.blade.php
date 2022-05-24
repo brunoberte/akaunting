@@ -5,7 +5,7 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-8">
             <!-- Account Balance List-->
             <div class="box box-success">
                 <div class="box-header with-border">
@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <div class="col-md-5">
+        <div class="col-md-4">
 
             <!---Income-->
             <div class="info-box">

@@ -357,7 +357,9 @@ class Dashboard extends Controller
             $labels[$id] = $this->income_donut['labels'][$id];
         }
 
-        $donut_incomes = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs')
+        /** @var \ConsoleTVs\Charts\Builder\Chart $chart_builder1 */
+        $chart_builder1 = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs');
+        $donut_incomes = $chart_builder1
             ->colors($colors)
             ->labels($labels)
             ->values($values)
@@ -380,7 +382,9 @@ class Dashboard extends Controller
             $labels[$id] = $this->expense_donut['labels'][$id];
         }
 
-        $donut_expenses = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs')
+        /** @var \ConsoleTVs\Charts\Builder\Chart $chart_builder2 */
+        $chart_builder2 = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs');
+        $donut_expenses = $chart_builder2
             ->colors($colors)
             ->labels($labels)
             ->values($values)

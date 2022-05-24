@@ -37,6 +37,9 @@
         options: {
             responsive: {{ $model->responsive || !$model->width ? 'true' : 'false' }},
             maintainAspectRatio: false,
+            legend: {
+                display: {{ $model->legend ? 'true' : 'false' }},
+            },
             @if($model->title)
             title: {
                 display: true,
