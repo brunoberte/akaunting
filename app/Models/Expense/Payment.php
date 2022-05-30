@@ -6,7 +6,6 @@ use App\Models\Model;
 use App\Models\Setting\Category;
 use App\Traits\DateTime;
 use App\Traits\Media;
-use App\Traits\Recurring;
 use Bkwld\Cloner\Cloneable;
 use Carbon\Carbon;
 use Sofa\Eloquence\Eloquence;
@@ -32,7 +31,7 @@ use Date;
  */
 class Payment extends Model
 {
-    use Cloneable, DateTime, Eloquence, Media, Recurring;
+    use Cloneable, DateTime, Eloquence, Media;
 
     protected $table = 'payments';
 
@@ -79,7 +78,7 @@ class Payment extends Model
      *
      * @var array
      */
-    public $cloneable_relations = ['recurring'];
+    public $cloneable_relations = [];
 
     public function account()
     {
@@ -94,11 +93,6 @@ class Payment extends Model
     public function currency()
     {
         return $this->belongsTo('App\Models\Setting\Currency', 'currency_code', 'code');
-    }
-
-    public function recurring()
-    {
-        return $this->morphOne('App\Models\Common\Recurring', 'recurable');
     }
 
 //    public function transfers()

@@ -58,8 +58,6 @@
             </div>
             @stack('category_id_input_end')
 
-            {{ Form::recurring('create') }}
-
             {{ Form::textGroup('reference', trans('general.reference'), 'file-text-o',[]) }}
 
             {{ Form::fileGroup('attachment', trans('general.attachment')) }}

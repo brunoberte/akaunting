@@ -87,9 +87,6 @@ class Payments extends Controller
             $payment->attachMedia($media, 'attachment');
         }
 
-        // Recurring
-        $payment->createRecurring();
-
         $message = trans('messages.success.added', ['type' => trans_choice('general.payments', 1)]);
 
         flash($message)->success();
@@ -181,9 +178,6 @@ class Payments extends Controller
             $payment->attachMedia($media, 'attachment');
         }
 
-        // Recurring
-        $payment->updateRecurring();
-
         $message = trans('messages.success.updated', ['type' => trans_choice('general.payments', 1)]);
 
         flash($message)->success();
@@ -205,7 +199,6 @@ class Payments extends Controller
             return redirect('expenses/payments');
         }
 
-        $payment->recurring()->delete();
         $payment->delete();
 
         $message = trans('messages.success.deleted', ['type' => trans_choice('general.payments', 1)]);

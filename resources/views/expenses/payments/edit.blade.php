@@ -53,8 +53,6 @@
 
             {{ Form::selectGroup('category_id', trans_choice('general.categories', 1), 'folder-open-o', $categories) }}
 
-            {{ Form::recurring('edit', $payment) }}
-
             {{ Form::textGroup('reference', trans('general.reference'), 'file-text-o',[]) }}
 
             {{ Form::fileGroup('attachment', trans('general.attachment')) }}

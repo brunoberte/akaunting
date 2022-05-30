@@ -6,13 +6,12 @@ use App\Models\Model;
 use App\Models\Setting\Category;
 use App\Traits\DateTime;
 use App\Traits\Media;
-use App\Traits\Recurring;
 use Bkwld\Cloner\Cloneable;
 use Sofa\Eloquence\Eloquence;
 
 class Revenue extends Model
 {
-    use Cloneable, DateTime, Eloquence, Media, Recurring;
+    use Cloneable, DateTime, Eloquence, Media;
 
     protected $table = 'revenues';
 
@@ -60,7 +59,7 @@ class Revenue extends Model
      *
      * @var array
      */
-    public $cloneable_relations = ['recurring'];
+    public $cloneable_relations = [];
 
     public function user()
     {
@@ -85,11 +84,6 @@ class Revenue extends Model
     public function customer()
     {
         return $this->belongsTo('App\Models\Income\Customer');
-    }
-
-    public function recurring()
-    {
-        return $this->morphOne('App\Models\Common\Recurring', 'recurable');
     }
 
     public function transfers()
