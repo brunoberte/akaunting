@@ -7,6 +7,7 @@ use App\Http\Requests\Setting\Category as Request;
 use App\Models\Expense\Payment;
 use App\Models\Income\Revenue;
 use App\Models\Setting\Category;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Categories extends Controller
 {
@@ -55,7 +56,7 @@ class Categories extends Controller
         $limit = request('limit', setting('general.list_limit', '25'));
 
         $total_amount = 0;
-        $list = [];
+        $list = new LengthAwarePaginator([], 0, 20);
         switch ($category->type) {
             case 'income':
                 $list = Revenue::query()
@@ -68,6 +69,7 @@ class Categories extends Controller
                     ->sum('amount');
                 break;
             case 'expense':
+            case 'other':
                 $list = Payment::query()
                     ->with(['vendor'])
                     ->where('category_id', $category->id)
@@ -76,8 +78,6 @@ class Categories extends Controller
                 $total_amount = Payment::query()
                     ->where('category_id', $category->id)
                     ->sum('amount');
-                break;
-            case 'other':
                 break;
             case 'item':
                 break;

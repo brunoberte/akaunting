@@ -465,12 +465,6 @@ class Dashboard extends Controller
     {
         $totals = array();
 
-        if ($type == 'income') {
-            $m1 = '\App\Models\Income\Revenue';
-        } else {
-            $m1 = '\App\Models\Expense\Payment';
-        }
-
         switch ($period) {
             case 'day':
                 $date_format = 'Y-m-d';
@@ -517,9 +511,24 @@ class Dashboard extends Controller
             }
         }
 
-        $items_1 = $m1::whereBetween('paid_at', [$start, $end])->isNotTransfer()->get();
-
-        $this->setCashFlowTotals($totals, $items_1, $date_format, $period);
+        switch ($type) {
+            case 'income':
+                $items_1 = Revenue::query()
+                    ->whereBetween('paid_at', [$start, $end])
+                    ->isNotTransfer()
+                    ->get();
+                $this->setCashFlowTotals($totals, $items_1, $date_format, $period);
+                break;
+            case 'expense':
+                $items_1 = Payment::query()
+                    ->whereBetween('paid_at', [$start, $end])
+                    ->isNotTransfer()
+                    ->get();
+                $this->setCashFlowTotals($totals, $items_1, $date_format, $period);
+                break;
+            default:
+                dd($type);
+        }
 
 //        $items_2 = $m2::whereBetween('paid_at', [$start, $end])->get();
 //
@@ -555,14 +564,11 @@ class Dashboard extends Controller
         $profit = [];
 
         foreach ($incomes as $key => $income) {
-            $profit[$key] = $income - $expenses[$key];
-            /*
             if ($income > 0 && $income > $expenses[$key]) {
                 $profit[$key] = $income - $expenses[$key];
             } else {
                 $profit[$key] = 0;
             }
-            */
         }
 
         return $profit;
