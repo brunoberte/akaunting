@@ -144,7 +144,7 @@ class Accounts extends Controller
 
         flash($message)->success();
 
-        return redirect()->route('accounts.index');
+        return redirect()->route('banking.accounts.index');
     }
 
     /**
@@ -172,10 +172,10 @@ class Accounts extends Controller
 
             flash($message)->warning();
 
-            return redirect()->route('accounts.index');
+            return redirect()->route('banking.accounts.index');
         }
 
-        return redirect()->route('accounts.index');
+        return redirect()->route('banking.accounts.index');
     }
 
     /**
