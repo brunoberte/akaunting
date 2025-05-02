@@ -1,23 +1,59 @@
-FROM php:apache
+FROM php:7.4-fpm
 
-RUN apt-get update && apt-get install -y zip libzip-dev libpng-dev \
-    && docker-php-ext-install pdo_mysql gd zip \
-    && rm -rf /var/lib/apt/lists/*
+# Copy composer.lock and composer.json
+COPY composer.lock composer.json /var/www/
 
-# Composer installation.
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Set working directory
+WORKDIR /var/www
 
-# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer global require hirak/prestissimo --prefer-dist --no-progress --no-suggest --classmap-authoritative \
-	&& composer clear-cache
-ENV PATH="${PATH}:/root/.composer/vendor/bin"
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    locales \
+    zip \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libmcrypt-dev \
+    libgd-dev \
+    jpegoptim optipng pngquant gifsicle \
+    libonig-dev \
+    libxml2-dev \
+    vim \
+    unzip \
+    git \
+    curl \
+    libzip-dev
 
-COPY . /var/www/html/
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Authorize these folders to be edited
-RUN chmod -R 777 /var/www/html/storage
-RUN chmod -R 777 /var/www/html/bootstrap/cache
+# Install PHP extensions
+RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd mysqli
+RUN docker-php-ext-install gd
 
-# Allow rewrite
-RUN a2enmod rewrite
+# Install extensions
+#RUN docker-php-ext-install pdo_mysql mysqli mbstring zip exif pcntl
+#RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add user for laravel application
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy existing application directory contents
+COPY . /var/www
+
+# Copy existing application directory permissions
+COPY --chown=www:www . /var/www
+
+# Change current user to www
+USER www
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
