@@ -9,6 +9,8 @@ services:
 #    container_name: app
     restart: unless-stopped
     tty: true
+    depends_on:
+      - db
     environment:
       SERVICE_NAME: app
       SERVICE_TAGS: dev
@@ -16,7 +18,7 @@ services:
     user: www
     volumes:
       - ./:/var/www
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - .dev-env/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
 
@@ -26,11 +28,14 @@ services:
 #    container_name: webserver
     restart: unless-stopped
     tty: true
+    depends_on:
+      - app
     ports:
       - "6080:80"
     volumes:
       - ./:/var/www
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - .dev-env/nginx-proxy/conf.d/:/etc/nginx/conf.d/
+      - .dev-env/nginx-proxy/certs:/etc/nginx/certs
     networks:
       - app-network
 
