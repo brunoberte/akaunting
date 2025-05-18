@@ -12,6 +12,7 @@ use App\Models\Setting\Category;
 use App\Models\Setting\Currency;
 use App\Util;
 use Carbon\Carbon;
+use ConsoleTVs\Charts\Classes\Highcharts\Chart;
 use Illuminate\Support\Facades\Response;
 
 class Dashboard extends Controller
@@ -42,7 +43,16 @@ class Dashboard extends Controller
 
         [$donut_incomes, $donut_expenses] = $this->getDonuts();
 
-        $accounts = Account::enabled()->orderBy('name')->get();
+        $accounts = Account::enabled()
+            ->selectRaw('
+                accounts.id,
+                accounts.name,
+                accounts.currency_code,
+                (select sum(amount) from payments p where p.account_id = accounts.id and p.deleted_at is null) as total_expenses,
+                (select sum(amount) from revenues r where r.account_id = accounts.id and r.deleted_at is null) as total_incomes
+            ')
+            ->orderBy('name')
+            ->get();
 
         return view('common.dashboard.index', compact(
             'total_incomes',
@@ -141,16 +151,17 @@ class Dashboard extends Controller
         $profit = $this->calculateCashFlowProfit($income, $expense);
         $balance = $this->calculateCashFlowBalance($income, $expense);
 
-        $chart = \ConsoleTVs\Charts\Facades\Charts::multi('line', 'chartjs')
-            ->dimensions(0, 300)
-            ->colors(['#6da252', '#00c0ef', '#F56954', '#176375'])
-            ->dataset(trans_choice('general.profits', 1), $profit)
-            ->dataset(trans_choice('general.incomes', 1), $income)
-            ->dataset(trans_choice('general.expenses', 1), $expense)
-            ->dataset(trans_choice('general.balance', 1), $balance)
-            ->labels($labels)
-            ->credits(false)
-            ->view('vendor.consoletvs.charts.chartjs.multi.line');
+        $chart = (new Chart())
+//            ->width(300)
+//            ->height(200)
+//            ->credits(false)
+            ->labels($labels);
+//            ->colors(['#6da252', '#00c0ef', '#F56954', '#176375'])
+            $chart->dataset(trans_choice('general.profits', 1), 'line', $profit);
+            $chart->dataset(trans_choice('general.incomes', 1), 'line', $income);
+            $chart->dataset(trans_choice('general.expenses', 1), 'line', $expense);
+            $chart->dataset(trans_choice('general.balance', 1), 'line', $balance);
+//            ->view('vendor.consoletvs.charts.chartjs.multi.line');
 
         return $chart;
     }
@@ -330,13 +341,13 @@ class Dashboard extends Controller
 
         ksort($values);
 
-        $chart = \ConsoleTVs\Charts\Facades\Charts::multi('line', 'chartjs')
-            ->dimensions(0, 300)
-            ->colors(['#6da252'])
-            ->dataset(trans_choice('general.balance', 1), $values)
-            ->labels($labels)
-            ->credits(false)
-            ->view('vendor.consoletvs.charts.chartjs.multi.line');
+        $chart = (new Chart())
+//            ->width(300)
+            ->labels($labels);
+//            ->colors(['#6da252'])
+        $chart->dataset(trans_choice('general.balance', 1), 'line', $values);
+//            ->credits(false)
+//            ->view('vendor.consoletvs.charts.chartjs.multi.line');
 
         return $chart;
     }
@@ -358,15 +369,14 @@ class Dashboard extends Controller
             $labels[$id] = $this->income_donut['labels'][$id];
         }
 
-        /** @var \ConsoleTVs\Charts\Builder\Chart $chart_builder1 */
-        $chart_builder1 = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs');
+        $chart_builder1 = (new Chart())->width(160);
         $donut_incomes = $chart_builder1
-            ->colors($colors)
-            ->labels($labels)
-            ->values($values)
-            ->dimensions(0, 160)
-            ->credits(false)
-            ->view('vendor.consoletvs.charts.chartjs.donut');
+//            ->colors($colors)
+            ->labels($labels);
+        $donut_incomes->dataset('incomes', 'pie', $values);
+//            ->dimensions(0, 160)
+//            ->credits(false)
+//            ->view('vendor.consoletvs.charts.chartjs.donut');
 
         // Show donut prorated if there is no expense
         if (array_sum($this->expense_donut['values']) == 0) {
@@ -383,15 +393,14 @@ class Dashboard extends Controller
             $labels[$id] = $this->expense_donut['labels'][$id];
         }
 
-        /** @var \ConsoleTVs\Charts\Builder\Chart $chart_builder2 */
-        $chart_builder2 = \ConsoleTVs\Charts\Facades\Charts::create('donut', 'chartjs');
+        $chart_builder2 = (new Chart());//->width(160);
         $donut_expenses = $chart_builder2
-            ->colors($colors)
-            ->labels($labels)
-            ->values($values)
-            ->dimensions(0, 160)
-            ->credits(false)
-            ->view('vendor.consoletvs.charts.chartjs.donut');
+//            ->colors($colors)
+            ->labels($labels);
+        $donut_expenses->dataset('expenses', 'pie', $values);
+//            ->dimensions(0, 160)
+//            ->credits(false)
+//            ->view('vendor.consoletvs.charts.chartjs.donut');
 
         return array($donut_incomes, $donut_expenses);
     }
