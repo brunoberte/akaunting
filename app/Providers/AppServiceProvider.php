@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Util;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
 use Schema;
 
@@ -13,8 +14,10 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(UrlGenerator $url)
     {
+        $url->forceScheme('https');
+
         // Laravel db fix
         Schema::defaultStringLength(191);
 
