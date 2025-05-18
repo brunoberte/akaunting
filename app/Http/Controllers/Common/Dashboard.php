@@ -47,11 +47,11 @@ class Dashboard extends Controller
 
         $accounts = Account::enabled()
             ->selectRaw("
-                accounts.id,
-                accounts.name,
-                accounts.currency_code,
-                (select sum(amount) from {$table_prefix}payments p where p.account_id = accounts.id and p.deleted_at is null) as total_expenses,
-                (select sum(amount) from {$table_prefix}revenues r where r.account_id = accounts.id and r.deleted_at is null) as total_incomes
+                {$table_prefix}accounts.id,
+                {$table_prefix}accounts.name,
+                {$table_prefix}accounts.currency_code,
+                (select sum(amount) from {$table_prefix}payments p where p.account_id = {$table_prefix}accounts.id and p.deleted_at is null) as total_expenses,
+                (select sum(amount) from {$table_prefix}revenues r where r.account_id = {$table_prefix}accounts.id and r.deleted_at is null) as total_incomes
             ")
             ->orderBy('name')
             ->get();
