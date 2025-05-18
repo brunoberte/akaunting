@@ -113,7 +113,7 @@ class ExpenseSummary extends Controller
 
                     if ($vendors = request('vendors')) {
                         if (!in_array($bill->vendor_id, $vendors)) {
-                            continue;
+                            continue 2;
                         }
                     }
 
@@ -123,7 +123,7 @@ class ExpenseSummary extends Controller
                     if ($accounts = request('accounts')) {
                         foreach ($item->payments as $payment) {
                             if (!in_array($payment->account_id, $accounts)) {
-                                continue 2;
+                                continue 3;
                             }
                         }
                     }

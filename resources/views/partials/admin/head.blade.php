@@ -28,9 +28,9 @@
     <!-- App style -->
     <link rel="stylesheet" href="{{ asset('public/css/app.css?v=' . version('short')) }}">
     <link rel="stylesheet" href="{{ asset('public/css/akaunting-green.css?v=' . version('short')) }}">
-    
+
     <link rel="shortcut icon" href="{{ asset('public/img/favicon.ico') }}">
-    
+
     @stack('css')
 
     @stack('stylesheet')
@@ -58,6 +58,11 @@
     <script src="{{ asset('public/js/jquery/jquery.maskMoney.js') }}"></script>
 
     <script src="{{ asset('public/js/app.js?v=' . version('short')) }}"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/6.0.6/highcharts.js" charset="utf-8"></script>
+
+{{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>--}}
+
 
     <script type="text/javascript"><!--
         var url_search = '{{ url("common/search/search") }}';

@@ -37,18 +37,25 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd mysqli
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Add user for laravel application
-RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
+#RUN groupadd -g 1000 www
+#RUN useradd -u 1000 -ms /bin/bash -g www www
+
+VOLUME /var/www
 
 # Copy existing application directory contents
-COPY . /var/www
+#COPY . /var/www
 
 # Copy existing application directory permissions
-COPY --chown=www:www . /var/www
+#COPY --chown=www:www . /var/www
 
 # Change current user to www
-USER www
+#USER www
+
+#RUN composer install
+
+RUN echo "user = root" >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo "group = root" >> /usr/local/etc/php-fpm.d/www.conf
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD ["php-fpm"]
+CMD ["php-fpm", "-R"]

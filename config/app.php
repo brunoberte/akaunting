@@ -261,7 +261,7 @@ return [
          * Vendor Aliases...
          */
         //'Api' => Dingo\Api\Facade\API,
-        'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
+        'Charts' => ConsoleTVs\Charts\Classes\Chartjs\Chart::class,
         'Date' => Jenssegers\Date\Date::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Form' => Collective\Html\FormFacade::class,

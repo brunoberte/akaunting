@@ -15,7 +15,6 @@ services:
       SERVICE_NAME: app
       SERVICE_TAGS: dev
     working_dir: /var/www
-    user: www
     volumes:
       - ./:/var/www
       - .dev-env/php/local.ini:/usr/local/etc/php/conf.d/local.ini

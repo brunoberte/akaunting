@@ -121,7 +121,10 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    {!! $donut_incomes->render() !!}
+                    {!! $donut_incomes->container() !!}
+                    @push('body_end')
+                    {!! $donut_incomes->script() !!}
+                    @endpush
                 </div>
             </div>
             <div class="box box-success">
@@ -132,7 +135,10 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    {!! $donut_expenses->render() !!}
+                    {!! $donut_expenses->container() !!}
+                    @push('body_end')
+                    {!! $donut_expenses->script() !!}
+                    @endpush
                 </div>
             </div>
 
@@ -148,7 +154,10 @@
                     <h3 class="box-title">{{ trans('dashboard.forecast') }} {{ trans('dashboard.chart') }}</h3>
                 </div>
                 <div class="box-body" id="forecast_chart">
-                    {!! $forecast_chart->render() !!}
+                    {!! $forecast_chart->container() !!}
+                    @push('body_end')
+                    {!! $forecast_chart->script() !!}
+                    @endpush
                 </div>
             </div>
         </div>
@@ -219,7 +228,10 @@
                     </div>
                 </div>
                 <div class="box-body" id="cashflow">
-                    {!! $cashflow->render() !!}
+                    {!! $cashflow->container() !!}
+                    @push('body_end')
+                    {!! $cashflow->script() !!}
+                    @endpush
                 </div>
             </div>
         </div>
@@ -232,7 +244,6 @@
 @endpush
 
 @push('js')
-{!! Charts::assets() !!}
 <script type="text/javascript" src="{{ asset('public/js/moment/moment.js') }}"></script>
 @if (is_file(base_path('public/js/moment/locale/' . strtolower(app()->getLocale()) . '.js')))
 <script type="text/javascript" src="{{ asset('public/js/moment/locale/' . strtolower(app()->getLocale()) . '.js') }}"></script>
