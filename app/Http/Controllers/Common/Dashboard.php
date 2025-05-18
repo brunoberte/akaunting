@@ -43,14 +43,16 @@ class Dashboard extends Controller
 
         [$donut_incomes, $donut_expenses] = $this->getDonuts();
 
+        $table_prefix = env('DB_PREFIX', 'ak_');
+
         $accounts = Account::enabled()
-            ->selectRaw('
+            ->selectRaw("
                 accounts.id,
                 accounts.name,
                 accounts.currency_code,
-                (select sum(amount) from payments p where p.account_id = accounts.id and p.deleted_at is null) as total_expenses,
-                (select sum(amount) from revenues r where r.account_id = accounts.id and r.deleted_at is null) as total_incomes
-            ')
+                (select sum(amount) from {$table_prefix}payments p where p.account_id = accounts.id and p.deleted_at is null) as total_expenses,
+                (select sum(amount) from {$table_prefix}revenues r where r.account_id = accounts.id and r.deleted_at is null) as total_incomes
+            ")
             ->orderBy('name')
             ->get();
 
