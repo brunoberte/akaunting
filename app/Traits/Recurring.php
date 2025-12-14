@@ -18,15 +18,15 @@ trait Recurring
         }
 
         $frequency = ($request['recurring_frequency'] != 'custom') ? $request['recurring_frequency'] : $request['recurring_custom_frequency'];
-        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int) $request['recurring_interval'];
+        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int)$request['recurring_interval'];
         $started_at = $request->get('paid_at') ?: ($request->get('invoiced_at') ?: $request->get('billed_at') ?: $request->get('due_at'));
 
         $this->recurring()->create([
-            'company_id' => session('company_id'),
-            'frequency' => $frequency,
-            'interval' => $interval,
+            'company_id' => session('company_id', 1), // FIXME
+            'frequency'  => $frequency,
+            'interval'   => $interval,
             'started_at' => $started_at,
-            'count' => (int) $request['recurring_count'],
+            'count'      => (int)$request['recurring_count'],
         ]);
     }
 
@@ -40,7 +40,7 @@ trait Recurring
         }
 
         $frequency = ($request['recurring_frequency'] != 'custom') ? $request['recurring_frequency'] : $request['recurring_custom_frequency'];
-        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int) $request['recurring_interval'];
+        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int)$request['recurring_interval'];
         $started_at = $request->get('paid_at') ?: ($request->get('invoiced_at') ?: $request->get('billed_at') ?: $request->get('due_at'));
 
         $recurring = $this->recurring();
@@ -52,11 +52,11 @@ trait Recurring
         }
 
         $recurring->$function([
-            'company_id' => session('company_id'),
-            'frequency' => $frequency,
-            'interval' => $interval,
+            'company_id' => session('company_id', 1), // FIXME
+            'frequency'  => $frequency,
+            'interval'   => $interval,
             'started_at' => $started_at,
-            'count' => (int) $request['recurring_count'],
+            'count'      => (int)$request['recurring_count'],
         ]);
     }
 

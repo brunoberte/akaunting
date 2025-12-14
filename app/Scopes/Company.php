@@ -9,16 +9,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Company implements Scope
 {
-    /**
-     * Apply the scope to a given Eloquent query builder.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return void
-     */
     public function apply(Builder $builder, Model $model)
     {
-        $company_id = session('company_id');
+        $company_id = session('company_id', 1); // FIXME: get first company from user
         if (empty($company_id)) {
             return;
         }
@@ -40,13 +33,6 @@ class Company implements Scope
         $builder->where($table . '.company_id', '=', $company_id);
     }
 
-    /**
-     * Check if scope exists.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @param  $column
-     * @return boolean
-     */
     protected function exists($builder, $column)
     {
         $query = $builder->getQuery();

@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCategoriesTable extends Migration
 {
@@ -24,6 +26,10 @@ class CreateCategoriesTable extends Migration
 
             $table->index('company_id');
         });
+
+        \App\Models\Category::factory()
+            ->state(['type' => 'other', 'name' => 'Transfer', 'company_id' => 1])
+            ->create();
     }
 
     /**

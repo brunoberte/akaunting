@@ -1,0 +1,332 @@
+import PageContainer from '@/components/PageContainer';
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link, router } from '@inertiajs/react';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import NativeSelect from '@mui/material/NativeSelect';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableFooter from '@mui/material/TableFooter';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import { format, parseISO } from 'date-fns';
+import * as React from 'react';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+export const schema = z.object({
+    id: z.number(),
+    account_id: z.number(),
+    category_id: z.number(),
+    customer_id: z.number().optional(),
+    vendor_id: z.number().optional(),
+    balance: z.number(),
+    credit: z.number().optional(),
+    debit: z.number().optional(),
+    description: z.string(),
+    is_transfer: z.boolean(),
+    transfer_account_id: z.number(),
+    paid_at: z.string(),
+    record_type: z.string(),
+});
+
+export const pagination_schema = z.object({
+    data: z.array(schema),
+    first_page_url: z.string(),
+    next_page_url: z.string(),
+    last_page_url: z.string(),
+    prev_page_url: z.string(),
+    path: z.string(),
+    current_page: z.number(),
+    from: z.number(),
+    to: z.number(),
+    total: z.number(),
+    per_page: z.number(),
+    last_page: z.number(),
+    // links: z.array(),
+});
+
+type IdNameType = { id: string | number; name: string; type: string };
+type IdNameCurrencyCode = { id: string | number; name: string; currency_code: string };
+
+export default function Index({
+    account_id: account_id,
+    pagination_data: pagination_data,
+    account_list: account_list,
+    category_list: category_list,
+}: {
+    account_id: string;
+    pagination_data: z.infer<typeof pagination_schema>[];
+    account_list: Array<IdNameCurrencyCode>;
+    category_list: Array<IdNameType>;
+}) {
+    const [selectedAccount, setSelectedAccount] = React.useState(account_id);
+
+    const handleRefresh = React.useCallback(() => {
+        router.reload();
+    }, []);
+
+    const handleAccountChange = (new_account_id: number) => {
+        setSelectedAccount(new_account_id);
+        router.visit(route('transactions.index', { account_id: new_account_id, page: 1 }), {
+            preserveState: true,
+            preserveScroll: true,
+            onError: (errors) => {
+                console.log({ OnError: errors });
+            },
+        });
+    };
+
+    const handleDeleteRecord = (item) => {
+        if (window.confirm('Are you sure you want to delete this record?')) {
+            try {
+                let route_name = '';
+                switch (item.record_type) {
+                    case 'Payment':
+                        route_name = 'transactions.payments.delete';
+                        break;
+                    case 'Revenue':
+                        route_name = 'transactions.revenues.delete';
+                        break;
+                    default:
+                        toast.error('Not implemented');
+                        return;
+                }
+                router.delete(route(route_name, [item.id]), {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: (page) => {
+                        toast.success(`Record deleted`);
+                        console.log(page);
+                    },
+                    onError: (errors) => {
+                        console.log(errors);
+                    },
+                });
+            } catch (error) {
+                toast.error('Failed to delete record');
+            }
+        }
+    };
+
+    const handleEditRecord = (row) => {
+        try {
+            let route_name = '';
+            switch (row.record_type) {
+                case 'Payment':
+                    route_name = 'transactions.payments.edit';
+                    break;
+                case 'Revenue':
+                    route_name = 'transactions.revenues.edit';
+                    break;
+                case 'TransferPayment':
+                case 'TransferRevenue':
+                    route_name = 'transactions.transfers.edit';
+                    break;
+                default:
+                    toast.error('Not implemented');
+                    return;
+            }
+            router.visit(route(route_name, [row.id]));
+        } catch (error) {
+            toast.error(error);
+        }
+    };
+
+    const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        router.visit(pagination_data.first_page_url);
+    };
+
+    const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        router.visit(pagination_data.prev_page_url);
+    };
+
+    const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        router.visit(pagination_data.next_page_url);
+    };
+
+    const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        router.visit(pagination_data.last_page_url);
+    };
+
+    const getCategoryName = (id) => {
+        const category = category_list.find((x) => x.id == id);
+        return category?.name || '';
+    };
+    const getAccountName = (id) => {
+        const item = account_list.find((x) => x.id == id);
+        return item?.name || '';
+    };
+    const formatType = (item) => {
+        if (item.record_type == 'TransferPayment') {
+            return 'Transfer to ' + getAccountName(item.transfer_account_id);
+        }
+        if (item.record_type == 'TransferRevenue') {
+            return 'Transfer from ' + getAccountName(item.transfer_account_id);
+        }
+        return item.record_type;
+    };
+    const formatDate = (date) => {
+        return date ? format(parseISO(date), 'dd/MM/yyyy') : 'N/A';
+    };
+    const formatNumber = (value, currency) => {
+        return value
+            ? new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: currency,
+                  currencyDisplay: 'code',
+                  currencySign: 'accounting',
+              }).format(value)
+            : '';
+    };
+
+    const pageTitle = 'Transactions';
+
+    return (
+        <AppLayout breadcrumbs={[{ title: pageTitle, path: route('transactions.index') }]}>
+            <Head title={pageTitle} />
+            <PageContainer
+                title={pageTitle}
+                breadcrumbs={[{ title: pageTitle }]}
+                actions={
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <Tooltip title="Reload data" placement="right" enterDelay={1000}>
+                            <div>
+                                <IconButton size="small" aria-label="refresh" onClick={handleRefresh}>
+                                    <RefreshIcon />
+                                </IconButton>
+                            </div>
+                        </Tooltip>
+                        <Button component={Link} variant="contained" href={route('transactions.payments.new', {'account_id': selectedAccount})} startIcon={<AddIcon />} size={'small'}>
+                            Payment
+                        </Button>
+                        <Button component={Link} variant="contained" href={route('transactions.revenues.new', {'account_id': selectedAccount})} startIcon={<AddIcon />} size={'small'}>
+                            Revenue
+                        </Button>
+                        <Button component={Link} variant="contained" href={route('transactions.transfers.new', {'account_id': selectedAccount})} startIcon={<AddIcon />} size={'small'}>
+                            Transfer
+                        </Button>
+                    </Stack>
+                }
+            >
+                <Grid spacing={2} columns={12}>
+                    <Grid size={{ xs: 12, lg: 9 }}>
+                        <Box
+                            className="SearchAndFilters-tabletUp"
+                            sx={{
+                                borderRadius: 'sm',
+                                py: 2,
+                                display: { xs: 'none', sm: 'flex' },
+                                flexWrap: 'wrap',
+                                gap: 1.5,
+                                '& > *': {
+                                    minWidth: { xs: '120px', md: '160px' },
+                                },
+                            }}
+                        >
+                            <FormControl size="small">
+                                <NativeSelect name="account_id" value={selectedAccount} onChange={(e) => handleAccountChange(e.target.value)}>
+                                    {account_list.map((row) => (
+                                        <option key={row.id} value={row.id}>
+                                            {row.name}
+                                        </option>
+                                    ))}
+                                </NativeSelect>
+                            </FormControl>
+                        </Box>
+
+                        <TableContainer component={Paper}>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Date</TableCell>
+                                        <TableCell>Type</TableCell>
+                                        <TableCell>Category</TableCell>
+                                        <TableCell>Description</TableCell>
+                                        <TableCell>Credit</TableCell>
+                                        <TableCell>Debit</TableCell>
+                                        <TableCell>Balance</TableCell>
+                                        <TableCell sx={{ minWidth: '120px' }}></TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {pagination_data.data.map((row) => (
+                                        <TableRow key={row.id}>
+                                            <TableCell>{formatDate(row.paid_at)}</TableCell>
+                                            <TableCell>{formatType(row)}</TableCell>
+                                            <TableCell>{getCategoryName(row.category_id)}</TableCell>
+                                            <TableCell>{row.description}</TableCell>
+                                            <TableCell align="right">{formatNumber(row.credit, row.currency_code)}</TableCell>
+                                            <TableCell align="right">{formatNumber(row.debit, row.currency_code)}</TableCell>
+                                            <TableCell align="right">{formatNumber(row.balance, row.currency_code)}</TableCell>
+                                            <TableCell align="right">
+                                                <IconButton size="small" onClick={() => handleEditRecord(row)}>
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton size="small" onClick={() => handleDeleteRecord(row)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                                <TableFooter>
+                                    <TableRow>
+                                        <TableCell colSpan={8}>
+                                            <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+                                                <IconButton
+                                                    onClick={handleFirstPageButtonClick}
+                                                    disabled={pagination_data.current_page === 1}
+                                                    aria-label="first page"
+                                                >
+                                                    <FirstPageIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={handleBackButtonClick}
+                                                    disabled={pagination_data.current_page === 1}
+                                                    aria-label="previous page"
+                                                >
+                                                    <KeyboardArrowLeft />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={handleNextButtonClick}
+                                                    disabled={pagination_data.current_page >= pagination_data.last_page}
+                                                    aria-label="next page"
+                                                >
+                                                    <KeyboardArrowRight />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={handleLastPageButtonClick}
+                                                    disabled={pagination_data.current_page >= pagination_data.last_page}
+                                                    aria-label="last page"
+                                                >
+                                                    <LastPageIcon />
+                                                </IconButton>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableFooter>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
+                </Grid>
+            </PageContainer>
+        </AppLayout>
+    );
+}

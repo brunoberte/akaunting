@@ -1,193 +1,83 @@
 <?php
 
+use App\Http\Controllers\AccountsController;
+use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\CompaniesController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PayablesController;
+use App\Http\Controllers\ReceivablesController;
+use App\Http\Controllers\Transactions\PaymentsController;
+use App\Http\Controllers\Transactions\RevenuesController;
+use App\Http\Controllers\Transactions\TransfersController;
+use App\Http\Controllers\TransactionsController;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => 'language'], function () {
-    Route::group(['middleware' => 'auth'], function () {
-        Route::group(['prefix' => 'uploads'], function () {
-            Route::get('{id}', 'Common\Uploads@get');
-            Route::get('{id}/download', 'Common\Uploads@download');
-        });
+Route::get('/', function () {
+    return Redirect::route('dashboard');
+})->name('home');
 
-        Route::group(['middleware' => 'permission:read-admin-panel'], function () {
-            Route::group(['prefix' => 'wizard'], function () {
-                Route::get('/', 'Wizard\Companies@edit')->name('wizard.index');
-                Route::get('companies', 'Wizard\Companies@edit')->name('wizard.companies.edit');
-                Route::patch('companies', 'Wizard\Companies@update')->name('wizard.companies.update');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('forecast-chart', [DashboardController::class, 'forecast_chart'])->name('forecast_chart');
+    Route::get('cashflow-chart', [DashboardController::class, 'cashflow_chart'])->name('cashflow_chart');
+    Route::post('set-active-company', [DashboardController::class, 'set_active_company'])->name('set_active_company');
 
-                Route::get('currencies', 'Wizard\Currencies@index')->name('wizard.currencies.index');
-                Route::get('currencies/create', 'Wizard\Currencies@create')->name('wizard.currencies.create');
-                Route::get('currencies/{currency}/edit', 'Wizard\Currencies@edit')->name('wizard.currencies.edit');
-                Route::get('currencies/{currency}/enable', 'Wizard\Currencies@enable')->name('wizard.currencies.enable');
-                Route::get('currencies/{currency}/disable', 'Wizard\Currencies@disable')->name('wizard.currencies.disable');
-                Route::get('currencies/{currency}/delete', 'Wizard\Currencies@destroy')->name('wizard.currencies.delete');
-                Route::post('currencies', 'Wizard\Currencies@store')->name('wizard.currencies.store');
-                Route::patch('currencies/{currency}', 'Wizard\Currencies@update')->name('wizard.currencies.update');
+    Route::get('transactions', [TransactionsController::class, 'index'])->name('transactions.index');
 
-                Route::get('finish', 'Wizard\Finish@index')->name('wizard.finish.index');
-            });
-        });
+    Route::post('transactions/payments', [PaymentsController::class, 'create'])->name('transactions.payments.create');
+    Route::get('transactions/payments/new', [PaymentsController::class, 'new'])->name('transactions.payments.new');
+    Route::get('transactions/payments/edit/{payment}', [PaymentsController::class, 'edit'])->name('transactions.payments.edit');
+    Route::patch('transactions/payments/{payment}', [PaymentsController::class, 'update'])->name('transactions.payments.update');
+    Route::delete('transactions/payments/{payment}', [PaymentsController::class, 'destroy'])->name('transactions.payments.delete');
 
-        Route::group(['middleware' => ['adminmenu', 'permission:read-admin-panel']], function () {
-            Route::get('/', 'Common\Dashboard@index');
+    Route::post('transactions/revenues', [RevenuesController::class, 'create'])->name('transactions.revenues.create');
+    Route::get('transactions/revenues/new', [RevenuesController::class, 'new'])->name('transactions.revenues.new');
+    Route::get('transactions/revenues/edit/{revenue}', [RevenuesController::class, 'edit'])->name('transactions.revenues.edit');
+    Route::patch('transactions/revenues/{revenue}', [RevenuesController::class, 'update'])->name('transactions.revenues.update');
+    Route::delete('transactions/revenues/{revenue}', [RevenuesController::class, 'destroy'])->name('transactions.revenues.delete');
 
-            Route::group(['prefix' => 'uploads'], function () {
-                Route::delete('{id}', 'Common\Uploads@destroy');
-            });
+    Route::get('transactions/transfers/new', [TransfersController::class, 'new'])->name('transactions.transfers.new');
+    Route::get('transactions/transfers/edit/{transfer}', [TransfersController::class, 'edit'])->name('transactions.transfers.edit');
+    Route::post('transactions/transfers', [TransfersController::class, 'create'])->name('transactions.transfers.create');
+    Route::patch('transactions/transfers/{transfer}', [TransfersController::class, 'update'])->name('transactions.transfers.update');
+    Route::delete('transactions/transfers/{transfer}', [TransfersController::class, 'destroy'])->name('transactions.transfers.delete');
 
-            Route::group(['prefix' => 'common'], function () {
-                Route::get('companies/{company}/set', 'Common\Companies@set')->name('companies.switch');
-                Route::get('companies/{company}/enable', 'Common\Companies@enable')->name('companies.enable');
-                Route::get('companies/{company}/disable', 'Common\Companies@disable')->name('companies.disable');
-                Route::resource('companies', 'Common\Companies');
-                Route::get('dashboard/cashflow', 'Common\Dashboard@cashFlow')->name('dashboard.cashflow');
-                Route::get('import/{group}/{type}', 'Common\Import@create')->name('import.create');
-                Route::get('items/autocomplete', 'Common\Items@autocomplete')->name('items.autocomplete');
-                Route::post('items/totalItem', 'Common\Items@totalItem')->middleware(['money'])->name('items.total');
-                Route::get('items/{item}/duplicate', 'Common\Items@duplicate')->name('items.duplicate');
-                Route::post('items/import', 'Common\Items@import')->name('items.import');
-                Route::get('items/export', 'Common\Items@export')->name('items.export');
-                Route::get('items/{item}/enable', 'Common\Items@enable')->name('items.enable');
-                Route::get('items/{item}/disable', 'Common\Items@disable')->name('items.disable');
-                Route::resource('items', 'Common\Items', ['middleware' => ['money']]);
-                Route::get('search/search', 'Common\Search@search')->name('search.search');
-                Route::resource('search', 'Common\Search');
-            });
+    Route::get('accounts', [AccountsController::class, 'index'])->name('accounts.index');
+    Route::get('accounts/new', [AccountsController::class, 'new'])->name('accounts.new');
+    Route::post('accounts', [AccountsController::class, 'create'])->name('accounts.create');
+    Route::get('accounts/{account}', [AccountsController::class, 'edit'])->name('accounts.edit');
+    Route::patch('accounts/{account}', [AccountsController::class, 'update'])->name('accounts.update');
+    Route::delete('accounts/{account}', [AccountsController::class, 'destroy'])->name('accounts.delete');
 
-            Route::group(['prefix' => 'auth'], function () {
-                Route::get('logout', 'Auth\Login@destroy')->name('logout');
-                Route::get('users/autocomplete', 'Auth\Users@autocomplete');
-                Route::get('users/{user}/read-items', 'Auth\Users@readItemsOutOfStock');
-                Route::get('users/{user}/enable', 'Auth\Users@enable')->name('users.enable');
-                Route::get('users/{user}/disable', 'Auth\Users@disable')->name('users.disable');
-                Route::resource('users', 'Auth\Users');
-                Route::resource('roles', 'Auth\Roles');
-                Route::resource('permissions', 'Auth\Permissions');
-            });
+    Route::get('categories', [CategoriesController::class, 'index'])->name('categories.index');
+    Route::get('categories/new', [CategoriesController::class, 'new'])->name('categories.new');
+    Route::get('categories/{category}', [CategoriesController::class, 'edit'])->name('categories.edit');
+    Route::post('categories', [CategoriesController::class, 'create'])->name('categories.create');
+    Route::patch('categories/{category}', [CategoriesController::class, 'update'])->name('categories.update');
+    Route::delete('categories/{category}', [CategoriesController::class, 'destroy'])->name('categories.delete');
 
-            Route::name('incomes.')->prefix('incomes')->group(function () {
+    Route::get('payables', [PayablesController::class, 'index'])->name('payables.index');
+    Route::get('payables/new', [PayablesController::class, 'new'])->name('payables.new');
+    Route::post('payables', [PayablesController::class, 'create'])->name('payables.create');
+    Route::get('payables/{payable}', [PayablesController::class, 'edit'])->name('payables.edit');
+    Route::patch('payables/{payable}', [PayablesController::class, 'update'])->name('payables.update');
+    Route::delete('payables/{payable}', [PayablesController::class, 'destroy'])->name('payables.delete');
 
-                Route::resource('receivables', 'Incomes\Receivables', ['middleware' => ['dateformat', 'money']]);
-                Route::get('receivables/{receivable}/duplicate', 'Incomes\Receivables@duplicate');
+    Route::get('receivables', [ReceivablesController::class, 'index'])->name('receivables.index');
+    Route::get('receivables/new', [ReceivablesController::class, 'new'])->name('receivables.new');
+    Route::get('receivables/{receivable}', [ReceivablesController::class, 'edit'])->name('receivables.edit');
+    Route::post('receivables', [ReceivablesController::class, 'create'])->name('receivables.create');
+    Route::patch('receivables/{receivable}', [ReceivablesController::class, 'update'])->name('receivables.update');
+    Route::delete('receivables/{receivable}', [ReceivablesController::class, 'destroy'])->name('receivables.delete');
 
-                Route::get('revenues/{revenue}/duplicate', 'Incomes\Revenues@duplicate');
-                Route::post('revenues/import', 'Incomes\Revenues@import')->name('revenues.import');
-                Route::get('revenues/export', 'Incomes\Revenues@export')->name('revenues.export');
-                Route::resource('revenues', 'Incomes\Revenues', ['middleware' => ['dateformat', 'money']]);
-                Route::get('customers/currency', 'Incomes\Customers@currency');
-                Route::get('customers/{customer}/duplicate', 'Incomes\Customers@duplicate');
-                Route::post('customers/customer', 'Incomes\Customers@customer');
-                Route::post('customers/field', 'Incomes\Customers@field');
-                Route::post('customers/import', 'Incomes\Customers@import')->name('customers.import');
-                Route::get('customers/export', 'Incomes\Customers@export')->name('customers.export');
-                Route::get('customers/{customer}/enable', 'Incomes\Customers@enable')->name('customers.enable');
-                Route::get('customers/{customer}/disable', 'Incomes\Customers@disable')->name('customers.disable');
-                Route::resource('customers', 'Incomes\Customers');
-            });
-
-            Route::name('expenses.')->prefix('expenses')->group(function () {
-
-                Route::resource('payables', 'Expenses\Payables', ['middleware' => ['dateformat', 'money']]);
-                Route::get('payables/{payable}/duplicate', 'Expenses\Payables@duplicate');
-
-                Route::get('payments/{payment}/duplicate', 'Expenses\Payments@duplicate');
-                Route::post('payments/import', 'Expenses\Payments@import')->name('payments.import');
-                Route::get('payments/export', 'Expenses\Payments@export')->name('payments.export');
-                Route::resource('payments', 'Expenses\Payments', ['middleware' => ['dateformat', 'money']]);
-                Route::get('vendors/currency', 'Expenses\Vendors@currency');
-                Route::get('vendors/{vendor}/duplicate', 'Expenses\Vendors@duplicate');
-                Route::post('vendors/vendor', 'Expenses\Vendors@vendor');
-                Route::post('vendors/import', 'Expenses\Vendors@import')->name('vendors.import');
-                Route::get('vendors/export', 'Expenses\Vendors@export')->name('vendors.export');
-                Route::get('vendors/{vendor}/enable', 'Expenses\Vendors@enable')->name('vendors.enable');
-                Route::get('vendors/{vendor}/disable', 'Expenses\Vendors@disable')->name('vendors.disable');
-                Route::resource('vendors', 'Expenses\Vendors');
-            });
-
-            Route::name('banking.')->prefix('banking')->group(function () {
-                Route::get('accounts/currency', 'Banking\Accounts@currency')->name('accounts.currency');
-                Route::get('accounts/balance', 'Banking\Accounts@balance')->name('accounts.balance');
-                Route::get('accounts/{account}/enable', 'Banking\Accounts@enable')->name('accounts.enable');
-                Route::get('accounts/{account}/disable', 'Banking\Accounts@disable')->name('accounts.disable');
-                Route::resource('accounts', 'Banking\Accounts', ['middleware' => ['dateformat', 'money']]);
-                Route::resource('transactions', 'Banking\Transactions');
-                Route::resource('transfers', 'Banking\Transfers', ['middleware' => ['dateformat', 'money']]);
-                Route::post('reconciliations/calculate', 'Banking\Reconciliations@calculate')->middleware(['money']);
-                Route::patch('reconciliations/calculate', 'Banking\Reconciliations@calculate')->middleware(['money']);
-                Route::resource('reconciliations', 'Banking\Reconciliations', ['middleware' => ['dateformat', 'money']]);
-            });
-
-            Route::group(['prefix' => 'reports'], function () {
-//                Route::resource('income-summary', 'Reports\IncomeSummary');
-                Route::resource('expense-summary', 'Reports\ExpenseSummary');
-//                Route::resource('income-expense-summary', 'Reports\IncomeExpenseSummary');
-                Route::resource('profit-loss', 'Reports\ProfitLoss');
-            });
-
-            Route::group(['prefix' => 'settings'], function () {
-                Route::post('categories/category', 'Settings\Categories@category');
-                Route::get('categories/{category}/enable', 'Settings\Categories@enable')->name('categories.enable');
-                Route::get('categories/{category}/disable', 'Settings\Categories@disable')->name('categories.disable');
-                Route::resource('categories', 'Settings\Categories');
-                Route::get('currencies/currency', 'Settings\Currencies@currency');
-                Route::get('currencies/config', 'Settings\Currencies@config');
-                Route::get('currencies/{currency}/enable', 'Settings\Currencies@enable')->name('currencies.enable');
-                Route::get('currencies/{currency}/disable', 'Settings\Currencies@disable')->name('currencies.disable');
-                Route::resource('currencies', 'Settings\Currencies');
-                Route::get('settings', 'Settings\Settings@edit');
-                Route::patch('settings', 'Settings\Settings@update');
-            });
-
-            Route::group(['as' => 'modals.', 'prefix' => 'modals'], function () {
-                Route::resource('categories', 'Modals\Categories');
-                Route::resource('customers', 'Modals\Customers');
-                Route::resource('vendors', 'Modals\Vendors');
-            });
-
-            /* @deprecated */
-            Route::post('items/items/totalItem', 'Common\Items@totalItem');
-        });
-
-        Route::group(['middleware' => ['customermenu', 'permission:read-customer-panel']], function () {
-            Route::name('customers.')->prefix('customers')->group(function () {
-                Route::get('/', 'Customers\Dashboard@index');
-
-                Route::resource('payments', 'Customers\Payments');
-                Route::get('transactions', 'Customers\Transactions@index')->name('customers.transactions');
-                Route::resource('profile', 'Customers\Profile');
-
-                Route::get('logout', 'Auth\Login@destroy')->name('customer_logout');
-            });
-        });
-    });
-
-    Route::group(['middleware' => 'guest'], function () {
-        Route::group(['prefix' => 'auth'], function () {
-            Route::get('login', 'Auth\Login@create')->name('login');
-            Route::post('login', 'Auth\Login@store');
-
-            Route::get('forgot', 'Auth\Forgot@create')->name('forgot');
-            Route::post('forgot', 'Auth\Forgot@store');
-
-            //Route::get('reset', 'Auth\Reset@create');
-            Route::get('reset/{token}', 'Auth\Reset@create')->name('reset');
-            Route::post('reset', 'Auth\Reset@store');
-        });
-
-        Route::group(['middleware' => 'install'], function () {
-            Route::group(['prefix' => 'install'], function () {
-                Route::get('/', 'Install\Requirements@show');
-                Route::get('requirements', 'Install\Requirements@show');
-
-                Route::get('language', 'Install\Language@create');
-                Route::post('language', 'Install\Language@store');
-
-                Route::get('database', 'Install\Database@create');
-                Route::post('database', 'Install\Database@store');
-
-                Route::get('settings', 'Install\Settings@create');
-                Route::post('settings', 'Install\Settings@store');
-            });
-        });
-    });
+    Route::get('companies', [CompaniesController::class, 'index'])->name('companies.index');
+    Route::get('companies/new', [CompaniesController::class, 'new'])->name('companies.new');
+    Route::post('companies', [CompaniesController::class, 'create'])->name('companies.create');
+    Route::get('companies/{company}', [CompaniesController::class, 'edit'])->name('companies.edit');
+    Route::patch('companies/{company}', [CompaniesController::class, 'update'])->name('companies.update');
+    Route::delete('companies/{company}', [CompaniesController::class, 'destroy'])->name('companies.delete');
 });
+
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

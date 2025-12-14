@@ -2,38 +2,23 @@
 
 namespace App\Providers;
 
-use App\Util;
-use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
-use Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
-     *
-     * @return void
+     * Register any application services.
      */
-    public function boot(UrlGenerator $url)
+    public function register(): void
     {
-        $url->forceScheme('https');
-
-        // Laravel db fix
-        Schema::defaultStringLength(191);
-
-        \Blade::directive('money', function($expression) {
-            [$amount, $currency] = explode(', ', $expression);
-
-            return "<?php echo \App\Util::money($amount, $currency); ?>";
-        });
+        //
     }
 
     /**
-     * Register any application services.
-     *
-     * @return void
+     * Bootstrap any application services.
      */
-    public function register()
+    public function boot(): void
     {
+        //
     }
 }
