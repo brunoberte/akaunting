@@ -20,7 +20,7 @@ type ResetPasswordForm = {
 };
 
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<ResetPasswordForm>>({
+    const { data, setData, post, errors, reset } = useForm<Required<ResetPasswordForm>>({
         token: token,
         email: email,
         password: '',

@@ -70,7 +70,7 @@ export default function CompanyForm({ company }: { company: CompanyModel }) {
         [setData],
     );
     const handleCheckboxFieldChange = React.useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+        (event: React.ChangeEvent<HTMLInputElement>) => {
             console.log(event);
             setData(event.target.name, event.target.checked);
         },

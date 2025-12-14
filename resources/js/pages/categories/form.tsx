@@ -14,7 +14,6 @@ import { SelectChangeEvent, SelectProps } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
-import { Dayjs } from 'dayjs';
 import * as React from 'react';
 import { toast } from 'sonner';
 import { Transition } from '@headlessui/react';
@@ -80,7 +79,7 @@ export default function CategoryForm({ category }: { category: CategoryModel }) 
     );
 
     const handleCheckboxFieldChange = React.useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+        (event: React.ChangeEvent<HTMLInputElement>) => {
             console.log(event);
             setData(event.target.name, event.target.checked);
         },

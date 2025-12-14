@@ -1,6 +1,6 @@
 import PageContainer from '@/components/PageContainer';
 import AppLayout from '@/layouts/app-layout';
-import { Head, router, useRemember } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -43,7 +43,7 @@ const handleDeleteRecord = (row) => {
                 },
             });
             toast.success(`Account ${row.name} deleted`);
-        } catch (error) {
+        } catch {
             toast.error('Failed to delete account');
         }
     }
@@ -189,19 +189,19 @@ export default function Index({
     // [dialogs, notifications, loadData],
     // );
 
-    const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleFirstPageButtonClick = () => {
         router.visit(accounts.first_page_url);
     };
 
-    const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleBackButtonClick = () => {
         router.visit(accounts.prev_page_url);
     };
 
-    const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleNextButtonClick = () => {
         router.visit(accounts.next_page_url);
     };
 
-    const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleLastPageButtonClick = () => {
         router.visit(accounts.last_page_url);
     };
 

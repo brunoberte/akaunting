@@ -2,7 +2,7 @@ import { tableFooterClasses } from '@mui/material/TableFooter';
 import { tableHeadClasses } from '@mui/material/TableHead';
 import { gridClasses } from '@mui/x-data-grid';
 
-/* eslint-disable import/prefer-default-export */
+ 
 export const tableCustomizations = {
     MuiTable: {
         styleOverrides: {

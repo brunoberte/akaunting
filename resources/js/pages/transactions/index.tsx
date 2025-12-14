@@ -119,7 +119,7 @@ export default function Index({
                         console.log(errors);
                     },
                 });
-            } catch (error) {
+            } catch {
                 toast.error('Failed to delete record');
             }
         }
@@ -149,19 +149,19 @@ export default function Index({
         }
     };
 
-    const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleFirstPageButtonClick = () => {
         router.visit(pagination_data.first_page_url);
     };
 
-    const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleBackButtonClick = () => {
         router.visit(pagination_data.prev_page_url);
     };
 
-    const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleNextButtonClick = () => {
         router.visit(pagination_data.next_page_url);
     };
 
-    const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleLastPageButtonClick = () => {
         router.visit(pagination_data.last_page_url);
     };
 

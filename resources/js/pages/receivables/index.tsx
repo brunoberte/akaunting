@@ -36,7 +36,7 @@ const handleDeleteRecord = (row) => {
                 },
             });
             toast.success(`Record ${row.title} deleted`);
-        } catch (error) {
+        } catch {
             toast.error('Failed to delete record');
         }
     }

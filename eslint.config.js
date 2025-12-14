@@ -4,6 +4,7 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import typescript from 'typescript-eslint';
+import importPlugin from "eslint-plugin-import";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -31,6 +32,7 @@ export default [
     {
         plugins: {
             'react-hooks': reactHooks,
+            import: importPlugin,
         },
         rules: {
             'react-hooks/rules-of-hooks': 'error',

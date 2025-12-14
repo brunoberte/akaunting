@@ -10,7 +10,7 @@ import { FormEventHandler } from 'react';
 import Alert from '@mui/material/Alert';
 
 export default function ForgotPassword({ status }: { status?: string }) {
-    const { data, setData, post, processing, errors } = useForm<Required<{ email: string }>>({
+    const { setData, post, processing, errors } = useForm<Required<{ email: string }>>({
         email: '',
     });
 

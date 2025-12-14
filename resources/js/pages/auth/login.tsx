@@ -8,7 +8,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler } from 'react';
 
 type LoginForm = {
     email: string;
@@ -22,19 +22,11 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<LoginForm>>({
+    const { setData, post, errors, reset } = useForm<Required<LoginForm>>({
         email: '',
         password: '',
         remember: false,
     });
-
-    const [open, setOpen] = useState(false);
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -97,9 +89,11 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 <Button type="submit" fullWidth variant="contained">
                     Sign in
                 </Button>
+                {canResetPassword && (
                 <Link component={Link} type="button" href={route('password.request')} variant="body2" sx={{ alignSelf: 'center' }}>
                     Forgot your password?
                 </Link>
+                )}
                 <Typography sx={{ textAlign: 'center' }}>
                     Don&apos;t have an account?{' '}
                     <Link href={route('register')} variant="body2" sx={{ alignSelf: 'center' }}>

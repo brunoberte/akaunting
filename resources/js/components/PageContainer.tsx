@@ -1,10 +1,6 @@
 'use client';
-import { Link } from '@inertiajs/react';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import Box from '@mui/material/Box';
-import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import Container, { ContainerProps } from '@mui/material/Container';
-import MuiLink from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -16,17 +12,6 @@ const PageContentHeader = styled('div')(({ theme }) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: theme.spacing(2),
-}));
-
-const PageHeaderBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
-    margin: theme.spacing(1, 0),
-    [`& .${breadcrumbsClasses.separator}`]: {
-        color: (theme.vars || theme).palette.action.disabled,
-        margin: 1,
-    },
-    [`& .${breadcrumbsClasses.ol}`]: {
-        alignItems: 'center',
-    },
 }));
 
 const PageHeaderToolbar = styled('div')(({ theme }) => ({
@@ -45,7 +30,7 @@ export interface PageContainerProps extends ContainerProps {
 }
 
 export default function PageContainer(props: PageContainerProps) {
-    const { children, breadcrumbs, title, actions = null } = props;
+    const { children, title, actions = null } = props;
 
     return (
         <Container disableGutters={true} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

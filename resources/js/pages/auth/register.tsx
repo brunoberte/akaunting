@@ -1,12 +1,12 @@
 import AuthLayout from '@/layouts/auth-layout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler } from 'react';
 
 type RegisterForm = {
     name: string;
@@ -16,19 +16,12 @@ type RegisterForm = {
 };
 
 export default function Register() {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
+    const { setData, post, errors, reset } = useForm<Required<RegisterForm>>({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
     });
-    const [open, setOpen] = useState(false);
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -36,7 +29,6 @@ export default function Register() {
             onFinish: () => reset('password', 'password_confirmation'),
         });
     };
-
 
     return (
         <AuthLayout title="Create an account" description="Enter your details below to create your account">
@@ -118,7 +110,7 @@ export default function Register() {
                         color={errors.password_confirmation ? 'error' : 'primary'}
                     />
                 </FormControl>
-                {/*<ForgotPassword open={open} handleClose={handleClose} />*/}
+
                 <Button type="submit" fullWidth variant="contained">
                     Create account
                 </Button>

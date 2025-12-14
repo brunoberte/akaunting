@@ -43,7 +43,7 @@ const handleDeleteRecord = (row) => {
                 },
             });
             toast.success(`Category ${row.name} deleted`);
-        } catch (error) {
+        } catch {
             toast.error('Failed to delete record');
         }
     }
@@ -72,10 +72,6 @@ export const pagination_schema = z.object({
     last_page: z.number(),
     // links: z.array(),
 });
-
-function renderStatus(enabled: boolean) {
-    return <Chip label={enabled ? 'Active' : 'Inactive'} color={enabled ? 'success' : 'default'} size="small" />;
-}
 
 export default function Index({
     categories: categories,
@@ -130,19 +126,19 @@ export default function Index({
         router.get(route('categories.new'));
     }, []);
 
-    const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleFirstPageButtonClick = () => {
         router.visit(categories.first_page_url);
     };
 
-    const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleBackButtonClick = () => {
         router.visit(categories.prev_page_url);
     };
 
-    const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleNextButtonClick = () => {
         router.visit(categories.next_page_url);
     };
 
-    const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleLastPageButtonClick = () => {
         router.visit(categories.last_page_url);
     };
 

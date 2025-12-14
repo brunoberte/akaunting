@@ -1,11 +1,10 @@
 import AuthLayout from '@/layouts/auth-layout';
 import { useForm, Link } from '@inertiajs/react';
 import Button from '@mui/material/Button';
-import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 export default function VerifyEmail({ status }: { status?: string }) {
-    const { post, processing } = useForm({});
+    const { post } = useForm({});
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
