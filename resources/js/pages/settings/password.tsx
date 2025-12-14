@@ -1,128 +1,125 @@
-import InputError from '@/components/input-error';
+import PageContainer from '@/components/PageContainer';
 import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/settings/layout';
-import { type BreadcrumbItem } from '@/types';
-import { Transition } from '@headlessui/react';
-import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler, useRef } from 'react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import { FormEventHandler } from 'react';
+import { toast } from 'sonner';
+import { ErrorList } from '@/components/ui/error-list';
+import * as React from 'react';
 
-import HeadingSmall from '@/components/heading-small';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Password settings',
-        href: '/settings/password',
-    },
-];
+type PasswordForm = {
+    current_password: string;
+    password: string;
+    password_confirmation: string;
+};
 
 export default function Password() {
-    const passwordInput = useRef<HTMLInputElement>(null);
-    const currentPasswordInput = useRef<HTMLInputElement>(null);
-
-    const { data, setData, errors, put, reset, processing, recentlySuccessful } = useForm({
+    const { data, setData, put, errors, processing } = useForm<Required<PasswordForm>>({
         current_password: '',
         password: '',
         password_confirmation: '',
     });
 
-    const updatePassword: FormEventHandler = (e) => {
+    const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
         put(route('password.update'), {
             preserveScroll: true,
-            onSuccess: () => reset(),
-            onError: (errors) => {
-                if (errors.password) {
-                    reset('password', 'password_confirmation');
-                    passwordInput.current?.focus();
-                }
-
-                if (errors.current_password) {
-                    reset('current_password');
-                    currentPasswordInput.current?.focus();
-                }
+            onSuccess: () => {
+                console.log('success');
+                toast.success('Password updated successfully');
+                setData({
+                    current_password: '',
+                    password: '',
+                    password_confirmation: '',
+                });
             },
         });
     };
 
+    const pageTitle = 'Password update';
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile settings" />
+        <AppLayout breadcrumbs={[{ title: pageTitle, path: route('profile.edit') }]}>
+            <Head title={pageTitle} />
+            <PageContainer title={pageTitle} breadcrumbs={[{ title: pageTitle }]}>
+                <Box component="form" onSubmit={submit} noValidate autoComplete="off" sx={{ width: '100%' }}>
+                    <FormGroup>
+                        <Grid container spacing={2} columns={12} sx={{ mb: 2, width: '100%' }}>
+                            <FormControl fullWidth>
+                                <FormLabel htmlFor="name">Current Password</FormLabel>
+                                <TextField
+                                    error={!!errors.current_password}
+                                    helperText={errors.current_password}
+                                    id="current_password"
+                                    type="password"
+                                    name="current_password"
+                                    value={data.current_password}
+                                    onChange={(e) => setData('current_password', e.target.value)}
+                                    autoFocus
+                                    required
+                                    fullWidth
+                                    variant="outlined"
+                                    color={errors.current_password ? 'error' : 'primary'}
+                                />
+                            </FormControl>
+                            <FormControl fullWidth>
+                                <FormLabel htmlFor="name">New Password</FormLabel>
+                                <TextField
+                                    error={!!errors.password}
+                                    helperText={errors.password}
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    autoComplete="password"
+                                    required
+                                    fullWidth
+                                    variant="outlined"
+                                    color={errors.password ? 'error' : 'primary'}
+                                />
+                            </FormControl>
+                            <FormControl fullWidth>
+                                <FormLabel htmlFor="name">Password Confirmation</FormLabel>
+                                <TextField
+                                    error={!!errors.password_confirmation}
+                                    helperText={errors.password_confirmation}
+                                    id="password_confirmation"
+                                    type="password"
+                                    name="password_confirmation"
+                                    value={data.password_confirmation}
+                                    onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    required
+                                    fullWidth
+                                    variant="outlined"
+                                    color={errors.password ? 'error' : 'primary'}
+                                />
+                            </FormControl>
+                        </Grid>
 
-            <SettingsLayout>
-                <div className="space-y-6">
-                    <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure" />
+                        <ErrorList errors={errors} />
+                    </FormGroup>
 
-                    <form onSubmit={updatePassword} className="space-y-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="current_password">Current password</Label>
 
-                            <Input
-                                id="current_password"
-                                ref={currentPasswordInput}
-                                value={data.current_password}
-                                onChange={(e) => setData('current_password', e.target.value)}
-                                type="password"
-                                className="mt-1 block w-full"
-                                autoComplete="current-password"
-                                placeholder="Current password"
-                            />
-
-                            <InputError message={errors.current_password} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">New password</Label>
-
-                            <Input
-                                id="password"
-                                ref={passwordInput}
-                                value={data.password}
-                                onChange={(e) => setData('password', e.target.value)}
-                                type="password"
-                                className="mt-1 block w-full"
-                                autoComplete="new-password"
-                                placeholder="New password"
-                            />
-
-                            <InputError message={errors.password} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">Confirm password</Label>
-
-                            <Input
-                                id="password_confirmation"
-                                value={data.password_confirmation}
-                                onChange={(e) => setData('password_confirmation', e.target.value)}
-                                type="password"
-                                className="mt-1 block w-full"
-                                autoComplete="new-password"
-                                placeholder="Confirm password"
-                            />
-
-                            <InputError message={errors.password_confirmation} />
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                            <Button disabled={processing}>Save password</Button>
-
-                            <Transition
-                                show={recentlySuccessful}
-                                enter="transition ease-in-out"
-                                enterFrom="opacity-0"
-                                leave="transition ease-in-out"
-                                leaveTo="opacity-0"
-                            >
-                                <p className="text-sm text-neutral-600">Saved</p>
-                            </Transition>
-                        </div>
-                    </form>
-                </div>
-            </SettingsLayout>
+                    <Stack direction="row" spacing={2} justifyContent="space-between">
+                        <Button component={Link} variant="contained" size="large" startIcon={<ArrowBackIcon />} href={route('home')}>
+                            Back
+                        </Button>
+                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={processing}>
+                            {processing ? "Saving..." : "Save"}
+                        </Button>
+                    </Stack>
+                </Box>
+            </PageContainer>
         </AppLayout>
     );
 }
