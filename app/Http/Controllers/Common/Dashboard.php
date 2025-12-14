@@ -43,7 +43,7 @@ class Dashboard extends Controller
 
         [$donut_incomes, $donut_expenses] = $this->getDonuts();
 
-        $table_prefix = env('DB_PREFIX', 'ak_');
+        $table_prefix = config('database.db_prefix', 'ak_');
 
         $accounts = Account::enabled()
             ->selectRaw("
