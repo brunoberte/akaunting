@@ -64,7 +64,7 @@ class User extends Authenticatable
     public function getDefaultCompany(): int
     {
         $enabledCompanies = $this->getEnabledCompaniesList();
-        if ($enabledCompanies->count() > 0) {
+        if ($enabledCompanies->count() == 0) {
             return 999; // FIXME
         }
         return $enabledCompanies[0]->id;

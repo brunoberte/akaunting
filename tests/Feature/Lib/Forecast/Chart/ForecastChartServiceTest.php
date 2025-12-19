@@ -16,6 +16,7 @@ test('full test', function () {
 
     // todo: create recurring record
 
+    /** @var Account $account */
     $account = Account::factory()
         ->has(
             Receivable::factory()
@@ -40,7 +41,7 @@ test('full test', function () {
         ->create();
 
     $service = new ForecastChartService();
-    $actual = $service->getDataOnPeriod($start_period, $end_period);
+    $actual = $service->getDataOnPeriod($account->currency_code, $start_period, $end_period);
     $this->assertCount(11, $actual);
     $this->assertEquals('2025-05-05', $actual[0]->date);
     $this->assertEquals('1000', $actual[0]->balance); // 0 + (2000 - 1000) = 1000 // initial balance + (receivable - payable)
