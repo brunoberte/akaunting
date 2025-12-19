@@ -40,7 +40,13 @@ docker compose exec app composer install
 ```sh
 docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy -e "create DATABASE financeiro;"
 docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy -e "create DATABASE financeiro_test;"
+```
+
+- restore backup
+```sh
 docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "\. /var/workspace/financeiro.sql"
+docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Payable' where recurable_type = 'App\\Models\\Expense\\Payable'"
+docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Receivable' where recurable_type = 'App\\Models\\Income\\Receivable'"
 ```
 
 - Run migrations
