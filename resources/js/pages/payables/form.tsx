@@ -46,11 +46,6 @@ type IdNameCurrencyCodeSchema = {
     currency_code: string;
 };
 
-export interface AccountFormState {
-    values: Partial<Omit<PayableModel, 'id'>>;
-    errors: Partial<Record<keyof AccountFormState['values'], string>>;
-}
-
 export default function PayableForm({
     payable,
     account_list,
@@ -164,7 +159,17 @@ export default function PayableForm({
                         <Grid container spacing={2} columns={12} sx={{ mb: 2, width: '100%' }}>
                             <Grid size={{ xs: 12, sm: 4 }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'pt-br'}>
-                                    <StaticDatePicker value={dueAt} onChange={(newValue) => setDueAt(newValue)} />
+                                    <StaticDatePicker
+                                        value={dueAt}
+                                        onChange={(newValue) => setDueAt(newValue)}
+                                        disableHighlightToday={true}
+                                        showDaysOutsideCurrentMonth={true}
+                                        slotProps={{
+                                            actionBar: {
+                                                actions: [],
+                                            },
+                                        }}
+                                    />
                                 </LocalizationProvider>
                             </Grid>
 

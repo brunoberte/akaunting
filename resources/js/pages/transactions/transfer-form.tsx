@@ -36,11 +36,6 @@ type TransferModel = {
 };
 type AccountBasicType = { id: string | number; name: string; currency_code: string; balance: number };
 
-export interface PaymentFormState {
-    values: Partial<Omit<TransferModel, 'id'>>;
-    errors: Partial<Record<keyof PaymentFormState['values'], string>>;
-}
-
 export default function PaymentForm({
     record,
     account_list,
@@ -132,7 +127,17 @@ export default function PaymentForm({
                         <Grid container spacing={2} columns={12} sx={{ mb: 2, width: '100%' }}>
                             <Grid size="auto">
                                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'pt-br'}>
-                                    <StaticDatePicker value={transferredAt} onChange={(newValue) => setTransferredAt(newValue)} />
+                                    <StaticDatePicker
+                                        value={transferredAt}
+                                        onChange={(newValue) => setTransferredAt(newValue)}
+                                        disableHighlightToday={true}
+                                        showDaysOutsideCurrentMonth={true}
+                                        slotProps={{
+                                            actionBar: {
+                                                actions: [],
+                                            },
+                                        }}
+                                    />
                                 </LocalizationProvider>
                             </Grid>
 
@@ -183,8 +188,11 @@ export default function PaymentForm({
                                         }}
                                         autoNumericOptions={{
                                             // currencySymbol: currentAccountCurrency(),
-                                            outputFormat: "string",
-                                            decimalPlacesRawValue: 2, emptyInputBehavior: 'zero', modifyValueOnWheel: false }}
+                                            outputFormat: 'string',
+                                            decimalPlacesRawValue: 2,
+                                            emptyInputBehavior: 'zero',
+                                            modifyValueOnWheel: false,
+                                        }}
                                     />
                                     <FormHelperText>{errors.amount ?? ' '}</FormHelperText>
                                 </FormControl>
