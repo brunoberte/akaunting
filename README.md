@@ -42,11 +42,19 @@ docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy -e "create
 docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy -e "create DATABASE financeiro_test;"
 ```
 
-- restore backup
+- restore backup - dev
 ```sh
 docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "\. /var/workspace/financeiro.sql"
 docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Payable' where recurable_type = 'App\\Models\\Expense\\Payable'"
 docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Receivable' where recurable_type = 'App\\Models\\Income\\Receivable'"
+```
+
+- restore backup - prod
+```sh
+docker compose -f compose.prod.yaml cp /home/brunoberte/scripts/backup/2025_12_20_12_28/financeiro.sql mysql:/var/lib/mysql/
+docker compose -f compose.prod.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "\. /var/lib/mysql/financeiro.sql"
+docker compose -f compose.prod.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Payable' where recurable_type = 'App\\Models\\Expense\\Payable'"
+docker compose -f compose.prod.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Receivable' where recurable_type = 'App\\Models\\Income\\Receivable'"
 ```
 
 - Run migrations
