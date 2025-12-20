@@ -12,7 +12,8 @@ git pull origin main
 # 2. Reconstruir e subir os containers
 # O flag --build garante que o Dockerfile seja processado novamente (npm run build, etc)
 echo "Rebuilding containers..."
-docker compose -f compose.prod.yaml up -d --build
+docker compose -f compose.prod.yaml build --build-arg CACHE_BUST=$(date +%s)
+docker compose -f compose.prod.yaml up -d
 
 echo "Copying env file"
 docker compose -f compose.prod.yaml cp .env php-fpm:/var/www/

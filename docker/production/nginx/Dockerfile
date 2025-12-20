@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /var/www
 
+# Create cache argument to ensure new files are copied during deploy
+ARG CACHE_BUST=default_value
+
 # Copy Laravel application code
 COPY . /var/www
 
