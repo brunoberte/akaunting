@@ -21,7 +21,7 @@ services:
       # This allows external access to the Nginx web server running inside the container.
       # For example, if 'NGINX_PORT' is set to '8080', accessing 'http://localhost:8080' will reach the application.
       # -----------------------------------------------------------
-      - "${NGINX_PORT:-80}:80"
+      - "${NGINX_HOST_PORT:-80}:80"
     depends_on:
       php-fpm:
         condition: service_healthy  # Wait for php-fpm health check
@@ -57,27 +57,22 @@ services:
     restart: unless-stopped
     user: mysql
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      - "${MYSQL_HOST_PORT:-3306}:3306"
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-app}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD:-app}
+      - MYSQL_DATABASE=${DB_DATABASE:-app}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-app}
       - SERVICE_TAGS=dev
       - SERVICE_NAME=mysql
     volumes:
       - db-data-production:/var/lib/mysql/
     networks:
       - laravel-production
-#    # Health check for PostgreSQL
-#    # -----------------------------------------------------------
-#    # Health checks allow Docker to determine if a service is operational.
-#    # The 'pg_isready' command checks if PostgreSQL is ready to accept connections.
-#    # This prevents dependent services from starting before the database is ready.
-#    # -----------------------------------------------------------
-#    healthcheck:
-#      test: [ "CMD", "pg_isready" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${DB_PASSWORD:-app}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   redis:
     image: redis:alpine
