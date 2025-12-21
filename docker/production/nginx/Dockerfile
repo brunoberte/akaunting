@@ -11,9 +11,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /var/www
 
-# Create cache argument to ensure new files are copied during deploy
-ARG CACHE_BUST=default_value
-
 # Copy Laravel application code
 COPY . /var/www
 
@@ -22,6 +19,9 @@ RUN npm install && npm run build
 
 # Stage 2: Nginx production image
 FROM nginx:alpine
+
+# Set the working directory to the public folder
+WORKDIR /var/www/public
 
 # Copy custom Nginx configuration
 # -----------------------------------------------------------
@@ -36,8 +36,6 @@ COPY ./docker/production/nginx/nginx.conf /etc/nginx/nginx.conf
 # -----------------------------------------------------------
 COPY --from=builder /var/www/public /var/www/public
 
-# Set the working directory to the public folder
-WORKDIR /var/www/public
 
 # Expose port 80 and start Nginx
 EXPOSE 80

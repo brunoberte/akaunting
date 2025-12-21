@@ -33,9 +33,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set the working directory inside the container
 WORKDIR /var/www
 
-# Create cache argument to ensure new files are copied during deploy
-ARG CACHE_BUST=default_value
-
 # Copy the entire Laravel application code into the container
 # -----------------------------------------------------------
 # In Laravel, the `composer install` command often triggers
@@ -100,9 +97,6 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-docker.conf
 # Update the variables_order to include E (for ENV)
 #RUN sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/' "$PHP_INI_DIR/php.ini"
-
-# Create cache argument to ensure new files are copied during deploy
-ARG CACHE_BUST=default_value
 
 # Copy the application code and dependencies from the build stage
 COPY --from=builder /var/www /var/www
