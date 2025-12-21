@@ -23,7 +23,7 @@ import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
 import { toast } from 'sonner';
-import { format, parseISO } from 'date-fns';
+import dayjs from 'dayjs';
 
 const handleDeleteRecord = (row) => {
     if (window.confirm(`Are you sure you want to delete ${row.title}?`)) {
@@ -93,7 +93,7 @@ export default function Index({
         return category?.name || '';
     };
     const formatDate = (date) =>{
-        return date ? format(parseISO(date), 'dd/MM/yyyy') : 'N/A';
+        return date ? dayjs(date).format('DD/MM/YYYY') : 'N/A';
     }
 
     const pageTitle = 'Receivables';

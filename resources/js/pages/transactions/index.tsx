@@ -25,7 +25,7 @@ import TableFooter from '@mui/material/TableFooter';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
-import { format, parseISO } from 'date-fns';
+import dayjs from 'dayjs';
 import * as React from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -183,7 +183,7 @@ export default function Index({
         return item.record_type;
     };
     const formatDate = (date) => {
-        return date ? format(parseISO(date), 'dd/MM/yyyy') : 'N/A';
+        return date ? dayjs(date).format('DD/MM/YYYY') : 'N/A';
     };
     const formatNumber = (value, currency) => {
         return value
