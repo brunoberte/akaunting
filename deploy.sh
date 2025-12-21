@@ -18,7 +18,6 @@ docker compose -f compose.prod.yaml up -d
 echo "Update public/build files on volume"
 docker run --rm -v akaunting_laravel-public-assets:/volume_dest akaunting-web:latest sh -c "cp -a /var/www/public/build/. /volume_dest"
 
-
 echo "Copying env file"
 docker compose -f compose.prod.yaml cp .env php-fpm:/var/www/
 
