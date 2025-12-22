@@ -125,7 +125,7 @@ export default function PaymentForm({
                 <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off" onReset={handleReset} sx={{ width: '100%' }}>
                     <FormGroup>
                         <Grid container spacing={2} columns={12} sx={{ mb: 2, width: '100%' }}>
-                            <Grid size="auto">
+                            <Grid size={{ xs: 12, sm: 'auto' }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'pt-br'}>
                                     <StaticDatePicker
                                         value={transferredAt}
@@ -141,7 +141,7 @@ export default function PaymentForm({
                                 </LocalizationProvider>
                             </Grid>
 
-                            <Grid size="grow">
+                            <Grid size={{ xs: 12, sm: 'grow' }}>
                                 <FormControl error={!!errors.from_account_id} variant="standard" fullWidth>
                                     <InputLabel shrink={true}>From Account</InputLabel>
                                     <NativeSelect

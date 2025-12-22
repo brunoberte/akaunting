@@ -157,7 +157,7 @@ export default function ReceivableForm({
                 <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off" onReset={handleReset} sx={{ width: '100%' }}>
                     <FormGroup>
                         <Grid container spacing={2} columns={12} sx={{ mb: 2, width: '100%' }}>
-                            <Grid size={{ xs: 12, sm: 4 }}>
+                            <Grid size={{ xs: 12, sm: "auto" }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'pt-br'}>
                                     <StaticDatePicker
                                         value={dueAt}
@@ -173,7 +173,7 @@ export default function ReceivableForm({
                                 </LocalizationProvider>
                             </Grid>
 
-                            <Grid size={{ xs: 12, sm: 8 }}>
+                            <Grid size={{ xs: 12, sm: "grow" }}>
                                 <FormControl error={!!errors.title} variant="standard" fullWidth>
                                     <TextField
                                         value={data.title ?? ''}
