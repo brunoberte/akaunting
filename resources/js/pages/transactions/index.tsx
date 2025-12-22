@@ -205,21 +205,39 @@ export default function Index({
                 title={pageTitle}
                 breadcrumbs={[{ title: pageTitle }]}
                 actions={
-                    <Stack direction="row" alignItems="center" spacing={1}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'stretch', sm: 'center' }} spacing={1}>
                         <Tooltip title="Reload data" placement="right" enterDelay={1000}>
-                            <div>
+                            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                                 <IconButton size="small" aria-label="refresh" onClick={handleRefresh}>
                                     <RefreshIcon />
                                 </IconButton>
-                            </div>
+                            </Box>
                         </Tooltip>
-                        <Button component={Link} variant="contained" href={route('transactions.payments.new', {'account_id': selectedAccount})} startIcon={<AddIcon />} size={'small'}>
+                        <Button
+                            component={Link}
+                            variant="contained"
+                            href={route('transactions.payments.new', { account_id: selectedAccount })}
+                            startIcon={<AddIcon />}
+                            size={'small'}
+                        >
                             Payment
                         </Button>
-                        <Button component={Link} variant="contained" href={route('transactions.revenues.new', {'account_id': selectedAccount})} startIcon={<AddIcon />} size={'small'}>
+                        <Button
+                            component={Link}
+                            variant="contained"
+                            href={route('transactions.revenues.new', { account_id: selectedAccount })}
+                            startIcon={<AddIcon />}
+                            size={'small'}
+                        >
                             Revenue
                         </Button>
-                        <Button component={Link} variant="contained" href={route('transactions.transfers.new', {'account_id': selectedAccount})} startIcon={<AddIcon />} size={'small'}>
+                        <Button
+                            component={Link}
+                            variant="contained"
+                            href={route('transactions.transfers.new', { account_id: selectedAccount })}
+                            startIcon={<AddIcon />}
+                            size={'small'}
+                        >
                             Transfer
                         </Button>
                     </Stack>
