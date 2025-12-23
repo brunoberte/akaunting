@@ -11,11 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /var/www
 
+COPY package.json /var/www
+COPY package-lock.json /var/www
+RUN npm install
+
 # Copy Laravel application code
 COPY . /var/www
 
 # Install Node.js dependencies and build assets
-RUN npm install && npm run build
+RUN npm run build
 
 # Stage 2: Nginx production image
 FROM nginx:alpine

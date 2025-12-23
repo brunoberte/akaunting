@@ -12,7 +12,7 @@ git pull origin main
 # 2. Reconstruir e subir os containers
 # O flag --build garante que o Dockerfile seja processado novamente (npm run build, etc)
 echo "Rebuilding containers..."
-docker compose -f compose.prod.yaml build --build-arg SOURCE_DATE_EPOCH=$(date +%s)
+docker compose -f compose.prod.yaml build --build-arg SOURCE_DATE_EPOCH="$(date +%s)"
 docker compose -f compose.prod.yaml up -d
 
 echo "Update public/build files on volume"
@@ -23,7 +23,16 @@ docker compose -f compose.prod.yaml cp .env php-fpm:/var/www/
 
 # 3. Instalar dependências do Composer (dentro do container PHP)
 echo "Installing composer dependencies..."
-docker compose -f compose.prod.yaml exec -T php-fpm composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+COMPOSER_HASH=$(md5sum composer.lock | cut -d' ' -f1)
+CACHE_FILE=".composer_hash_cache"
+
+if [ -f "$CACHE_FILE" ] && [ "$(cat $CACHE_FILE)" == "$COMPOSER_HASH" ]; then
+    echo "⏭️ composer.lock não alterado, pulando instalação..."
+else
+    echo "Installing composer dependencies..."
+    docker compose -f compose.prod.yaml exec -T php-fpm composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+    echo "$COMPOSER_HASH" > "$CACHE_FILE"
+fi
 
 # 4. Executar migrações do banco de dados
 #echo "Running database migrations..."
