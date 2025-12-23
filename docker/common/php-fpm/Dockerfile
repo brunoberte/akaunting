@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     libcurl4-openssl-dev \
     libicu-dev \
+    git \
     libzip-dev \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
@@ -21,7 +22,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     opcache \
     intl \
     zip \
-    git \
     bcmath \
     soap \
     && pecl install redis \
