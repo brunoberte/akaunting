@@ -51,9 +51,11 @@ WORKDIR /var/www
 
 COPY composer.json /var/www
 COPY composer.lock /var/www
+COPY artisan /var/www
 
 # Install Composer dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+RUN --mount=type=cache,target=/root/.composer/cache \
+    composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
 
 COPY . /var/www
 

@@ -13,7 +13,8 @@ WORKDIR /var/www
 
 COPY package.json /var/www
 COPY package-lock.json /var/www
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm \
+    npm install
 
 # Copy Laravel application code
 COPY . /var/www
