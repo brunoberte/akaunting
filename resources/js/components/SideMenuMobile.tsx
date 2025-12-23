@@ -18,6 +18,29 @@ interface SideMenuMobileProps {
 
 export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobileProps) {
   const { auth } = usePage<SharedData>().props;
+  function stringToColor(string: string) {
+      let hash = 0;
+      let i;
+      for (i = 0; i < string.length; i += 1) {
+          hash = string.charCodeAt(i) + ((hash << 5) - hash);
+      }
+
+      let color = '#';
+      for (i = 0; i < 3; i += 1) {
+          const value = (hash >> (i * 8)) & 0xff;
+          color += `00${value.toString(16)}`.slice(-2);
+      }
+      return color;
+  }
+
+  function stringAvatar(name: string) {
+      return {
+          sx: {
+              bgcolor: stringToColor(name),
+          },
+          children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+      };
+  }
   return (
       <Drawer
           anchor="right"
@@ -39,7 +62,7 @@ export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobilePro
           >
               <Stack direction="row" sx={{ p: 2, pb: 0, gap: 1 }}>
                   <Stack direction="row" sx={{ gap: 1, alignItems: 'center', flexGrow: 1, p: 1 }}>
-                      <Avatar sizes="small" alt={auth.user.name} src="/static/images/avatar/7.jpg" sx={{ width: 24, height: 24 }} />
+                      <Avatar {...stringAvatar(auth.user.name)} />
                       <Typography component="p" variant="h6">
                           {auth.user.name}
                       </Typography>

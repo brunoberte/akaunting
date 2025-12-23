@@ -2,6 +2,7 @@ import PageContainer from '@/components/PageContainer';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -29,6 +30,12 @@ import dayjs from 'dayjs';
 import * as React from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import Chip from '@mui/material/Chip';
+import { CardActions } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
 
 export const schema = z.object({
     id: z.number(),
@@ -39,6 +46,7 @@ export const schema = z.object({
     balance: z.number(),
     credit: z.number().optional(),
     debit: z.number().optional(),
+    currency_code: z.number().optional(),
     description: z.string(),
     is_transfer: z.boolean(),
     transfer_account_id: z.number(),
@@ -72,11 +80,11 @@ export default function Index({
     category_list: category_list,
 }: {
     account_id: string;
-    pagination_data: z.infer<typeof pagination_schema>[];
+    pagination_data: z.infer<typeof pagination_schema>;
     account_list: Array<IdNameCurrencyCode>;
     category_list: Array<IdNameType>;
 }) {
-    const [selectedAccount, setSelectedAccount] = React.useState(account_id);
+    const [selectedAccount, setSelectedAccount] = React.useState<number>(account_id);
 
     const handleRefresh = React.useCallback(() => {
         router.reload();
@@ -127,23 +135,21 @@ export default function Index({
 
     const handleEditRecord = (row) => {
         try {
-            let route_name = '';
             switch (row.record_type) {
                 case 'Payment':
-                    route_name = 'transactions.payments.edit';
+                    router.visit(route('transactions.payments.edit', [row.id]));
                     break;
                 case 'Revenue':
-                    route_name = 'transactions.revenues.edit';
+                    router.visit(route('transactions.revenues.edit', [row.id]));
                     break;
                 case 'TransferPayment':
                 case 'TransferRevenue':
-                    route_name = 'transactions.transfers.edit';
+                    router.visit(route('transactions.transfers.edit', [row.transfer_id]));
                     break;
                 default:
                     toast.error('Not implemented');
                     return;
             }
-            router.visit(route(route_name, [row.id]));
         } catch (error) {
             toast.error(error);
         }
@@ -182,7 +188,16 @@ export default function Index({
         }
         return item.record_type;
     };
-    const formatDate = (date) => {
+    const formatMobileDescription = (item: z.infer<typeof schema>) => {
+        if (item.record_type == 'TransferPayment') {
+            return 'Transfer to ' + getAccountName(item.transfer_account_id);
+        }
+        if (item.record_type == 'TransferRevenue') {
+            return 'Transfer from ' + getAccountName(item.transfer_account_id);
+        }
+        return getCategoryName(item.category_id);
+    };
+    const formatDate = (date: string) => {
         return date ? dayjs(date).format('DD/MM/YYYY') : 'N/A';
     };
     const formatNumber = (value, currency) => {
@@ -250,7 +265,7 @@ export default function Index({
                             sx={{
                                 borderRadius: 'sm',
                                 py: 2,
-                                display: { xs: 'none', sm: 'flex' },
+                                display: 'flex',
                                 flexWrap: 'wrap',
                                 gap: 1.5,
                                 '& > *': {
@@ -269,7 +284,60 @@ export default function Index({
                             </FormControl>
                         </Box>
 
-                        <TableContainer component={Paper}>
+                        <Stack sx={{ display: { xs: '', md: 'none' } }}>
+                            {pagination_data.data.map((row) => (
+                                <Card key={row.id} variant={'outlined'}>
+                                    <CardContent>
+                                        <Typography variant="h6" component="div">
+                                            {formatMobileDescription(row)}
+                                        </Typography>
+                                        <Stack direction="row" spacing={1}>
+                                            <Chip color="info" label={formatDate(row.paid_at)} variant="outlined" />
+                                            {row.credit && (
+                                                <Chip
+                                                    color="info"
+                                                    avatar={
+                                                        <Avatar sx={{ bgcolor: '#FFF' }}>
+                                                            <AddIcon />
+                                                        </Avatar>
+                                                    }
+                                                    label={row.credit}
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            {row.debit && (
+                                                <Chip
+                                                    color="info"
+                                                    avatar={
+                                                        <Avatar sx={{ bgcolor: '#FFF' }}>
+                                                            <RemoveIcon />
+                                                        </Avatar>
+                                                    }
+                                                    label={row.debit}
+                                                    variant="outlined"
+                                                />
+                                            )}
+                                            {row.balance >= 0 && (
+                                                <Chip color="success" label={formatNumber(row.balance, row.currency_code)} variant="outlined" />
+                                            )}
+                                            {row.balance < 0 && (
+                                                <Chip color="error" label={formatNumber(row.balance, row.currency_code)} variant="outlined" />
+                                            )}
+                                        </Stack>
+                                    </CardContent>
+                                    <CardActions disableSpacing>
+                                        <IconButton size="small" onClick={() => handleEditRecord(row)}>
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton size="small" onClick={() => handleDeleteRecord(row)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </CardActions>
+                                </Card>
+                            ))}
+                        </Stack>
+
+                        <TableContainer component={Paper} sx={{ display: { xs: 'none', md: 'block' } }}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>

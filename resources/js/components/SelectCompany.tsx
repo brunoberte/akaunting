@@ -1,7 +1,6 @@
 import type { SharedData } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import DevicesRoundedIcon from '@mui/icons-material/DevicesRounded';
 import MuiAvatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import MuiListItemAvatar from '@mui/material/ListItemAvatar';
@@ -36,6 +35,38 @@ export default function SelectCompany() {
         router.post(route('set_active_company', { company_id: event.target.value }));
     };
 
+    const stringToColor = (string: string)=> {
+        let hash = 0;
+        let i;
+        for (i = 0; i < string.length; i += 1) {
+            hash = string.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        let color = '#';
+        for (i = 0; i < 3; i += 1) {
+            const value = (hash >> (i * 8)) & 0xff;
+            color += `00${value.toString(16)}`.slice(-2);
+        }
+        return color;
+    }
+
+    const stringAvatar = (name: string)=> {
+        let letters;
+        const parts = name.split(' ');
+        if (parts.length > 1) {
+            letters = [parts[0][0], parts[1][0]];
+        } else {
+            letters = [parts[0][0]];
+        }
+
+        return {
+            sx: {
+                bgcolor: stringToColor(name),
+            },
+            children: letters,
+        };
+    }
+
     return (
         <Select
             labelId="company-select"
@@ -63,15 +94,13 @@ export default function SelectCompany() {
             {auth.companies.map((row) => (
                 <MenuItem value={row.id}>
                     <ListItemAvatar>
-                        <Avatar alt={row.name}>
-                            <DevicesRoundedIcon sx={{ fontSize: '1rem' }} />
-                        </Avatar>
+                        <Avatar {...stringAvatar(row.name)} />
                     </ListItemAvatar>
                     <ListItemText primary={row.name} />
                 </MenuItem>
             ))}
             <Divider sx={{ mx: -1 }} />
-            <MenuItem value={"manage-companies"}>
+            <MenuItem value={'manage-companies'}>
                 <ListItemIcon>
                     <AddRoundedIcon />
                 </ListItemIcon>

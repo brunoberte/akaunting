@@ -38,10 +38,11 @@ class TransactionsController extends Controller
         /** @var Account $account */
         $account = Account::query()->find($request->get('account_id'));
         $transfer_category = Category::transfer();
-        $table_prefix = env('DB_PREFIX', 'ak_');
+        $table_prefix = config('custom.database_prefix');
         $payments = DB::table('payments')
             ->selectRaw(<<<SQL
                 {$table_prefix}payments.id,
+                {$table_prefix}transfers.id as transfer_id,
                 'Payment' as record_type,
                 {$table_prefix}payments.paid_at,
                 {$table_prefix}payments.created_at,
@@ -64,6 +65,7 @@ class TransactionsController extends Controller
         $revenues = DB::table('revenues')
             ->selectRaw(<<<SQL
                 {$table_prefix}revenues.id,
+                {$table_prefix}transfers.id as transfer_id,
                 'Revenue' as record_type,
                 {$table_prefix}revenues.paid_at,
                 {$table_prefix}revenues.created_at,
@@ -95,6 +97,7 @@ class TransactionsController extends Controller
                 $is_transfer = $item->category_id == $transfer_category;
                 $ret = [
                     'id'                  => $item->id,
+                    'transfer_id'         => $item->transfer_id,
                     'record_type'         => $is_transfer ? 'Transfer' . $item->record_type : $item->record_type,
                     'paid_at'             => Carbon::createFromFormat('Y-m-d H:i:s', $item->paid_at)->format('Y-m-d'),
                     'is_transfer'         => $is_transfer,
