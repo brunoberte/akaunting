@@ -38,7 +38,6 @@ type RevenueModel = {
 };
 type AccountBasicType = { id: string | number; name: string; currency_code: string; balance: number };
 type IdNameType = { id: string | number; name: string };
-type IdNameTypeType = { id: string | number; name: string; type: string };
 
 export default function RevenueForm({
     revenue,
@@ -48,7 +47,7 @@ export default function RevenueForm({
 }: {
     revenue: RevenueModel;
     account_list: Array<AccountBasicType>;
-    category_list: Array<IdNameTypeType>;
+    category_list: Array<IdNameType>;
     customer_list: Array<IdNameType>;
 }) {
     const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm<Required<RevenueModel>>({

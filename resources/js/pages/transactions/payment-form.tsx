@@ -38,7 +38,6 @@ type PaymentModel = {
 };
 type AccountBasicType = { id: string | number; name: string; currency_code: string; balance: number };
 type IdNameType = { id: string | number; name: string };
-type IdNameTypeType = { id: string | number; name: string; type: string };
 
 export default function PaymentForm({
     payment,
@@ -48,7 +47,7 @@ export default function PaymentForm({
 }: {
     payment: PaymentModel;
     account_list: Array<AccountBasicType>;
-    category_list: Array<IdNameTypeType>;
+    category_list: Array<IdNameType>;
     vendor_list: Array<IdNameType>;
 }) {
     const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm<Required<PaymentModel>>({

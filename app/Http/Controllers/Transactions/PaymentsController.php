@@ -28,7 +28,7 @@ class PaymentsController extends Controller
                 'payment'       => $payment,
                 'vendor_list'   => fn() => Vendor::enabled()->orderBy('name')->select(['name', 'id'])->get()->collect()->toArray(),
                 'account_list'  => fn() => Account::enabled()->orderBy('name')->select(['name', 'currency_code', 'id'])->get()->collect()->toArray(),
-                'category_list' => fn() => Category::enabled()->orderBy('name')->select(['id', 'name', 'type'])->get()->collect()->toArray(),
+                'category_list' => fn() => Category::enabled()->orderBy('name')->where('type', 'expense')->select(['id', 'name'])->get()->collect()->toArray(),
             ]
         );
     }
@@ -41,7 +41,7 @@ class PaymentsController extends Controller
                 'payment'       => $payment,
                 'vendor_list'   => fn() => Vendor::enabled()->orderBy('name')->select(['name', 'id'])->get()->collect()->toArray(),
                 'account_list'  => fn() => Account::enabled()->orderBy('name')->select(['name', 'currency_code', 'id'])->get()->collect()->toArray(),
-                'category_list' => fn() => Category::enabled()->orderBy('name')->select(['id', 'name', 'type'])->get()->collect()->toArray(),
+                'category_list' => fn() => Category::enabled()->orderBy('name')->where('type', 'expense')->select(['id', 'name'])->get()->collect()->toArray(),
             ]
         );
     }

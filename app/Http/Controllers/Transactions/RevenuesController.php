@@ -43,7 +43,7 @@ class RevenuesController extends Controller
                 'revenue'       => $revenue,
                 'customer_list' => fn() => Customer::enabled()->orderBy('name')->select(['name', 'id'])->get()->collect()->toArray(),
                 'account_list'  => fn() => Account::enabled()->orderBy('name')->select(['name', 'currency_code', 'id'])->get()->collect()->toArray(),
-                'category_list' => fn() => Category::enabled()->orderBy('name')->select(['id', 'name', 'type'])->get()->collect()->toArray(),
+                'category_list' => fn() => Category::enabled()->orderBy('name')->where('type', 'income')->select(['id', 'name'])->get()->collect()->toArray(),
             ]
         );
     }
@@ -56,7 +56,7 @@ class RevenuesController extends Controller
                 'revenue'       => $revenue,
                 'customer_list' => fn() => Customer::enabled()->orderBy('name')->select(['name', 'id'])->get()->collect()->toArray(),
                 'account_list'  => fn() => Account::enabled()->orderBy('name')->select(['name', 'currency_code', 'id'])->get()->collect()->toArray(),
-                'category_list' => fn() => Category::enabled()->orderBy('name')->select(['id', 'name', 'type'])->get()->collect()->toArray(),
+                'category_list' => fn() => Category::enabled()->orderBy('name')->where('type', 'income')->select(['id', 'name'])->get()->collect()->toArray(),
             ]
         );
     }
