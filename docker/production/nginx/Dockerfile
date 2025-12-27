@@ -13,13 +13,13 @@ WORKDIR /var/www
 
 COPY package.json /var/www
 COPY package-lock.json /var/www
-COPY .env /var/www
 RUN --mount=type=cache,target=/root/.npm \
     npm install
 
 # Copy Laravel application code
 COPY . /var/www
 
+RUN echo 'VITE_APP_NAME=Financeiro' > /var/www/.env
 # Install Node.js dependencies and build assets
 RUN npm run build
 
