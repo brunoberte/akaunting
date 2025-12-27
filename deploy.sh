@@ -4,6 +4,7 @@
 set -e
 
 export DOCKER_BUILDKIT=1
+export COMPOSE_BAKE=true
 
 echo "🚀 Iniciando deploy da aplicação Financeiro..."
 
