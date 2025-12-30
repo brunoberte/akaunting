@@ -39,13 +39,13 @@ export interface AccountFormState {
 export default function AccountForm({ account }: { account: AccountModel }) {
     const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm<Required<AccountModel>>({
         id: account.id || null,
-        name: account.name,
-        number: account.number,
-        currency_code: account.currency_code,
+        name: account.name || '',
+        number: account.number || '',
+        currency_code: account.currency_code || 'BRL',
         opening_balance: account.opening_balance || 0,
-        bank_name: account.bank_name,
-        bank_phone: account.bank_phone,
-        bank_address: account.bank_address,
+        bank_name: account.bank_name || '',
+        bank_phone: account.bank_phone || '',
+        bank_address: account.bank_address || '',
         enabled: account.enabled == null ? true : account.enabled,
     });
 

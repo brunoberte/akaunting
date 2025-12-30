@@ -92,7 +92,7 @@ class TransfersController extends Controller
         ];
         $transfer->update($transfer_request);
 
-        return to_route('transactions.index', ['account_id' => $request->get('from_account_id')]);
+        return to_route('transactions.index', ['account_id' => $request['from_account_id']]);
     }
 
     public function create(TransferCreateRequest $request): RedirectResponse
@@ -138,7 +138,7 @@ class TransfersController extends Controller
 
         Transfer::create($transfer_request);
 
-        return to_route('transactions.index', ['account_id' => $request->get('account_id')]);
+        return to_route('transactions.index', ['account_id' => $request['from_account_id']]);
     }
 
     public function destroy(Transfer $transfer): RedirectResponse
