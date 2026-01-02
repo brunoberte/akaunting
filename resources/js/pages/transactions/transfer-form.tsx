@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Transition } from '@headlessui/react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -10,8 +11,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
-import NativeSelect from '@mui/material/NativeSelect';
-import { SelectProps } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { StaticDatePicker } from '@mui/x-date-pickers';
@@ -53,10 +52,11 @@ export default function PaymentForm({
         reference: record.reference || null,
     });
 
-    const [transferredAt, setTransferredAt] = React.useState<Dayjs | null>(dayjs(data.transferred_at || null, 'YYYY-MM-DD HH:mm:ss'));
+    const [transferredAt, setTransferredAt] = React.useState<Dayjs | null>(dayjs(data.transferred_at || null, 'YYYY-MM-DD'));
     const [amount, setAmount] = React.useState(AutoNumeric.format(data.amount || '0'));
 
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [selectedAccountFrom, setSelectedAccountFrom] = React.useState<AccountBasicType | null>(account_list.find((x) => x.id == data.from_account_id) || null);
+    const [selectedAccountTo, setSelectedAccountTo] = React.useState<AccountBasicType | null>(account_list.find((x) => x.id == data.to_account_id) || null);
 
     React.useEffect(() => {
         setData('amount', AutoNumeric.unformat(amount));
@@ -69,37 +69,25 @@ export default function PaymentForm({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        setIsSubmitting(true);
-        try {
-            if (data.id === null) {
-                post(route('transactions.transfers.create'), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Transfer created successfully');
-                    },
-                });
-            } else {
-                patch(route('transactions.transfers.update', data.id), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Transfer updated successfully');
-                    },
-                });
-            }
-        } finally {
-            setIsSubmitting(false);
+        if (data.id === null) {
+            post(route('transactions.transfers.create'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Transfer created successfully');
+                },
+            });
+        } else {
+            patch(route('transactions.transfers.update', data.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Transfer updated successfully');
+                },
+            });
         }
     };
 
     const handleTextFieldChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
-            setData(event.target.name, event.target.value);
-        },
-        [setData],
-    );
-
-    const handleSelectFieldChange = React.useCallback(
-        (event: SelectChangeEvent) => {
             setData(event.target.name, event.target.value);
         },
         [setData],
@@ -144,38 +132,33 @@ export default function PaymentForm({
                             <Grid size={{ xs: 12, sm: 'grow' }}>
                                 <FormControl error={!!errors.from_account_id} variant="standard" fullWidth>
                                     <InputLabel shrink={true}>From Account</InputLabel>
-                                    <NativeSelect
-                                        value={data.from_account_id ?? ''}
-                                        autoFocus={true}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="from_account_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {account_list.map((account) => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <Autocomplete
+                                        options={account_list}
+                                        getOptionLabel={(option: AccountBasicType) => option.name}
+                                        getOptionKey={(option: AccountBasicType) => option.id}
+                                        value={selectedAccountFrom}
+                                        onChange={(event, newValue: AccountBasicType) => {
+                                            setSelectedAccountFrom(newValue);
+                                            setData('from_account_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.from_account_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
                                 <FormControl error={!!errors.to_account_id} variant="standard" fullWidth>
                                     <InputLabel shrink={true}>To Account</InputLabel>
-                                    <NativeSelect
-                                        value={data.to_account_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="to_account_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {account_list.map((account) => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <Autocomplete
+                                        options={account_list}
+                                        getOptionLabel={(option: AccountBasicType) => option.name}
+                                        getOptionKey={(option: AccountBasicType) => option.id}
+                                        value={selectedAccountTo}
+                                        onChange={(event, newValue: AccountBasicType) => {
+                                            setSelectedAccountTo(newValue);
+                                            setData('to_account_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.to_account_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -231,7 +214,7 @@ export default function PaymentForm({
                         >
                             Back
                         </Button>
-                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={isSubmitting || processing}>
+                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={processing}>
                             Save
                         </Button>
 

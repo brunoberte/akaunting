@@ -10,8 +10,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
-import NativeSelect from '@mui/material/NativeSelect';
-import { SelectProps } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { StaticDatePicker } from '@mui/x-date-pickers';
@@ -24,6 +22,7 @@ import { AutoNumericMaterialUIInput } from 'material-ui-autonumeric';
 import * as React from 'react';
 import { toast } from 'sonner';
 import { ErrorList } from '@/components/ui/error-list';
+import Autocomplete from '@mui/material/Autocomplete';
 
 type PaymentModel = {
     id: number | null;
@@ -65,7 +64,15 @@ export default function PaymentForm({
     const [paidAt, setPaidAt] = React.useState<Dayjs | null>(dayjs(data.paid_at || null, 'YYYY-MM-DD HH:mm:ss'));
     const [amount, setAmount] = React.useState(AutoNumeric.format(data.amount || '0'));
 
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [selectedAccount, setSelectedAccount] = React.useState<AccountBasicType | null>(
+        account_list.find((x) => x.id == data.account_id) || null,
+    );
+    const [selectedCategory, setSelectedCategory] = React.useState<IdNameType | null>(
+        category_list.find((x) => x.id == data.category_id) || null,
+    );
+    const [selectedVendor, setSelectedVendor] = React.useState<IdNameType | null>(
+        vendor_list.find((x) => x.id == data.vendor_id) || null,
+    );
 
     React.useEffect(() => {
         setData('amount', AutoNumeric.unformat(amount));
@@ -82,25 +89,20 @@ export default function PaymentForm({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        setIsSubmitting(true);
-        try {
-            if (data.id === null) {
-                post(route('transactions.payments.create'), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Payment created successfully');
-                    },
-                });
-            } else {
-                patch(route('transactions.payments.update', data.id), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Payment updated successfully');
-                    },
-                });
-            }
-        } finally {
-            setIsSubmitting(false);
+        if (data.id === null) {
+            post(route('transactions.payments.create'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Payment created successfully');
+                },
+            });
+        } else {
+            patch(route('transactions.payments.update', data.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Payment updated successfully');
+                },
+            });
         }
     };
 
@@ -116,13 +118,6 @@ export default function PaymentForm({
 
     const handleTextFieldChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
-            setData(event.target.name, event.target.value);
-        },
-        [setData],
-    );
-
-    const handleSelectFieldChange = React.useCallback(
-        (event: SelectChangeEvent) => {
             setData(event.target.name, event.target.value);
         },
         [setData],
@@ -166,44 +161,35 @@ export default function PaymentForm({
 
                             <Grid size={{ xs: 12, sm: 'grow' }}>
                                 <FormControl error={!!errors.account_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Account
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.account_id ?? ''}
-                                        autoFocus={true}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="account_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {account_list.map((account) => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Account</InputLabel>
+                                    <Autocomplete
+                                        options={account_list}
+                                        getOptionLabel={(option: AccountBasicType) => option.name}
+                                        getOptionKey={(option: AccountBasicType) => option.id}
+                                        value={selectedAccount}
+                                        onChange={(event, newValue: AccountBasicType) => {
+                                            setSelectedAccount(newValue);
+                                            setData('account_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>Current balance: {showCurrentBalance()}</FormHelperText>
                                     <FormHelperText>{errors.account_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
                                 <FormControl error={!!errors.category_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Category
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.category_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="category_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {category_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Category</InputLabel>
+                                    <Autocomplete
+                                        options={category_list}
+                                        getOptionLabel={(option: IdNameType) => option.name}
+                                        getOptionKey={(option: IdNameType) => option.id}
+                                        value={selectedCategory}
+                                        onChange={(event, newValue: IdNameType) => {
+                                            setSelectedCategory(newValue);
+                                            setData('category_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.category_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -227,19 +213,17 @@ export default function PaymentForm({
 
                                 <FormControl error={!!errors.vendor_id} variant="standard" fullWidth>
                                     <InputLabel shrink={true}>Vendor</InputLabel>
-                                    <NativeSelect
-                                        value={data.vendor_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="vendor_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {vendor_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <Autocomplete
+                                        options={vendor_list}
+                                        getOptionLabel={(option: IdNameType) => option.name}
+                                        getOptionKey={(option: IdNameType) => option.id}
+                                        value={selectedVendor}
+                                        onChange={(event, newValue: IdNameType) => {
+                                            setSelectedVendor(newValue);
+                                            setData('vendor_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.vendor_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -277,7 +261,7 @@ export default function PaymentForm({
                         >
                             Back
                         </Button>
-                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={isSubmitting || processing}>
+                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={  processing}>
                             Save
                         </Button>
 

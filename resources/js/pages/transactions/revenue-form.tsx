@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Transition } from '@headlessui/react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -10,8 +11,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
-import NativeSelect from '@mui/material/NativeSelect';
-import { SelectProps } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { StaticDatePicker } from '@mui/x-date-pickers';
@@ -64,8 +63,15 @@ export default function RevenueForm({
 
     const [paidAt, setPaidAt] = React.useState<Dayjs | null>(dayjs(data.paid_at || null, 'YYYY-MM-DD HH:mm:ss'));
     const [amount, setAmount] = React.useState(AutoNumeric.format(data.amount || '0'));
-
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [selectedAccount, setSelectedAccount] = React.useState<AccountBasicType | null>(
+        account_list.find((x) => x.id == data.account_id) || null
+    );
+    const [selectedCategory, setSelectedCategory] = React.useState<IdNameType | null>(
+        category_list.find((x) => x.id == data.category_id) || null
+    );
+    const [selectedCustomer, setSelectedCustomer] = React.useState<IdNameType | null>(
+        customer_list.find((x) => x.id == data.customer_id) || null
+    );
 
     React.useEffect(() => {
         setData('amount', AutoNumeric.unformat(amount));
@@ -82,25 +88,20 @@ export default function RevenueForm({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        setIsSubmitting(true);
-        try {
-            if (data.id === null) {
-                post(route('transactions.revenues.create'), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Revenue created successfully');
-                    },
-                });
-            } else {
-                patch(route('transactions.revenues.update', data.id), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Revenue updated successfully');
-                    },
-                });
-            }
-        } finally {
-            setIsSubmitting(false);
+        if (data.id === null) {
+            post(route('transactions.revenues.create'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Revenue created successfully');
+                },
+            });
+        } else {
+            patch(route('transactions.revenues.update', data.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Revenue updated successfully');
+                },
+            });
         }
     };
 
@@ -116,13 +117,6 @@ export default function RevenueForm({
 
     const handleTextFieldChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
-            setData(event.target.name, event.target.value);
-        },
-        [setData],
-    );
-
-    const handleSelectFieldChange = React.useCallback(
-        (event: SelectChangeEvent) => {
             setData(event.target.name, event.target.value);
         },
         [setData],
@@ -166,44 +160,35 @@ export default function RevenueForm({
 
                             <Grid size={{ xs: 12, sm: 'grow' }}>
                                 <FormControl error={!!errors.account_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Account
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.account_id ?? ''}
-                                        autoFocus={true}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="account_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {account_list.map((account) => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Account</InputLabel>
+                                    <Autocomplete
+                                        options={account_list}
+                                        getOptionLabel={(option: AccountBasicType) => option.name}
+                                        getOptionKey={(option: AccountBasicType) => option.id}
+                                        value={selectedAccount}
+                                        onChange={(event, newValue: AccountBasicType) => {
+                                            setSelectedAccount(newValue);
+                                            setData('account_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>Current balance: {showCurrentBalance()}</FormHelperText>
                                     <FormHelperText>{errors.account_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
                                 <FormControl error={!!errors.category_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Category
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.category_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="category_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {category_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Category</InputLabel>
+                                    <Autocomplete
+                                        options={category_list}
+                                        getOptionLabel={(option: IdNameType) => option.name}
+                                        getOptionKey={(option: IdNameType) => option.id}
+                                        value={selectedCategory}
+                                        onChange={(event, newValue: IdNameType) => {
+                                            setSelectedCategory(newValue);
+                                            setData('category_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.category_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -227,19 +212,17 @@ export default function RevenueForm({
 
                                 <FormControl error={!!errors.customer_id} variant="standard" fullWidth>
                                     <InputLabel shrink={true}>Customer</InputLabel>
-                                    <NativeSelect
-                                        value={data.customer_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="customer_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {customer_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <Autocomplete
+                                        options={customer_list}
+                                        getOptionLabel={(option: IdNameType) => option.name}
+                                        getOptionKey={(option: IdNameType) => option.id}
+                                        value={selectedCustomer}
+                                        onChange={(event, newValue: IdNameType) => {
+                                            setSelectedCustomer(newValue);
+                                            setData('customer_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.customer_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -277,7 +260,7 @@ export default function RevenueForm({
                         >
                             Back
                         </Button>
-                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={isSubmitting || processing}>
+                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={processing}>
                             Save
                         </Button>
 

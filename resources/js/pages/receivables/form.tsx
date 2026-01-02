@@ -23,6 +23,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { AutoNumericMaterialUIInput } from 'material-ui-autonumeric';
 import * as React from 'react';
 import { toast } from 'sonner';
+import Autocomplete from '@mui/material/Autocomplete';
 
 type ReceivableModel = {
     id: number | null;
@@ -72,7 +73,16 @@ export default function ReceivableForm({
 
     const [dueAt, setDueAt] = React.useState<Dayjs | null>(dayjs(data.due_at || null, 'YYYY-MM-DD HH:mm:ss'));
     const [amount, setAmount] = React.useState(AutoNumeric.format(data.amount || '0'));
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [selectedAccount, setSelectedAccount] = React.useState<IdNameCurrencyCodeSchema | null>(
+        account_list.find((x) => x.id == data.account_id) || null,
+    );
+    const [selectedCategory, setSelectedCategory] = React.useState<IdNameSchema | null>(
+        category_list.find((x) => x.id == data.category_id) || null,
+    );
+    const [selectedCustomer, setSelectedCustomer] = React.useState<IdNameSchema | null>(
+        customer_list.find((x) => x.id == data.customer_id) || null,
+    );
+
 
     const recurring_options = [
         { value: 'no', label: 'No' },
@@ -101,25 +111,20 @@ export default function ReceivableForm({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        setIsSubmitting(true);
-        try {
-            if (data.id === null) {
-                post(route('receivables.create'), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Record created successfully');
-                    },
-                });
-            } else {
-                patch(route('receivables.update', data.id), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Record updated successfully');
-                    },
-                });
-            }
-        } finally {
-            setIsSubmitting(false);
+        if (data.id === null) {
+            post(route('receivables.create'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Record created successfully');
+                },
+            });
+        } else {
+            patch(route('receivables.update', data.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Record updated successfully');
+                },
+            });
         }
     };
 
@@ -157,7 +162,7 @@ export default function ReceivableForm({
                 <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off" onReset={handleReset} sx={{ width: '100%' }}>
                     <FormGroup>
                         <Grid container spacing={2} columns={12} sx={{ mb: 2, width: '100%' }}>
-                            <Grid size={{ xs: 12, sm: "auto" }}>
+                            <Grid size={{ xs: 12, sm: 'auto' }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'pt-br'}>
                                     <StaticDatePicker
                                         value={dueAt}
@@ -173,7 +178,7 @@ export default function ReceivableForm({
                                 </LocalizationProvider>
                             </Grid>
 
-                            <Grid size={{ xs: 12, sm: "grow" }}>
+                            <Grid size={{ xs: 12, sm: 'grow' }}>
                                 <FormControl error={!!errors.title} variant="standard" fullWidth>
                                     <TextField
                                         value={data.title ?? ''}
@@ -194,22 +199,18 @@ export default function ReceivableForm({
                                 </FormControl>
 
                                 <FormControl error={!!errors.account_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Account
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.account_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="account_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {account_list.map((account) => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Account</InputLabel>
+                                    <Autocomplete
+                                        options={account_list}
+                                        getOptionLabel={(option: IdNameCurrencyCodeSchema) => option.name}
+                                        getOptionKey={(option: IdNameCurrencyCodeSchema) => option.id}
+                                        value={selectedAccount}
+                                        onChange={(event, newValue: IdNameCurrencyCodeSchema) => {
+                                            setSelectedAccount(newValue);
+                                            setData('account_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.account_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -232,40 +233,34 @@ export default function ReceivableForm({
                                 </FormControl>
 
                                 <FormControl error={!!errors.customer_id} variant="standard" fullWidth>
-                                    <InputLabel shrink={true}>Vendor</InputLabel>
-                                    <NativeSelect
-                                        value={data.customer_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="customer_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {customer_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Customer</InputLabel>
+                                    <Autocomplete
+                                        options={customer_list}
+                                        getOptionLabel={(option: IdNameSchema) => option.name}
+                                        getOptionKey={(option: IdNameSchema) => option.id}
+                                        value={selectedCustomer}
+                                        onChange={(event, newValue: IdNameSchema) => {
+                                            setSelectedCustomer(newValue);
+                                            setData('customer_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.customer_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
                                 <FormControl error={!!errors.category_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Category
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.category_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="category_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {category_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Category</InputLabel>
+                                    <Autocomplete
+                                        options={category_list}
+                                        getOptionLabel={(option: IdNameSchema) => option.name}
+                                        getOptionKey={(option: IdNameSchema) => option.id}
+                                        value={selectedCategory}
+                                        onChange={(event, newValue: IdNameSchema) => {
+                                            setSelectedCategory(newValue);
+                                            setData('category_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.category_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -298,7 +293,7 @@ export default function ReceivableForm({
                         <Button variant="contained" size="large" startIcon={<ArrowBackIcon />} onClick={handleBack}>
                             Back
                         </Button>
-                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={isSubmitting || processing}>
+                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={processing}>
                             Save
                         </Button>
 

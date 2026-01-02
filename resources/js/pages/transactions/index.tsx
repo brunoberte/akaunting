@@ -15,7 +15,6 @@ import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import NativeSelect from '@mui/material/NativeSelect';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -36,6 +35,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 export const schema = z.object({
     id: z.number(),
@@ -85,6 +86,9 @@ export default function Index({
     category_list: Array<IdNameType>;
 }) {
     const [selectedAccount, setSelectedAccount] = React.useState<number>(account_id);
+    const [selectedAccountObj, setSelectedAccountObj] = React.useState<IdNameCurrencyCode | null>(
+        account_list.find((x) => x.id == account_id) || null,
+    );
 
     const handleRefresh = React.useCallback(() => {
         router.reload();
@@ -273,14 +277,18 @@ export default function Index({
                                 },
                             }}
                         >
-                            <FormControl size="small">
-                                <NativeSelect name="account_id" value={selectedAccount} onChange={(e) => handleAccountChange(e.target.value)}>
-                                    {account_list.map((row) => (
-                                        <option key={row.id} value={row.id}>
-                                            {row.name}
-                                        </option>
-                                    ))}
-                                </NativeSelect>
+                            <FormControl size="small" fullWidth>
+                                <Autocomplete
+                                    options={account_list}
+                                    getOptionLabel={(option: IdNameCurrencyCode) => option.name}
+                                    getOptionKey={(option: IdNameCurrencyCode) => option.id}
+                                    value={selectedAccountObj}
+                                    onChange={(event, newValue: IdNameCurrencyCode) => {
+                                        handleAccountChange(newValue?.id);
+                                        setSelectedAccountObj(newValue);
+                                    }}
+                                    renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                />
                             </FormControl>
                         </Box>
 

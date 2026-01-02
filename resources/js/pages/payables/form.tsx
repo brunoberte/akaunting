@@ -23,6 +23,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { AutoNumericMaterialUIInput } from 'material-ui-autonumeric';
 import * as React from 'react';
 import { toast } from 'sonner';
+import Autocomplete from '@mui/material/Autocomplete';
 
 type PayableModel = {
     id: number | null;
@@ -72,7 +73,9 @@ export default function PayableForm({
 
     const [dueAt, setDueAt] = React.useState<Dayjs | null>(dayjs(data.due_at || null, 'YYYY-MM-DD HH:mm:ss'));
     const [amount, setAmount] = React.useState(AutoNumeric.format(data.amount || '0'));
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [selectedAccount, setSelectedAccount] = React.useState<IdNameCurrencyCodeSchema | null>(account_list.find((x) => x.id == data.account_id) || null);
+    const [selectedCategory, setSelectedCategory] = React.useState<IdNameSchema | null>(category_list.find((x) => x.id == data.category_id) || null);
+    const [selectedVendor, setSelectedVendor] = React.useState<IdNameSchema | null>(vendor_list.find((x) => x.id == data.vendor_id) || null);
 
     const recurring_options = [
         { value: 'no', label: 'No' },
@@ -101,25 +104,20 @@ export default function PayableForm({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        setIsSubmitting(true);
-        try {
-            if (data.id === null) {
-                post(route('payables.create'), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Record created successfully');
-                    },
-                });
-            } else {
-                patch(route('payables.update', data.id), {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        toast.success('Record updated successfully');
-                    },
-                });
-            }
-        } finally {
-            setIsSubmitting(false);
+        if (data.id === null) {
+            post(route('payables.create'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Record created successfully');
+                },
+            });
+        } else {
+            patch(route('payables.update', data.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Record updated successfully');
+                },
+            });
         }
     };
 
@@ -194,22 +192,18 @@ export default function PayableForm({
                                 </FormControl>
 
                                 <FormControl error={!!errors.account_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Account
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.account_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="account_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {account_list.map((account) => (
-                                            <option key={account.id} value={account.id}>
-                                                {account.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Account</InputLabel>
+                                    <Autocomplete
+                                        options={account_list}
+                                        getOptionLabel={(option: IdNameCurrencyCodeSchema) => option.name}
+                                        getOptionKey={(option: IdNameCurrencyCodeSchema) => option.id}
+                                        value={selectedAccount}
+                                        onChange={(event, newValue: IdNameCurrencyCodeSchema) => {
+                                            setSelectedAccount(newValue);
+                                            setData('account_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.account_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -233,39 +227,33 @@ export default function PayableForm({
 
                                 <FormControl error={!!errors.vendor_id} variant="standard" fullWidth>
                                     <InputLabel shrink={true}>Vendor</InputLabel>
-                                    <NativeSelect
-                                        value={data.vendor_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="vendor_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {vendor_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <Autocomplete
+                                        options={vendor_list}
+                                        getOptionLabel={(option: IdNameSchema) => option.name}
+                                        getOptionKey={(option: IdNameSchema) => option.id}
+                                        value={selectedVendor}
+                                        onChange={(event, newValue: IdNameSchema) => {
+                                            setSelectedVendor(newValue);
+                                            setData('vendor_id  ', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.vendor_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
                                 <FormControl error={!!errors.category_id} variant="standard" fullWidth>
-                                    <InputLabel id="currency_code-label" shrink={true}>
-                                        Category
-                                    </InputLabel>
-                                    <NativeSelect
-                                        value={data.category_id ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        name="category_id"
-                                        fullWidth
-                                    >
-                                        <option value=""></option>
-                                        {category_list.map((item) => (
-                                            <option key={item.id} value={item.id}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </NativeSelect>
+                                    <InputLabel shrink={true}>Category</InputLabel>
+                                    <Autocomplete
+                                        options={category_list}
+                                        getOptionLabel={(option: IdNameSchema) => option.name}
+                                        getOptionKey={(option: IdNameSchema) => option.id}
+                                        value={selectedCategory}
+                                        onChange={(event, newValue: IdNameSchema) => {
+                                            setSelectedCategory(newValue);
+                                            setData('category_id', newValue?.id);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    />
                                     <FormHelperText>{errors.category_id ?? ' '}</FormHelperText>
                                 </FormControl>
 
@@ -298,7 +286,7 @@ export default function PayableForm({
                         <Button variant="contained" size="large" startIcon={<ArrowBackIcon />} onClick={handleBack}>
                             Back
                         </Button>
-                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={isSubmitting || processing}>
+                        <Button disabled={processing} type="submit" variant="contained" size="large" loading={processing}>
                             Save
                         </Button>
 
