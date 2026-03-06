@@ -71,7 +71,7 @@ export default function ReceivableForm({
         recurring_frequency: receivable.recurring_frequency || 'no',
     });
 
-    const [dueAt, setDueAt] = React.useState<Dayjs | null>(dayjs(data.due_at || null, 'YYYY-MM-DD HH:mm:ss'));
+    const [dueAt, setDueAt] = React.useState<Dayjs | null>(dayjs(data.due_at?.replace('Z', '') || null || null, 'YYYY-MM-DD HH:mm:ss'));
     const [amount, setAmount] = React.useState(AutoNumeric.format(data.amount || '0'));
     const [selectedAccount, setSelectedAccount] = React.useState<IdNameCurrencyCodeSchema | null>(
         account_list.find((x) => x.id == data.account_id) || null,
