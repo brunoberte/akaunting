@@ -10,7 +10,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
-import { SelectChangeEvent, SelectProps } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
@@ -30,11 +29,6 @@ type AccountModel = {
     bank_address: string;
     enabled: boolean;
 };
-
-export interface AccountFormState {
-    values: Partial<Omit<AccountModel, 'id'>>;
-    errors: Partial<Record<keyof AccountFormState['values'], string>>;
-}
 
 export default function AccountForm({ account }: { account: AccountModel }) {
     const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm<Required<AccountModel>>({
@@ -81,22 +75,21 @@ export default function AccountForm({ account }: { account: AccountModel }) {
 
     const handleTextFieldChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
-            setData(event.target.name, event.target.value);
+            setData(event.target.name as keyof AccountModel, event.target.value);
         },
         [setData],
     );
 
     const handleCheckboxFieldChange = React.useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            console.log(event);
-            setData(event.target.name, event.target.checked);
+        (_event: React.SyntheticEvent<Element, Event>, checked: boolean) => {
+            setData('enabled', checked);
         },
         [setData],
     );
 
     const handleSelectFieldChange = React.useCallback(
-        (event: SelectChangeEvent) => {
-            setData(event.target.name, event.target.value);
+        (event: React.ChangeEvent<HTMLSelectElement>) => {
+            setData(event.target.name as keyof AccountModel, event.target.value);
         },
         [setData],
     );
@@ -161,8 +154,7 @@ export default function AccountForm({ account }: { account: AccountModel }) {
                                     <InputLabel id="currency_code-label" shrink={true}>Currency Code</InputLabel>
                                     <NativeSelect
                                         value={data.currency_code ?? ''}
-                                        onChange={handleSelectFieldChange as SelectProps['onChange']}
-                                        labelId="currency_code-label"
+                                        onChange={handleSelectFieldChange}
                                         name="currency_code"
                                         label="Currency Code"
                                         variant="standard"
@@ -249,10 +241,9 @@ export default function AccountForm({ account }: { account: AccountModel }) {
                             <Grid size={{ xs: 12, sm: 12 }} sx={{ display: 'flex' }}>
                                 <FormGroup>
                                     <FormControlLabel
-                                        control={<Switch defaultChecked />}
+                                        control={<Switch checked={!!data.enabled} onChange={handleCheckboxFieldChange} />}
                                         name="enabled"
                                         label={data.enabled ? 'Enabled' : 'Disabled'}
-                                        onChange={handleCheckboxFieldChange}
                                     />
                                 </FormGroup>
                             </Grid>
