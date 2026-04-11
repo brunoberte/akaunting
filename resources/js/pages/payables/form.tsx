@@ -36,6 +36,7 @@ type PayableModel = {
     category_id: number;
     notes: string;
     recurring_frequency: string;
+    recurring_count: number;
 };
 type IdNameSchema = {
     id: number;
@@ -69,6 +70,7 @@ export default function PayableForm({
         category_id: payable.category_id || 0,
         notes: payable.notes || '',
         recurring_frequency: payable.recurring_frequency || 'no',
+        recurring_count: payable.recurring_count || 0,
     });
     const [dueAt, setDueAt] = React.useState<Dayjs | null>(dayjs(data.due_at?.replace('Z', '') || null, 'YYYY-MM-DD HH:mm:ss'));
     const [amount, setAmount] = React.useState(AutoNumeric.format(data.amount || '0'));
@@ -275,6 +277,27 @@ export default function PayableForm({
                                     </NativeSelect>
                                     <FormHelperText>{errors.recurring_frequency ?? ' '}</FormHelperText>
                                 </FormControl>
+
+                                {data.recurring_frequency && data.recurring_frequency !== 'no' && (
+                                    <FormControl error={!!errors.recurring_count} variant="standard" fullWidth>
+                                        <TextField
+                                            value={data.recurring_count ?? ''}
+                                            onChange={handleTextFieldChange}
+                                            name="recurring_count"
+                                            label="Recurring Count"
+                                            type="number"
+                                            error={!!errors.recurring_count}
+                                            helperText={errors.recurring_count ?? 'O valor zero significa que será recorrência sem prazo'}
+                                            variant="standard"
+                                            fullWidth
+                                            slotProps={{
+                                                inputLabel: {
+                                                    shrink: true,
+                                                },
+                                            }}
+                                        />
+                                    </FormControl>
+                                )}
 
                                 <ErrorList errors={errors} />
                             </Grid>

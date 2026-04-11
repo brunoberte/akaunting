@@ -46,6 +46,7 @@ class PayablesController extends Controller
     public function edit(Payable $payable): Response
     {
         $payable->recurring_frequency = $payable->recurring?->frequency;
+        $payable->recurring_count = $payable->recurring?->count;
         return Inertia::render(
             'payables/form',
             [

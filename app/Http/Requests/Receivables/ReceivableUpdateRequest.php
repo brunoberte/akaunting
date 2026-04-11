@@ -27,6 +27,7 @@ class ReceivableUpdateRequest extends AppCustomRequest
             'category_id'         => ['required', 'exists:categories,id'],
             'notes'               => ['nullable', 'string', 'max:2000'],
             'recurring_frequency' => ['required', 'string', Rule::in(['no', 'weekly', 'monthly', 'yearly'])],
+            'recurring_count'     => ['nullable', 'integer', 'min:0'],
         ];
     }
 }

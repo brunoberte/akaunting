@@ -36,6 +36,7 @@ type ReceivableModel = {
     category_id: number;
     notes: string;
     recurring_frequency: string;
+    recurring_count: number;
 };
 type IdNameSchema = {
     id: number;
@@ -69,6 +70,7 @@ export default function ReceivableForm({
         category_id: receivable.category_id || 0,
         notes: receivable.notes || '',
         recurring_frequency: receivable.recurring_frequency || 'no',
+        recurring_count: receivable.recurring_count || 0,
     });
 
     const [dueAt, setDueAt] = React.useState<Dayjs | null>(dayjs(data.due_at?.replace('Z', '') || null || null, 'YYYY-MM-DD HH:mm:ss'));
@@ -283,6 +285,27 @@ export default function ReceivableForm({
                                     </NativeSelect>
                                     <FormHelperText>{errors.recurring_frequency ?? ' '}</FormHelperText>
                                 </FormControl>
+
+                                {data.recurring_frequency && data.recurring_frequency !== 'no' && (
+                                    <FormControl error={!!errors.recurring_count} variant="standard" fullWidth>
+                                        <TextField
+                                            value={data.recurring_count ?? ''}
+                                            onChange={handleTextFieldChange}
+                                            name="recurring_count"
+                                            label="Recurring Count"
+                                            type="number"
+                                            error={!!errors.recurring_count}
+                                            helperText={errors.recurring_count ?? 'O valor zero significa que será recorrência sem prazo'}
+                                            variant="standard"
+                                            fullWidth
+                                            slotProps={{
+                                                inputLabel: {
+                                                    shrink: true,
+                                                },
+                                            }}
+                                        />
+                                    </FormControl>
+                                )}
 
                                 <ErrorList errors={errors} />
                             </Grid>

@@ -46,6 +46,7 @@ class ReceivablesController extends Controller
     public function edit(Receivable $receivable): Response
     {
         $receivable->recurring_frequency = $receivable->recurring?->frequency;
+        $receivable->recurring_count = $receivable->recurring?->count;
         return Inertia::render(
             'receivables/form',
             [
