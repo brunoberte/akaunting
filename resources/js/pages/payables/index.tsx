@@ -50,6 +50,7 @@ type PayableModel = {
     category_id: number;
     notes: string;
     recurring_frequency: string;
+    recurring_count: number;
 };
 type IdNameSchema = {
     id: number;
@@ -194,7 +195,7 @@ export default function Index({
                                             <TableCell>{getVendorName(row.vendor_id)}</TableCell>
                                             <TableCell>{getCategoryName(row.category_id)}</TableCell>
                                             <TableCell sx={{whiteSpace: 'nowrap'}}>{row.currency_code} {row.amount}</TableCell>
-                                            <TableCell>{row.recurring_frequency}</TableCell>
+                                            <TableCell>{row.recurring_frequency}{row.recurring_count > 0 ? ' (' + row.recurring_count + ')' : ''}</TableCell>
                                             <TableCell align="right">
                                                 <IconButton component={Link} size="small" href={route('payables.edit', { payable: row.id })}>
                                                     <EditIcon />
