@@ -7,7 +7,6 @@ FROM php:8.4-fpm AS builder
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
-    libpq-dev \
     libonig-dev \
     libssl-dev \
     libxml2-dev \
@@ -17,8 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
-    pdo_pgsql \
-    pgsql \
     opcache \
     intl \
     zip \
