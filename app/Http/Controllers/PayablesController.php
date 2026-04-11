@@ -108,4 +108,36 @@ class PayablesController extends Controller
         $payable->delete();
         return to_route('payables.index');
     }
+
+    public function skipNext(Payable $payable): RedirectResponse
+    {
+        $recurring = $payable->recurring;
+        if (!$recurring) {
+            return to_route('payables.index');
+        }
+
+        switch ($recurring->frequency) {
+            case 'daily':
+                $payable->due_at = $payable->due_at->addDays($recurring->interval);
+                break;
+            case 'weekly':
+                $payable->due_at = $payable->due_at->addWeeks($recurring->interval);
+                break;
+            case 'monthly':
+                $payable->due_at = $payable->due_at->addMonths($recurring->interval);
+                break;
+            case 'yearly':
+                $payable->due_at = $payable->due_at->addYears($recurring->interval);
+                break;
+        }
+
+        $payable->save();
+
+        if ($recurring->count > 0) {
+            $recurring->count--;
+            $recurring->save();
+        }
+
+        return to_route('payables.index');
+    }
 }

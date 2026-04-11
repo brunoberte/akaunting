@@ -109,4 +109,36 @@ class ReceivablesController extends Controller
         $receivable->delete();
         return to_route('receivables.index');
     }
+
+    public function skipNext(Receivable $receivable): RedirectResponse
+    {
+        $recurring = $receivable->recurring;
+        if (!$recurring) {
+            return to_route('receivables.index');
+        }
+
+        switch ($recurring->frequency) {
+            case 'daily':
+                $receivable->due_at = $receivable->due_at->addDays($recurring->interval);
+                break;
+            case 'weekly':
+                $receivable->due_at = $receivable->due_at->addWeeks($recurring->interval);
+                break;
+            case 'monthly':
+                $receivable->due_at = $receivable->due_at->addMonths($recurring->interval);
+                break;
+            case 'yearly':
+                $receivable->due_at = $receivable->due_at->addYears($recurring->interval);
+                break;
+        }
+
+        $receivable->save();
+
+        if ($recurring->count > 0) {
+            $recurring->count--;
+            $recurring->save();
+        }
+
+        return to_route('receivables.index');
+    }
 }

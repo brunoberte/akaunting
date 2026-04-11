@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
@@ -107,6 +108,17 @@ export default function Index({
         router.get(route('payables.new'));
     }, []);
 
+    const handleSkipNext = (row: PayableModel) => {
+        if (window.confirm(`Mover ${row.title} para a próxima data?`)) {
+            router.post(route('payables.skip-next', [row.id]), {}, {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => toast.success(`Data de ${row.title} atualizada`),
+                onError: () => toast.error('Falha ao atualizar data'),
+            });
+        }
+    };
+
     const getAccountName = (id: number) => {
         const account = account_list.find((x) => x.id == id);
         return account?.name || '';
@@ -183,7 +195,7 @@ export default function Index({
                                         <TableCell>Category</TableCell>
                                         <TableCell>Amount</TableCell>
                                         <TableCell>Recurring</TableCell>
-                                        <TableCell sx={{minWidth: '120px'}}></TableCell>
+                                        <TableCell sx={{minWidth: '140px'}}></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -197,6 +209,13 @@ export default function Index({
                                             <TableCell sx={{whiteSpace: 'nowrap'}}>{row.currency_code} {row.amount}</TableCell>
                                             <TableCell>{row.recurring_frequency}{row.recurring_count > 0 ? ' (' + row.recurring_count + ')' : ''}</TableCell>
                                             <TableCell align="right">
+                                                {row.recurring_frequency && (
+                                                    <Tooltip title="Mover para próxima data">
+                                                        <IconButton size="small" onClick={() => handleSkipNext(row)}>
+                                                            <SkipNextIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
                                                 <IconButton component={Link} size="small" href={route('payables.edit', { payable: row.id })}>
                                                     <EditIcon />
                                                 </IconButton>

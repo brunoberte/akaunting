@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
@@ -25,7 +26,7 @@ import * as React from 'react';
 import { toast } from 'sonner';
 import dayjs from 'dayjs';
 
-const handleDeleteRecord = (row) => {
+const handleDeleteRecord = (row: ReceivableModel) => {
     if (window.confirm(`Are you sure you want to delete ${row.title}?`)) {
         try {
             router.delete(route('receivables.delete', [row.id]), {
@@ -42,6 +43,29 @@ const handleDeleteRecord = (row) => {
     }
 };
 
+type ReceivableModel = {
+    id: number | null;
+    account_id: number;
+    due_at: string;
+    currency_code: string;
+    amount: number;
+    title: string;
+    customer_id: number;
+    category_id: number;
+    notes: string;
+    recurring_frequency: string;
+    recurring_count: number;
+};
+type IdNameSchema = {
+    id: number;
+    name: string;
+};
+type IdNameCurrencyCodeSchema = {
+    id: number;
+    name: string;
+    currency_code: string;
+};
+
 export default function Index({
     record_list: record_list,
     account_list: account_list,
@@ -49,7 +73,10 @@ export default function Index({
     customer_list: customer_list,
     filter_text: filter_text = '',
 }: {
-
+    record_list: ReceivableModel[];
+    account_list: IdNameCurrencyCodeSchema[];
+    category_list: IdNameSchema[];
+    customer_list: IdNameSchema[];
     filter_text: string;
 }) {
     const [filterText, setFilterText] = React.useState(filter_text || '');
@@ -80,19 +107,34 @@ export default function Index({
         });
     }, [filterText]);
 
-    const getAccountName = (id) => {
+    const handleCreateClick = React.useCallback(() => {
+        router.get(route('receivables.new'));
+    }, []);
+
+    const handleSkipNext = (row: ReceivableModel) => {
+        if (window.confirm(`Mover ${row.title} para a próxima data?`)) {
+            router.post(route('receivables.skip-next', [row.id]), {}, {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => toast.success(`Data de ${row.title} atualizada`),
+                onError: () => toast.error('Falha ao atualizar data'),
+            });
+        }
+    };
+
+    const getAccountName = (id: number) => {
         const account = account_list.find((x) => x.id == id);
         return account?.name || '';
     };
-    const getCustomerName = (id) => {
+    const getCustomerName = (id: number) => {
         const customer = customer_list.find((x) => x.id == id);
         return customer?.name || '';
     };
-    const getCategoryName = (id) => {
+    const getCategoryName = (id: number) => {
         const category = category_list.find((x) => x.id == id);
         return category?.name || '';
     };
-    const formatDate = (date) =>{
+    const formatDate = (date: string) =>{
         return date ? dayjs(date).format('DD/MM/YYYY') : 'N/A';
     }
 
@@ -113,7 +155,7 @@ export default function Index({
                                 </IconButton>
                             </div>
                         </Tooltip>
-                        <Button component={Link} variant="contained" href={route('receivables.new')} startIcon={<AddIcon />} size={'small'}>
+                        <Button variant="contained" onClick={handleCreateClick} startIcon={<AddIcon />} size={'small'}>
                             Create
                         </Button>
                     </Stack>
@@ -168,8 +210,15 @@ export default function Index({
                                             <TableCell>{getCustomerName(row.customer_id)}</TableCell>
                                             <TableCell>{getCategoryName(row.category_id)}</TableCell>
                                             <TableCell sx={{whiteSpace: 'nowrap'}}>{row.currency_code} {row.amount}</TableCell>
-                                            <TableCell>{row.recurring_frequency}</TableCell>
+                                            <TableCell>{row.recurring_frequency}{row.recurring_count > 0 ? ' (' + row.recurring_count + ')' : ''}</TableCell>
                                             <TableCell align="right">
+                                                {row.recurring_frequency && (
+                                                    <Tooltip title="Mover para próxima data">
+                                                        <IconButton size="small" onClick={() => handleSkipNext(row)}>
+                                                            <SkipNextIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
                                                 <IconButton component={Link} size="small" href={route('receivables.edit', { receivable: row.id })}>
                                                     <EditIcon />
                                                 </IconButton>

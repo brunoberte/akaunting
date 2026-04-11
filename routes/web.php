@@ -63,6 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('payables/{payable}', [PayablesController::class, 'edit'])->name('payables.edit');
     Route::patch('payables/{payable}', [PayablesController::class, 'update'])->name('payables.update');
     Route::delete('payables/{payable}', [PayablesController::class, 'destroy'])->name('payables.delete');
+    Route::post('payables/{payable}/skip-next', [PayablesController::class, 'skipNext'])->name('payables.skip-next');
 
     Route::get('receivables', [ReceivablesController::class, 'index'])->name('receivables.index');
     Route::get('receivables/new', [ReceivablesController::class, 'new'])->name('receivables.new');
@@ -70,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('receivables', [ReceivablesController::class, 'create'])->name('receivables.create');
     Route::patch('receivables/{receivable}', [ReceivablesController::class, 'update'])->name('receivables.update');
     Route::delete('receivables/{receivable}', [ReceivablesController::class, 'destroy'])->name('receivables.delete');
+    Route::post('receivables/{receivable}/skip-next', [ReceivablesController::class, 'skipNext'])->name('receivables.skip-next');
 
     Route::get('companies', [CompaniesController::class, 'index'])->name('companies.index');
     Route::get('companies/new', [CompaniesController::class, 'new'])->name('companies.new');
