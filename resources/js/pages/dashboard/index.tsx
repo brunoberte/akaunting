@@ -37,23 +37,27 @@ export default function Index({
             <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 8 }}>
-                        <AccountsTable currencies={currencies} accounts={accounts}></AccountsTable>
+                        <Box sx={{ mb: { xs: 4, md: 0 } }}>
+                            <AccountsTable currencies={currencies} accounts={accounts}></AccountsTable>
+                        </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
-                        <Box mb={2}>
+                        <Box sx={{ mb: 2 }}>
                             <TopCategoriesChart title="Expenses - last 90 days" chartData={top_expense_categories} />
                         </Box>
-                        <Box mb={2}>
+                        <Box sx={{ mb: 2 }}>
                             <TopCategoriesChart title="Income - last 90 days" chartData={top_income_categories} />
                         </Box>
                     </Grid>
                 </Grid>
             </Box>
 
-            <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
+            <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' }, mt: 2 }}>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
-                        <ForecastChart currencies={currencies} />
+                        <Box sx={{ mb: 2 }}>
+                            <ForecastChart currencies={currencies} />
+                        </Box>
                     </Grid>
                 </Grid>
             </Box>
@@ -61,7 +65,9 @@ export default function Index({
             <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
-                        <CashflowChart currencies={currencies} />
+                        <Box sx={{ mb: 2 }}>
+                            <CashflowChart currencies={currencies} />
+                        </Box>
                     </Grid>
                 </Grid>
             </Box>

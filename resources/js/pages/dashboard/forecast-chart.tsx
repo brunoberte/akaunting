@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
@@ -48,27 +49,39 @@ export default function ForecastChart({currencies}: {currencies: string[]}) {
             <CardContent>
                 <Stack sx={{ justifyContent: 'space-between' }}>
                     <Stack
-                        direction="row"
+                        direction={{ xs: 'column', sm: 'row' }}
                         sx={{
                             alignContent: { xs: 'center', sm: 'flex-start' },
-                            alignItems: 'center',
+                            alignItems: { xs: 'flex-start', sm: 'center' },
                             gap: 1,
                         }}
                     >
-                        <Typography variant="h4" component="p">
-                            Forecast Chart
-                        </Typography>
-                        <Chip size="small" color="success" label={`${diff}%`} />
-                        <NativeSelect value={currency_code} onChange={(e) => setCurrencyCode(e.target.value)}>
-                            {currencies.map((currency) => (
-                                <option key={currency} value={currency}>{currency}</option>
-                            ))}
-                        </NativeSelect>
-                        <NativeSelect value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
-                            <option value="90">Next 90 days</option>
-                            <option value="180">Next 180 days</option>
-                            <option value="365">Next 365 days</option>
-                        </NativeSelect>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%', justifyContent: 'space-between' }}>
+                            <Typography variant="h5" component="p" sx={{ fontWeight: 'bold' }}>
+                                Forecast
+                            </Typography>
+                            <Chip size="small" color="success" label={`${diff}%`} />
+                        </Box>
+                        <Stack direction="row" spacing={1} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+                            <NativeSelect
+                                value={currency_code}
+                                onChange={(e) => setCurrencyCode(e.target.value)}
+                                sx={{ flexGrow: 1 }}
+                            >
+                                {currencies.map((currency) => (
+                                    <option key={currency} value={currency}>{currency}</option>
+                                ))}
+                            </NativeSelect>
+                            <NativeSelect
+                                value={timeRange}
+                                onChange={(e) => setTimeRange(e.target.value)}
+                                sx={{ flexGrow: 1 }}
+                            >
+                                <option value="90">90 days</option>
+                                <option value="180">180 days</option>
+                                <option value="365">365 days</option>
+                            </NativeSelect>
+                        </Stack>
                     </Stack>
                 </Stack>
                 <LineChart

@@ -109,14 +109,14 @@ export default function TopCategoriesChart(
                 <Typography component="h2" variant="subtitle2">
                     {title}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <PieChart
                         colors={colors}
                         margin={{
-                            left: 80,
-                            right: 80,
-                            top: 80,
-                            bottom: 80,
+                            left: 20,
+                            right: 20,
+                            top: 20,
+                            bottom: 20,
                         }}
                         series={[
                             {
@@ -128,7 +128,10 @@ export default function TopCategoriesChart(
                             },
                         ]}
                         height={260}
-                        width={260}
+                        sx={{
+                            width: '100%',
+                            maxWidth: 260,
+                        }}
                         hideLegend
                     >
                         <PieCenterLabel primaryText={total.toString()} secondaryText="Total" />
