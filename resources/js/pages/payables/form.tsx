@@ -156,9 +156,10 @@ export default function PayableForm({
                 <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off" onReset={handleReset} sx={{ width: '100%' }}>
                     <FormGroup>
                         <Grid container spacing={2} columns={12} sx={{ mb: 2, width: '100%' }}>
-                            <Grid size={{ xs: 12, sm: 'auto' }}>
+                            <Grid size={{ xs: 12, md: 'auto' }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'pt-br'}>
                                     <StaticDatePicker
+                                        displayStaticWrapperAs="desktop"
                                         value={dueAt}
                                         onChange={(newValue) => setDueAt(newValue)}
                                         disableHighlightToday={true}
@@ -172,7 +173,7 @@ export default function PayableForm({
                                 </LocalizationProvider>
                             </Grid>
 
-                            <Grid size={{ xs: 12, sm: 'grow' }}>
+                            <Grid size={{ xs: 12, md: 'grow' }}>
                                 <FormControl error={!!errors.title} variant="standard" fullWidth>
                                     <TextField
                                         value={data.title ?? ''}

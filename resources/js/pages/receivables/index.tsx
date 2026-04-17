@@ -22,6 +22,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import * as React from 'react';
 import { toast } from 'sonner';
 import dayjs from 'dayjs';
@@ -112,12 +117,12 @@ export default function Index({
     }, []);
 
     const handleSkipNext = (row: ReceivableModel) => {
-        if (window.confirm(`Mover ${row.title} para a próxima data?`)) {
+        if (window.confirm(`Move ${row.title} to the next date?`)) {
             router.post(route('receivables.skip-next', [row.id]), {}, {
                 preserveScroll: true,
                 preserveState: true,
-                onSuccess: () => toast.success(`Data de ${row.title} atualizada`),
-                onError: () => toast.error('Falha ao atualizar data'),
+                onSuccess: () => toast.success(`${row.title} date updated`),
+                onError: () => toast.error('Failed to update date'),
             });
         }
     };
@@ -168,7 +173,7 @@ export default function Index({
                             sx={{
                                 borderRadius: 'sm',
                                 py: 2,
-                                display: { xs: 'none', sm: 'flex' },
+                                display: 'flex',
                                 flexWrap: 'wrap',
                                 gap: 1.5,
                                 '& > *': {
@@ -187,7 +192,80 @@ export default function Index({
                             </FormControl>
                         </Box>
 
-                        <TableContainer component={Paper}>
+                        <Box
+                            sx={{
+                                display: { xs: 'flex', sm: 'none' },
+                                flexDirection: 'column',
+                                gap: 2,
+                                mt: 2,
+                            }}
+                        >
+                            {record_list.map((row) => (
+                                <Card key={row.id} variant="outlined">
+                                    <CardContent sx={{ pb: 1 }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                {formatDate(row.due_at)}
+                                            </Typography>
+                                            <Typography variant="body1" fontWeight="bold">
+                                                {row.currency_code} {row.amount}
+                                            </Typography>
+                                        </Box>
+                                        <Typography variant="h6" component="div" gutterBottom sx={{ fontSize: '1.1rem' }}>
+                                            {row.title}
+                                        </Typography>
+                                        <Grid container spacing={1}>
+                                            <Grid item xs={6}>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Account
+                                                </Typography>
+                                                <Typography variant="body2">{getAccountName(row.account_id)}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Customer
+                                                </Typography>
+                                                <Typography variant="body2">{getCustomerName(row.customer_id)}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Category
+                                                </Typography>
+                                                <Typography variant="body2">{getCategoryName(row.category_id)}</Typography>
+                                            </Grid>
+                                            {row.recurring_frequency && (
+                                                <Grid item xs={6}>
+                                                    <Typography variant="caption" color="text.secondary" display="block">
+                                                        Recurring
+                                                    </Typography>
+                                                    <Typography variant="body2">
+                                                        {row.recurring_frequency}{row.recurring_count > 0 ? ` (${row.recurring_count})` : ''}
+                                                    </Typography>
+                                                </Grid>
+                                            )}
+                                        </Grid>
+                                    </CardContent>
+                                    <Divider />
+                                    <CardActions sx={{ justifyContent: 'flex-end', py: 1 }}>
+                                        {row.recurring_frequency && (
+                                            <Tooltip title="Move to next date">
+                                                <IconButton size="small" onClick={() => handleSkipNext(row)}>
+                                                    <SkipNextIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        <IconButton component={Link} size="small" href={route('receivables.edit', { receivable: row.id })} color="primary">
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton size="small" onClick={() => handleDeleteRecord(row)} color="error">
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </CardActions>
+                                </Card>
+                            ))}
+                        </Box>
+
+                        <TableContainer component={Paper} sx={{ display: { xs: 'none', sm: 'block' } }}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>

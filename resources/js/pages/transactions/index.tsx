@@ -2,7 +2,6 @@ import PageContainer from '@/components/PageContainer';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -29,12 +28,10 @@ import dayjs from 'dayjs';
 import * as React from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import Chip from '@mui/material/Chip';
-import { CardActions } from '@mui/material';
+import { CardActions, Divider } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
@@ -192,15 +189,6 @@ export default function Index({
         }
         return item.record_type;
     };
-    const formatMobileDescription = (item: z.infer<typeof schema>) => {
-        if (item.record_type == 'TransferPayment') {
-            return 'Transfer to ' + getAccountName(item.transfer_account_id);
-        }
-        if (item.record_type == 'TransferRevenue') {
-            return 'Transfer from ' + getAccountName(item.transfer_account_id);
-        }
-        return getCategoryName(item.category_id);
-    };
     const formatDate = (date: string) => {
         return date ? dayjs(date).format('DD/MM/YYYY') : 'N/A';
     };
@@ -292,60 +280,80 @@ export default function Index({
                             </FormControl>
                         </Box>
 
-                        <Stack sx={{ display: { xs: '', md: 'none' } }}>
+                        <Box
+                            sx={{
+                                display: { xs: 'flex', sm: 'none' },
+                                flexDirection: 'column',
+                                gap: 2,
+                                mt: 2,
+                            }}
+                        >
                             {pagination_data.data.map((row) => (
-                                <Card key={row.id} variant={'outlined'}>
-                                    <CardContent>
-                                        <Typography variant="h6" component="div">
-                                            {formatMobileDescription(row)}
-                                        </Typography>
-                                        <Stack direction="row" spacing={1}>
-                                            <Chip color="info" label={formatDate(row.paid_at)} variant="outlined" />
-                                            {row.credit && (
-                                                <Chip
-                                                    color="info"
-                                                    avatar={
-                                                        <Avatar sx={{ bgcolor: '#FFF' }}>
-                                                            <AddIcon />
-                                                        </Avatar>
-                                                    }
-                                                    label={row.credit}
-                                                    variant="outlined"
-                                                />
-                                            )}
-                                            {row.debit && (
-                                                <Chip
-                                                    color="info"
-                                                    avatar={
-                                                        <Avatar sx={{ bgcolor: '#FFF' }}>
-                                                            <RemoveIcon />
-                                                        </Avatar>
-                                                    }
-                                                    label={row.debit}
-                                                    variant="outlined"
-                                                />
-                                            )}
-                                            {row.balance >= 0 && (
-                                                <Chip color="success" label={formatNumber(row.balance, row.currency_code)} variant="outlined" />
-                                            )}
-                                            {row.balance < 0 && (
-                                                <Chip color="error" label={formatNumber(row.balance, row.currency_code)} variant="outlined" />
-                                            )}
-                                        </Stack>
+                                <Card key={row.id} variant="outlined">
+                                    <CardContent sx={{ pb: 1 }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                                            <Typography variant="subtitle2" color="text.secondary">
+                                                {formatDate(row.paid_at)}
+                                            </Typography>
+                                            <Typography
+                                                variant="h6"
+                                                fontWeight="bold"
+                                                color={row.balance >= 0 ? 'success.main' : 'error.main'}
+                                                sx={{ fontSize: '1.2rem' }}
+                                            >
+                                                {formatNumber(row.balance, row.currency_code)}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                            <Typography variant="body2" fontWeight="medium" color="text.primary">
+                                                {row.description || getCategoryName(row.category_id)}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" fontWeight="bold">
+                                                {row.currency_code} {row.credit || row.debit}
+                                            </Typography>
+                                        </Box>
+                                        <Grid container spacing={1}>
+                                            <Grid item xs={6}>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Type
+                                                </Typography>
+                                                <Typography variant="body2">{formatType(row)}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Category
+                                                </Typography>
+                                                <Typography variant="body2">{getCategoryName(row.category_id)}</Typography>
+                                            </Grid>
+                                        </Grid>
                                     </CardContent>
-                                    <CardActions disableSpacing>
-                                        <IconButton size="small" onClick={() => handleEditRecord(row)}>
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton size="small" onClick={() => handleDeleteRecord(row)}>
-                                            <DeleteIcon />
-                                        </IconButton>
+                                    <Divider />
+                                    <CardActions sx={{ justifyContent: 'flex-end', gap: 1, p: 1.5 }}>
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            startIcon={<EditIcon />}
+                                            onClick={() => handleEditRecord(row)}
+                                            sx={{ borderRadius: 2, textTransform: 'none' }}
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            color="error"
+                                            startIcon={<DeleteIcon />}
+                                            onClick={() => handleDeleteRecord(row)}
+                                            sx={{ borderRadius: 2, textTransform: 'none' }}
+                                        >
+                                            Delete
+                                        </Button>
                                     </CardActions>
                                 </Card>
                             ))}
-                        </Stack>
+                        </Box>
 
-                        <TableContainer component={Paper} sx={{ display: { xs: 'none', md: 'block' } }}>
+                        <TableContainer component={Paper} sx={{ display: { xs: 'none', sm: 'block' } }}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>

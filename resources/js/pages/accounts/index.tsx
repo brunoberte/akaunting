@@ -28,6 +28,11 @@ import TableFooter from '@mui/material/TableFooter';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import * as React from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -235,7 +240,7 @@ export default function Index({
                             sx={{
                                 borderRadius: 'sm',
                                 py: 2,
-                                display: { xs: 'none', sm: 'flex' },
+                                display: 'flex',
                                 flexWrap: 'wrap',
                                 gap: 1.5,
                                 '& > *': {
@@ -265,7 +270,58 @@ export default function Index({
                             </FormControl>
                         </Box>
 
-                        <TableContainer component={Paper}>
+                        <Box
+                            sx={{
+                                display: { xs: 'flex', sm: 'none' },
+                                flexDirection: 'column',
+                                gap: 2,
+                                mt: 2,
+                            }}
+                        >
+                            {accounts.data.map((row) => (
+                                <Card key={row.id} variant="outlined">
+                                    <CardContent sx={{ pb: 1 }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                                            <Typography variant="h6" component="div" sx={{ fontSize: '1.1rem' }}>
+                                                {row.name}
+                                            </Typography>
+                                            {renderStatus(row.enabled)}
+                                        </Box>
+                                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                                            {row.number} {row.bank_name ? `• ${row.bank_name}` : ''}
+                                        </Typography>
+                                        <Divider sx={{ my: 1 }} />
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Currency
+                                                </Typography>
+                                                <Typography variant="body2">{row.currency_code}</Typography>
+                                            </Box>
+                                            <Box sx={{ textAlign: 'right' }}>
+                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                    Current Balance
+                                                </Typography>
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    {row.currency_code} {row.current_balance}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </CardContent>
+                                    <Divider />
+                                    <CardActions sx={{ justifyContent: 'flex-end', py: 1 }}>
+                                        <IconButton size="small" href={route('accounts.edit', { account: row.id })} color="primary">
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton size="small" onClick={() => handleDeleteRecord(row)} color="error">
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </CardActions>
+                                </Card>
+                            ))}
+                        </Box>
+
+                        <TableContainer component={Paper} sx={{ display: { xs: 'none', sm: 'block' } }}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
