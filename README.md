@@ -51,7 +51,7 @@ docker compose -f compose.dev.yaml exec mysql mysql -u root -pSenhaMy financeiro
 
 - restore backup - prod
 ```sh
-docker compose -f compose.prod.yaml cp /home/brunoberte/scripts/backup/2025_12_20_12_28/financeiro.sql mysql:/var/lib/mysql/
+docker compose -f compose.prod.yaml cp $HOME/backup/financeiro.sql mysql:/var/lib/mysql/
 docker compose -f compose.prod.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "\. /var/lib/mysql/financeiro.sql"
 docker compose -f compose.prod.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Payable' where recurable_type = 'App\\Models\\Expense\\Payable'"
 docker compose -f compose.prod.yaml exec mysql mysql -u root -pSenhaMy financeiro -e "update financeiro.0fc_recurring set recurable_type = 'App\\Models\\Receivable' where recurable_type = 'App\\Models\\Income\\Receivable'"
@@ -72,3 +72,32 @@ npm run dev
 then open https://financeiro.local/
 
 ---
+
+
+
+### Backup
+
+#### script - $HOME/scripts/bkp_akaunting.sh
+```
+#!/bin/bash
+complemento=`date +%Y_%m_%d_%H_%M`
+path_backup=$HOME'/scripts/backup'
+mkdir ${path_backup}/${complemento}
+
+docker compose -f $HOME/docker/apps/akaunting/compose.prod.yaml exec mysql mysqldump -u root -pSenhaMy financeiro | gzip > ${path_backup}/${complemento}/financeiro.sql.gz
+
+# curl "https://raw.githubusercontent.com/andreafabrizi/Dropbox-Uploader/master/dropbox_uploader.sh" -o $HOME/scripts/dropbox_uploader.sh
+# chmod +x $HOME/scripts/dropbox_uploader.sh
+$HOME/scripts/dropbox_uploader.sh upload ${path_backup}/${complemento}/financeiro.sql.gz /
+
+#remover arquivos com mais de 2 dias
+find ${path_backup} -mtime +0 -exec rm {} +
+
+#remover pastas em branco
+find ${path_backup} -type d -empty -delete
+```
+
+#### Crontab for backup script  
+```
+0 4 * * * $HOME/scripts/bkp_akaunting.sh
+```
