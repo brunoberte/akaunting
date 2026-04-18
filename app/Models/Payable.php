@@ -86,4 +86,29 @@ class Payable extends AppModel
 //
 //        return $this->getMedia('attachment')->last();
 //    }
+
+    public function scopeFilter($query, $filter)
+    {
+        return $query->when($filter, function ($query, $value) {
+            return $query->where('title', 'like', "%{$value}%");
+        });
+    }
+
+    public function toArrayResponse(): array
+    {
+        return [
+            'id'                  => $this->id,
+            'account_id'          => $this->account_id,
+            'due_at'              => $this->due_at->format('Y-m-d'),
+            'currency_code'       => $this->currency_code,
+            'amount'              => $this->amount,
+            'title'               => $this->title,
+            'vendor_id'           => $this->vendor_id,
+            'category_id'         => $this->category_id,
+            'notes'               => $this->notes,
+            'recurring_frequency' => $this->recurring?->frequency,
+            'recurring_interval'  => $this->recurring?->interval,
+            'recurring_count'     => $this->recurring?->count,
+        ];
+    }
 }

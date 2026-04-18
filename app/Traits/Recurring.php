@@ -9,55 +9,55 @@ use Recurr\Transformer\ArrayTransformerConfig;
 trait Recurring
 {
 
-    public function createRecurring()
+    public function createRecurring(array $data)
     {
-        $request = request();
+        $frequency = ($data['recurring_frequency'] ?? 'no');
 
-        if ($request->get('recurring_frequency', 'no') == 'no') {
+        if ($frequency == 'no') {
             return;
         }
 
-        $frequency = ($request['recurring_frequency'] != 'custom') ? $request['recurring_frequency'] : $request['recurring_custom_frequency'];
-        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int)$request['recurring_interval'];
-        $started_at = $request->get('paid_at') ?: ($request->get('invoiced_at') ?: $request->get('billed_at') ?: $request->get('due_at'));
+        $interval = ($frequency != 'custom') ? 1 : (int)($data['recurring_interval'] ?? 1);
+        $frequency = ($frequency != 'custom') ? $frequency : ($data['recurring_custom_frequency'] ?? 'monthly');
+        $started_at = $data['paid_at'] ?? ($data['invoiced_at'] ?? ($data['billed_at'] ?? ($data['due_at'] ?? now())));
 
         $this->recurring()->create([
-            'company_id' => session('company_id', 1), // FIXME
+            'company_id' => session('company_id', 1),
             'frequency'  => $frequency,
             'interval'   => $interval,
             'started_at' => $started_at,
-            'count'      => (int)$request['recurring_count'],
+            'count'      => (int)($data['recurring_count'] ?? 0),
         ]);
     }
 
-    public function updateRecurring()
+    public function updateRecurring(array $data)
     {
-        $request = request();
+        $frequency = ($data['recurring_frequency'] ?? 'no');
 
-        if ($request->get('recurring_frequency', 'no') == 'no') {
-            $this->recurring()->delete();
+        if ($frequency == 'no') {
+            $this->recurring()->forceDelete();
             return;
         }
 
-        $frequency = ($request['recurring_frequency'] != 'custom') ? $request['recurring_frequency'] : $request['recurring_custom_frequency'];
-        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int)$request['recurring_interval'];
-        $started_at = $request->get('paid_at') ?: ($request->get('invoiced_at') ?: $request->get('billed_at') ?: $request->get('due_at'));
+        $interval = ($frequency != 'custom') ? 1 : (int)($data['recurring_interval'] ?? 1);
+        $frequency = ($frequency != 'custom') ? $frequency : ($data['recurring_custom_frequency'] ?? 'monthly');
+        $started_at = $data['paid_at'] ?? ($data['invoiced_at'] ?? ($data['billed_at'] ?? ($data['due_at'] ?? now())));
 
         $recurring = $this->recurring();
 
-        if ($recurring->count()) {
-            $function = 'update';
-        } else {
-            $function = 'create';
-        }
-
-        $recurring->$function([
-            'company_id' => session('company_id', 1), // FIXME
+        $recurringData = [
+            'company_id' => session('company_id', 1),
             'frequency'  => $frequency,
             'interval'   => $interval,
             'started_at' => $started_at,
-            'count'      => (int)$request['recurring_count'],
-        ]);
+            'count'      => (int)($data['recurring_count'] ?? 0),
+        ];
+
+        if ($recurring->exists()) {
+            $recurring->update($recurringData);
+        } else {
+            $recurring->create($recurringData);
+        }
     }
 
     public function current()
@@ -146,5 +146,35 @@ trait Recurring
     public function getRuleFrequency()
     {
         return strtoupper($this->frequency);
+    }
+
+    public function skipNext()
+    {
+        $recurring = $this->recurring;
+        if (!$recurring) {
+            return;
+        }
+
+        switch ($recurring->frequency) {
+            case 'daily':
+                $this->due_at = $this->due_at->addDays($recurring->interval);
+                break;
+            case 'weekly':
+                $this->due_at = $this->due_at->addWeeks($recurring->interval);
+                break;
+            case 'monthly':
+                $this->due_at = $this->due_at->addMonths($recurring->interval);
+                break;
+            case 'yearly':
+                $this->due_at = $this->due_at->addYears($recurring->interval);
+                break;
+        }
+
+        $this->save();
+
+        if ($recurring->count > 0) {
+            $recurring->count--;
+            $recurring->save();
+        }
     }
 }

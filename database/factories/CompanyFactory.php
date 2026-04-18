@@ -17,7 +17,7 @@ class CompanyFactory extends Factory
     public function definition(): array
     {
         return [
-            'domain'  => $this->faker->words(3, true),
+            'domain'  => 'example.com',
             'enabled' => 1,
         ];
     }

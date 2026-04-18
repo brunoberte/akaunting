@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Carbon\Carbon;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * @property int $id
  * @property int $company_id
@@ -25,6 +27,7 @@ use Carbon\Carbon;
  */
 class Customer extends AppModel
 {
+    use HasFactory;
     protected $table = 'customers';
 
     /**
