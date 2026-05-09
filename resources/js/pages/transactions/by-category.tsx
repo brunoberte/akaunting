@@ -10,6 +10,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -32,6 +33,10 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CardActions from '@mui/material/CardActions';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import * as React from 'react';
@@ -87,6 +92,13 @@ export default function ByCategory({
     const [selectedCategoryObj, setSelectedCategoryObj] = React.useState<CategoryType | null>(
         category_list.find((c) => c.id === category_id) || null,
     );
+
+    React.useEffect(() => {
+        setSelectedCategoryObj(category_list.find((c) => c.id === category_id) || null);
+    }, [category_id, category_list]);
+
+    const [isMigrateDialogOpen, setIsMigrateDialogOpen] = React.useState(false);
+    const [targetCategory, setTargetCategory] = React.useState<CategoryType | null>(null);
 
     const handleCategoryChange = (new_category_id: number | null) => {
         router.visit(route('transactions.index_by_category', { category_id: new_category_id, page: 1 }), {
@@ -183,6 +195,29 @@ export default function ByCategory({
         return item.record_type;
     };
 
+    const handleMigrateAll = () => {
+        if (!targetCategory || !category) return;
+
+        router.post(
+            route('transactions.migrate_by_category'),
+            {
+                from_category_id: category.id,
+                to_category_id: targetCategory.id,
+            },
+            {
+                onSuccess: () => {
+                    toast.success('Transactions migrated successfully');
+                    setIsMigrateDialogOpen(false);
+                    setTargetCategory(null);
+                },
+                onError: (errors) => {
+                    toast.error('Failed to migrate transactions');
+                    console.error(errors);
+                },
+            },
+        );
+    };
+
     const totalsByCurrency = pagination_data?.data.reduce((acc, item) => {
         const currency = item.currency_code || 'USD';
         const credit = item.credit !== null ? Number(item.credit) : 0;
@@ -205,17 +240,34 @@ export default function ByCategory({
                 title={pageTitle}
                 actions={
                     <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'stretch', sm: 'center' }} spacing={1}>
-                        <Button component={Link} variant="contained" href={route('transactions.payments.new')} startIcon={<AddIcon />} size={'small'}>
+                        {category && (
+                            <Button variant="contained" startIcon={<SwapHorizIcon />} size={'small'} onClick={() => setIsMigrateDialogOpen(true)}>
+                                Migrate All
+                            </Button>
+                        )}
+                        <Button
+                            component={Link}
+                            variant="contained"
+                            href={route('transactions.payments.new')}
+                            startIcon={<AddIcon aria-hidden={true} />}
+                            size={'small'}
+                        >
                             Payment
                         </Button>
-                        <Button component={Link} variant="contained" href={route('transactions.revenues.new')} startIcon={<AddIcon />} size={'small'}>
+                        <Button
+                            component={Link}
+                            variant="contained"
+                            href={route('transactions.revenues.new')}
+                            startIcon={<AddIcon aria-hidden={true} />}
+                            size={'small'}
+                        >
                             Revenue
                         </Button>
                         <Button
                             component={Link}
                             variant="contained"
                             href={route('transactions.transfers.new')}
-                            startIcon={<AddIcon />}
+                            startIcon={<AddIcon aria-hidden={true} />}
                             size={'small'}
                         >
                             Transfer
@@ -433,7 +485,14 @@ export default function ByCategory({
                                                         <TableCell>{formatType(row)}</TableCell>
                                                         <TableCell>{getAccountName(row.account_id)}</TableCell>
                                                         <TableCell>{row.vendor_name || row.customer_name || '-'}</TableCell>
-                                                        <TableCell sx={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        <TableCell
+                                                            sx={{
+                                                                maxWidth: '200px',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: 'nowrap',
+                                                            }}
+                                                        >
                                                             {row.description || '-'}
                                                         </TableCell>
                                                         <TableCell align="right" sx={{ color: row.credit !== null ? 'success.main' : 'error.main' }}>
@@ -510,6 +569,49 @@ export default function ByCategory({
                     </Grid>
                 </Stack>
             </PageContainer>
+
+            <Dialog open={isMigrateDialogOpen} onClose={() => setIsMigrateDialogOpen(false)} fullWidth maxWidth="sm">
+                <DialogTitle>Migrate Transactions</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ mt: 2 }}>
+                        <Typography variant="body1" sx={{ mb: 2 }}>
+                            Select the target category to migrate all transactions from <strong>{category?.name}</strong>.
+                        </Typography>
+                        <FormControl fullWidth>
+                            <Autocomplete
+                                options={category_list.filter((c) => c.id !== category?.id && c.type === category?.type)}
+                                getOptionLabel={(option: CategoryType) => option.name}
+                                getOptionKey={(option: CategoryType) => option.id}
+                                renderOption={(props, option) => (
+                                    <Box component="li" {...props} sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                        <Typography>{option.name}</Typography>
+                                        <Typography variant="caption" color="text.secondary" sx={{ ml: 1, textTransform: 'capitalize' }}>
+                                            ({option.type})
+                                        </Typography>
+                                    </Box>
+                                )}
+                                value={targetCategory}
+                                onChange={(event, newValue: CategoryType | null) => {
+                                    setTargetCategory(newValue);
+                                }}
+                                renderInput={(params) => <TextField {...params} label={false} variant="outlined" />}
+                                fullWidth
+                            />
+                        </FormControl>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsMigrateDialogOpen(false)}>Cancel</Button>
+                    <Button
+                        onClick={handleMigrateAll}
+                        variant="contained"
+                        disabled={!targetCategory}
+                        startIcon={<SwapHorizIcon aria-hidden="true" />}
+                    >
+                        Migrate All
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </AppLayout>
     );
 }

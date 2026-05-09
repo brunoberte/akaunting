@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Category;
 use App\Settings\SettingHelper;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -239,5 +240,34 @@ class TransactionsController extends Controller
         ]);
 
         return $pagination_data;
+    }
+
+    public function migrateByCategory(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'from_category_id' => 'required|exists:categories,id',
+            'to_category_id'   => 'required|exists:categories,id|different:from_category_id',
+        ]);
+
+        $from_category = Category::findOrFail($request->from_category_id);
+        $to_category = Category::findOrFail($request->to_category_id);
+
+        if ($from_category->type !== $to_category->type) {
+            return back()->withErrors(['to_category_id' => 'Categories must be of the same type.']);
+        }
+
+        if ($from_category->type === 'expense') {
+            DB::table('payments')
+                ->where('category_id', $from_category->id)
+                ->whereNull('deleted_at')
+                ->update(['category_id' => $to_category->id]);
+        } elseif ($from_category->type === 'income') {
+            DB::table('revenues')
+                ->where('category_id', $from_category->id)
+                ->whereNull('deleted_at')
+                ->update(['category_id' => $to_category->id]);
+        }
+
+        return to_route('transactions.index_by_category', ['category_id' => $to_category->id]);
     }
 }
