@@ -34,18 +34,20 @@ import { z } from 'zod';
 
 const handleDeleteRecord = (row) => {
     if (window.confirm(`Are you sure you want to delete ${row.name}?`)) {
-        try {
-            router.delete(route('categories.delete', [row.id]), {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: (page) => {
-                    console.log(page);
-                },
-            });
-            toast.success(`Category ${row.name} deleted`);
-        } catch {
-            toast.error('Failed to delete record');
-        }
+        router.delete(route('categories.delete', [row.id]), {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                toast.success(`Category ${row.name} deleted`);
+            },
+            onError: (errors) => {
+                if (errors.category) {
+                    toast.error(errors.category);
+                } else {
+                    toast.error('Failed to delete record');
+                }
+            },
+        });
     }
 };
 

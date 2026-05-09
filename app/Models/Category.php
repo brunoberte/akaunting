@@ -31,30 +31,35 @@ class Category extends AppModel
 
     public $sortable = ['name', 'type', 'enabled'];
 
-    public function items()
-    {
-        return $this->hasMany('App\Models\Common\Item');
-    }
-
     public function payments()
     {
-        return $this->hasMany('App\Models\Expense\Payment');
+        return $this->hasMany(Payment::class);
+    }
+
+    public function payables()
+    {
+        return $this->hasMany(Payable::class);
+    }
+
+    public function receivables()
+    {
+        return $this->hasMany(Receivable::class);
     }
 
     public function payments_last90days()
     {
-        return $this->hasMany('App\Models\Expense\Payment')
+        return $this->hasMany(Payment::class)
             ->where('paid_at', '>=', Carbon::now()->startOfDay()->addDays(-90));
     }
 
     public function revenues()
     {
-        return $this->hasMany('App\Models\Income\Revenue');
+        return $this->hasMany(Revenue::class);
     }
 
     public function revenues_last90days()
     {
-        return $this->hasMany('App\Models\Income\Revenue')
+        return $this->hasMany(Revenue::class)
             ->where('paid_at', '>=', Carbon::now()->startOfDay()->addDays(-90));
     }
 

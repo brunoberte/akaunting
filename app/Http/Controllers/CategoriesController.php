@@ -103,8 +103,16 @@ class CategoriesController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
-        // TODO: check if is being used
+        if ($category->payments()->exists()
+            || $category->revenues()->exists()
+            || $category->payables()->exists()
+            || $category->receivables()->exists()
+        ) {
+            return back()->withErrors(['category' => 'This category is in use and cannot be deleted.']);
+        }
+
         $category->delete();
+
         return to_route('categories.index');
     }
 }
