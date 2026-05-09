@@ -47,11 +47,15 @@ WORKDIR /var/www
 # first, to leverage Docker's layer caching mechanism.
 # -----------------------------------------------------------
 
-COPY . /var/www
+COPY composer.json composer.lock /var/www/
 
 # Install Composer dependencies
 RUN --mount=type=cache,target=/root/.composer/cache \
-    composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+    composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+
+COPY . /var/www
+
+RUN composer dump-autoload --optimize --no-dev
 
 # Stage 2: Production environment
 FROM php:8.4-fpm AS production
