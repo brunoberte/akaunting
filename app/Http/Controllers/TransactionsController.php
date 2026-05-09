@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\Category;
-use App\Models\Customer;
-use App\Models\Vendor;
 use App\Settings\SettingHelper;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -118,6 +116,117 @@ class TransactionsController extends Controller
 
         $pagination_data->appends([
             'account_id' => $request->get('account_id') ?? '',
+        ]);
+
+        return $pagination_data;
+    }
+
+    public function indexByCategory(Request $request): Response
+    {
+        $category_id = $request->get('category_id');
+        $category = $category_id ? Category::find($category_id) : null;
+
+        return Inertia::render(
+            'transactions/by-category',
+            [
+                'pagination_data' => fn() => $this->loadTransactionsByCategory($request, $category),
+                'category_list'   => fn() => Category::enabled()->orderBy('name')->select(['id', 'name', 'type', 'color'])->get()->collect()->toArray(),
+                'category_id'     => (int) $category_id,
+                'category'        => $category,
+            ]
+        );
+    }
+
+    private function loadTransactionsByCategory(Request $request, ?Category $category): ?LengthAwarePaginator
+    {
+        if (!$category) {
+            return null;
+        }
+
+        $table_prefix = config('custom.database_prefix');
+        $query = null;
+
+        if ($category->type === 'expense') {
+            $query = DB::table('payments')
+                ->selectRaw(<<<SQL
+                    {$table_prefix}payments.id,
+                    {$table_prefix}transfers.id as transfer_id,
+                    'Payment' as record_type,
+                    {$table_prefix}payments.paid_at,
+                    {$table_prefix}payments.created_at,
+                    {$table_prefix}payments.amount,
+                    {$table_prefix}payments.currency_code,
+                    {$table_prefix}payments.account_id,
+                    {$table_prefix}payments.category_id,
+                    null as customer_id,
+                    {$table_prefix}payments.vendor_id,
+                    {$table_prefix}payments.description,
+                    {$table_prefix}revenues.account_id as transfer_account_id
+                SQL
+                )
+                ->leftJoin('transfers', 'transfers.payment_id', '=', 'payments.id')
+                ->leftJoin('revenues', 'revenues.id', '=', 'transfers.revenue_id')
+                ->where('payments.category_id', $category->id)
+                ->whereNull('payments.deleted_at')
+                ->orderBy('paid_at', 'desc');
+        } elseif ($category->type === 'income') {
+            $query = DB::table('revenues')
+                ->selectRaw(<<<SQL
+                    {$table_prefix}revenues.id,
+                    {$table_prefix}transfers.id as transfer_id,
+                    'Revenue' as record_type,
+                    {$table_prefix}revenues.paid_at,
+                    {$table_prefix}revenues.created_at,
+                    {$table_prefix}revenues.amount,
+                    {$table_prefix}revenues.currency_code,
+                    {$table_prefix}revenues.account_id,
+                    {$table_prefix}revenues.category_id,
+                    {$table_prefix}revenues.customer_id,
+                    null as vendor_id,
+                    {$table_prefix}revenues.description,
+                    {$table_prefix}payments.account_id as transfer_account_id
+                SQL
+                )
+                ->leftJoin('transfers', 'transfers.revenue_id', '=', 'revenues.id')
+                ->leftJoin('payments', 'payments.id', '=', 'transfers.payment_id')
+                ->where('revenues.category_id', $category->id)
+                ->whereNull('revenues.deleted_at')
+                ->orderBy('paid_at', 'desc');
+        }
+
+        if (!$query) {
+            return null;
+        }
+
+        $transfer_category = Category::transfer();
+
+        $pagination_data = $query
+            ->orderBy('paid_at', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->through(function ($item) use ($transfer_category) {
+                $is_payment = $item->record_type == 'Payment';
+                $is_transfer = $item->category_id == $transfer_category;
+                return [
+                    'id'                  => $item->id,
+                    'transfer_id'         => $item->transfer_id,
+                    'record_type'         => $is_transfer ? 'Transfer' . $item->record_type : $item->record_type,
+                    'paid_at'             => Carbon::createFromFormat('Y-m-d H:i:s', $item->paid_at)->format('Y-m-d'),
+                    'is_transfer'         => $is_transfer,
+                    'credit'              => !$is_payment ? $item->amount : null,
+                    'debit'               => $is_payment ? $item->amount : null,
+                    'currency_code'       => $item->currency_code,
+                    'account_id'          => $item->account_id,
+                    'category_id'         => $item->category_id,
+                    'vendor_id'           => $item->vendor_id,
+                    'customer_id'         => $item->customer_id,
+                    'description'         => $item->description,
+                    'transfer_account_id' => $item->transfer_account_id,
+                ];
+            });
+
+        $pagination_data->appends([
+            'category_id' => $request->get('category_id') ?? '',
         ]);
 
         return $pagination_data;

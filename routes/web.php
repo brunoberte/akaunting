@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('set-active-company', [DashboardController::class, 'set_active_company'])->name('set_active_company');
 
     Route::get('transactions', [TransactionsController::class, 'index'])->name('transactions.index');
+    Route::get('transactions/by-category', [TransactionsController::class, 'indexByCategory'])->name('transactions.index_by_category');
 
     Route::post('transactions/payments', [PaymentsController::class, 'create'])->name('transactions.payments.create');
     Route::get('transactions/payments/new', [PaymentsController::class, 'new'])->name('transactions.payments.new');

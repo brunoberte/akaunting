@@ -259,13 +259,14 @@ export default function Index({
                                 py: 2,
                                 display: 'flex',
                                 flexWrap: 'wrap',
+                                alignItems: 'center',
                                 gap: 1.5,
                                 '& > *': {
-                                    minWidth: { xs: '120px', md: '160px' },
+                                    minWidth: { xs: '120px', md: '320px' },
                                 },
                             }}
                         >
-                            <FormControl size="small" fullWidth>
+                            <FormControl size="small" sx={{ flexGrow: 1 }}>
                                 <Autocomplete
                                     options={account_list}
                                     getOptionLabel={(option: IdNameCurrencyCode) => option.name}
@@ -275,9 +276,19 @@ export default function Index({
                                         handleAccountChange(newValue?.id);
                                         setSelectedAccountObj(newValue);
                                     }}
-                                    renderInput={(params) => <TextField {...params} label={false} variant="standard" />}
+                                    renderInput={(params) => <TextField {...params} label={false} variant="outlined" placeholder="Select Account" />}
+                                    fullWidth
                                 />
                             </FormControl>
+
+                            <Button
+                                variant="outlined"
+                                component={Link}
+                                href={route('transactions.index_by_category')}
+                                sx={{ borderRadius: 2, textTransform: 'none', minWidth: 'fit-content' }}
+                            >
+                                View by Category
+                            </Button>
                         </Box>
 
                         <Box
