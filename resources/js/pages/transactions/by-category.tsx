@@ -2,6 +2,8 @@ import PageContainer from '@/components/PageContainer';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -28,7 +30,10 @@ import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import CardActions from '@mui/material/CardActions';
 import dayjs from 'dayjs';
+import { toast } from 'sonner';
 import * as React from 'react';
 
 type TransactionType = {
@@ -45,15 +50,18 @@ type TransactionType = {
     transfer_account_id: number | null;
     paid_at: string;
     record_type: string;
+    transfer_id?: number;
 };
 
 type CategoryType = { id: number; name: string; type: string; color: string };
+type AccountType = { id: number; name: string; currency_code: string };
 
 export default function ByCategory({
     category_id,
     category,
     pagination_data,
     category_list,
+    account_list,
 }: {
     category_id: number;
     category: CategoryType | null;
@@ -72,6 +80,7 @@ export default function ByCategory({
         last_page: number;
     } | null;
     category_list: Array<CategoryType>;
+    account_list: Array<AccountType>;
 }) {
     const [selectedCategoryObj, setSelectedCategoryObj] = React.useState<CategoryType | null>(
         category_list.find((c) => c.id === category_id) || null,
@@ -93,12 +102,97 @@ export default function ByCategory({
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: currencyCode || 'USD',
+            currencyDisplay: 'code',
+            currencySign: 'accounting',
         }).format(amount);
     };
 
-    const totalAmount = pagination_data?.data.reduce((acc, item) => {
-        return acc + (item.credit || 0) - (item.debit || 0);
-    }, 0) || 0;
+    const handleDeleteRecord = (item: TransactionType) => {
+        if (window.confirm('Are you sure you want to delete this record?')) {
+            try {
+                let route_name = '';
+                switch (item.record_type) {
+                    case 'Payment':
+                    case 'TransferPayment':
+                        route_name = 'transactions.payments.delete';
+                        break;
+                    case 'Revenue':
+                    case 'TransferRevenue':
+                        route_name = 'transactions.revenues.delete';
+                        break;
+                    default:
+                        toast.error('Not implemented');
+                        return;
+                }
+                router.delete(route(route_name, [item.id]), {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () => {
+                        toast.success(`Record deleted`);
+                    },
+                    onError: (errors) => {
+                        console.log(errors);
+                    },
+                });
+            } catch {
+                toast.error('Failed to delete record');
+            }
+        }
+    };
+
+    const handleEditRecord = (row: TransactionType) => {
+        try {
+            switch (row.record_type) {
+                case 'Payment':
+                    router.visit(route('transactions.payments.edit', [row.id]));
+                    break;
+                case 'Revenue':
+                    router.visit(route('transactions.revenues.edit', [row.id]));
+                    break;
+                case 'TransferPayment':
+                case 'TransferRevenue':
+                    router.visit(route('transactions.transfers.edit', [row.transfer_id]));
+                    break;
+                default:
+                    toast.error('Not implemented');
+                    return;
+            }
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error(String(error));
+            }
+        }
+    };
+
+    const getAccountName = (id: number) => {
+        const item = account_list.find((x) => x.id == id);
+        return item?.name || '';
+    };
+
+    const formatType = (item: TransactionType) => {
+        if (item.record_type == 'TransferPayment') {
+            return 'Transfer to ' + getAccountName(item.transfer_account_id as number);
+        }
+        if (item.record_type == 'TransferRevenue') {
+            return 'Transfer from ' + getAccountName(item.transfer_account_id as number);
+        }
+        return item.record_type;
+    };
+
+    const totalsByCurrency = pagination_data?.data.reduce((acc, item) => {
+        const currency = item.currency_code || 'USD';
+        const credit = item.credit !== null ? Number(item.credit) : 0;
+        const debit = item.debit !== null ? Number(item.debit) : 0;
+        const amount = credit > 0 ? credit : -debit;
+
+        if (!acc[currency]) {
+            acc[currency] = 0;
+        }
+        acc[currency] += amount;
+        return acc;
+    }, {} as Record<string, number>) || {};
 
     return (
         <AppLayout>
@@ -197,6 +291,8 @@ export default function ByCategory({
                                                     display: 'flex',
                                                     justifyContent: 'space-between',
                                                     alignItems: 'center',
+                                                    flexWrap: 'wrap',
+                                                    gap: 2,
                                                 }}
                                             >
                                                 <Stack direction="row" spacing={2} alignItems="center">
@@ -218,9 +314,19 @@ export default function ByCategory({
                                                         sx={{ ml: 1, textTransform: 'capitalize' }}
                                                     />
                                                 </Stack>
-                                                <Typography variant="h6" fontWeight="bold">
-                                                    Total: {formatNumber(totalAmount, pagination_data?.data[0]?.currency_code || 'BRL')}
-                                                </Typography>
+                                                <Stack direction="column" alignItems="flex-end" spacing={0.5}>
+                                                    {Object.entries(totalsByCurrency).length > 0 ? (
+                                                        Object.entries(totalsByCurrency).map(([currency, amount]) => (
+                                                            <Typography key={currency} variant="h6" fontWeight="bold">
+                                                                Total ({currency}): {formatNumber(Math.abs(amount), currency)}
+                                                            </Typography>
+                                                        ))
+                                                    ) : (
+                                                        <Typography variant="h6" fontWeight="bold">
+                                                            Total: {formatNumber(0, 'USD')}
+                                                        </Typography>
+                                                    )}
+                                                </Stack>
                                             </Box>
                                         </CardContent>
                                     </Card>
@@ -245,7 +351,7 @@ export default function ByCategory({
                                                             {formatDate(row.paid_at)}
                                                         </Typography>
                                                         <Typography variant="body2" color="text.secondary" fontWeight="bold">
-                                                            {row.currency_code} {row.credit || row.debit}
+                                                            {row.currency_code} {row.credit !== null ? row.credit : row.debit}
                                                         </Typography>
                                                     </Box>
                                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -258,22 +364,50 @@ export default function ByCategory({
                                                             <Typography variant="caption" color="text.secondary" display="block">
                                                                 Type
                                                             </Typography>
-                                                            <Typography variant="body2">{row.record_type}</Typography>
+                                                            <Typography variant="body2">{formatType(row)}</Typography>
                                                         </Grid>
                                                         <Grid item xs={6}>
+                                                            <Typography variant="caption" color="text.secondary" display="block">
+                                                                Account
+                                                            </Typography>
+                                                            <Typography variant="body2">{getAccountName(row.account_id)}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={12}>
                                                             <Typography variant="caption" color="text.secondary" display="block">
                                                                 Amount
                                                             </Typography>
                                                             <Typography
                                                                 variant="body2"
-                                                                color={row.credit ? 'success.main' : 'error.main'}
+                                                                color={row.credit !== null ? 'success.main' : 'error.main'}
                                                                 fontWeight="bold"
                                                             >
-                                                                {formatNumber(row.credit || row.debit, row.currency_code)}
+                                                                {formatNumber(row.credit !== null ? row.credit : row.debit, row.currency_code)}
                                                             </Typography>
                                                         </Grid>
                                                     </Grid>
                                                 </CardContent>
+                                                <Divider />
+                                                <CardActions sx={{ justifyContent: 'flex-end', gap: 1, p: 1.5 }}>
+                                                    <Button
+                                                        size="small"
+                                                        variant="outlined"
+                                                        startIcon={<EditIcon />}
+                                                        onClick={() => handleEditRecord(row)}
+                                                        sx={{ borderRadius: 2, textTransform: 'none' }}
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        size="small"
+                                                        variant="outlined"
+                                                        color="error"
+                                                        startIcon={<DeleteIcon />}
+                                                        onClick={() => handleDeleteRecord(row)}
+                                                        sx={{ borderRadius: 2, textTransform: 'none' }}
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </CardActions>
                                             </Card>
                                         ))}
                                     </Box>
@@ -284,28 +418,35 @@ export default function ByCategory({
                                                 <TableRow>
                                                     <TableCell>Date</TableCell>
                                                     <TableCell>Type</TableCell>
+                                                    <TableCell>Account</TableCell>
                                                     <TableCell>Description</TableCell>
-                                                    <TableCell align="right">Credit</TableCell>
-                                                    <TableCell align="right">Debit</TableCell>
+                                                    <TableCell align="right">Amount</TableCell>
+                                                    <TableCell sx={{ minWidth: '120px' }}></TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
                                                 {pagination_data.data.map((row) => (
                                                     <TableRow key={`${row.record_type}-${row.id}`}>
                                                         <TableCell>{formatDate(row.paid_at)}</TableCell>
-                                                        <TableCell>{row.record_type}</TableCell>
+                                                        <TableCell>{formatType(row)}</TableCell>
+                                                        <TableCell>{getAccountName(row.account_id)}</TableCell>
                                                         <TableCell>{row.description || '-'}</TableCell>
-                                                        <TableCell align="right" sx={{ color: 'success.main' }}>
-                                                            {formatNumber(row.credit, row.currency_code)}
+                                                        <TableCell align="right" sx={{ color: row.credit !== null ? 'success.main' : 'error.main' }}>
+                                                            {formatNumber(row.credit !== null ? row.credit : row.debit, row.currency_code)}
                                                         </TableCell>
-                                                        <TableCell align="right" sx={{ color: 'error.main' }}>
-                                                            {formatNumber(row.debit, row.currency_code)}
+                                                        <TableCell align="right">
+                                                            <IconButton size="small" onClick={() => handleEditRecord(row)}>
+                                                                <EditIcon />
+                                                            </IconButton>
+                                                            <IconButton size="small" onClick={() => handleDeleteRecord(row)}>
+                                                                <DeleteIcon />
+                                                            </IconButton>
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
                                                 {pagination_data.data.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                                                        <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
                                                             No transactions found for this category.
                                                         </TableCell>
                                                     </TableRow>
@@ -313,7 +454,7 @@ export default function ByCategory({
                                             </TableBody>
                                             <TableFooter>
                                                 <TableRow>
-                                                    <TableCell colSpan={5}>
+                                                    <TableCell colSpan={6}>
                                                         <Box display="flex" justifyContent="center" alignItems="center" p={2}>
                                                             <IconButton
                                                                 onClick={() => router.visit(pagination_data.first_page_url)}
