@@ -42,6 +42,8 @@ type TransactionType = {
     category_id: number;
     customer_id: number | null;
     vendor_id: number | null;
+    customer_name: string | null;
+    vendor_name: string | null;
     credit: number | null;
     debit: number | null;
     currency_code: string;
@@ -363,6 +365,14 @@ export default function ByCategory({
                                                             </Typography>
                                                             <Typography variant="body2">{getAccountName(row.account_id)}</Typography>
                                                         </Grid>
+                                                        {(row.vendor_name || row.customer_name) && (
+                                                            <Grid size={12}>
+                                                                <Typography variant="caption" color="text.secondary" display="block">
+                                                                    Contact
+                                                                </Typography>
+                                                                <Typography variant="body2">{row.vendor_name || row.customer_name}</Typography>
+                                                            </Grid>
+                                                        )}
                                                         <Grid size={12}>
                                                             <Typography variant="caption" color="text.secondary" display="block">
                                                                 Amount
@@ -410,6 +420,7 @@ export default function ByCategory({
                                                     <TableCell>Date</TableCell>
                                                     <TableCell>Type</TableCell>
                                                     <TableCell>Account</TableCell>
+                                                    <TableCell>Contact</TableCell>
                                                     <TableCell>Description</TableCell>
                                                     <TableCell align="right">Amount</TableCell>
                                                     <TableCell sx={{ minWidth: '120px' }}></TableCell>
@@ -421,7 +432,10 @@ export default function ByCategory({
                                                         <TableCell>{formatDate(row.paid_at)}</TableCell>
                                                         <TableCell>{formatType(row)}</TableCell>
                                                         <TableCell>{getAccountName(row.account_id)}</TableCell>
-                                                        <TableCell>{row.description || '-'}</TableCell>
+                                                        <TableCell>{row.vendor_name || row.customer_name || '-'}</TableCell>
+                                                        <TableCell sx={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {row.description || '-'}
+                                                        </TableCell>
                                                         <TableCell align="right" sx={{ color: row.credit !== null ? 'success.main' : 'error.main' }}>
                                                             {formatNumber(row.credit !== null ? row.credit : row.debit, row.currency_code)}
                                                         </TableCell>
@@ -437,7 +451,7 @@ export default function ByCategory({
                                                 ))}
                                                 {pagination_data.data.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                                                        <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
                                                             No transactions found for this category.
                                                         </TableCell>
                                                     </TableRow>
@@ -445,7 +459,7 @@ export default function ByCategory({
                                             </TableBody>
                                             <TableFooter>
                                                 <TableRow>
-                                                    <TableCell colSpan={6}>
+                                                    <TableCell colSpan={7}>
                                                         <Box display="flex" justifyContent="center" alignItems="center" p={2}>
                                                             <IconButton
                                                                 onClick={() => router.visit(pagination_data.first_page_url)}

@@ -161,12 +161,15 @@ class TransactionsController extends Controller
                     {$table_prefix}payments.category_id,
                     null as customer_id,
                     {$table_prefix}payments.vendor_id,
+                    {$table_prefix}vendors.name as vendor_name,
+                    null as customer_name,
                     {$table_prefix}payments.description,
                     {$table_prefix}revenues.account_id as transfer_account_id
                 SQL
                 )
                 ->leftJoin('transfers', 'transfers.payment_id', '=', 'payments.id')
                 ->leftJoin('revenues', 'revenues.id', '=', 'transfers.revenue_id')
+                ->leftJoin('vendors', 'vendors.id', '=', 'payments.vendor_id')
                 ->where('payments.category_id', $category->id)
                 ->whereNull('payments.deleted_at')
                 ->orderBy('paid_at', 'desc');
@@ -184,12 +187,15 @@ class TransactionsController extends Controller
                     {$table_prefix}revenues.category_id,
                     {$table_prefix}revenues.customer_id,
                     null as vendor_id,
+                    {$table_prefix}customers.name as customer_name,
+                    null as vendor_name,
                     {$table_prefix}revenues.description,
                     {$table_prefix}payments.account_id as transfer_account_id
                 SQL
                 )
                 ->leftJoin('transfers', 'transfers.revenue_id', '=', 'revenues.id')
                 ->leftJoin('payments', 'payments.id', '=', 'transfers.payment_id')
+                ->leftJoin('customers', 'customers.id', '=', 'revenues.customer_id')
                 ->where('revenues.category_id', $category->id)
                 ->whereNull('revenues.deleted_at')
                 ->orderBy('paid_at', 'desc');
@@ -221,6 +227,8 @@ class TransactionsController extends Controller
                     'category_id'         => $item->category_id,
                     'vendor_id'           => $item->vendor_id,
                     'customer_id'         => $item->customer_id,
+                    'vendor_name'         => $item->vendor_name ?? null,
+                    'customer_name'       => $item->customer_name ?? null,
                     'description'         => $item->description,
                     'transfer_account_id' => $item->transfer_account_id,
                 ];
