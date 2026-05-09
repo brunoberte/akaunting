@@ -172,10 +172,10 @@ export default function ByCategory({
     };
 
     const formatType = (item: TransactionType) => {
-        if (item.record_type == 'TransferPayment') {
+        if (item.record_type === 'TransferPayment') {
             return 'Transfer to ' + getAccountName(item.transfer_account_id as number);
         }
-        if (item.record_type == 'TransferRevenue') {
+        if (item.record_type === 'TransferRevenue') {
             return 'Transfer from ' + getAccountName(item.transfer_account_id as number);
         }
         return item.record_type;
@@ -194,30 +194,19 @@ export default function ByCategory({
         return acc;
     }, {} as Record<string, number>) || {};
 
+    const pageTitle = 'Transactions By Category';
+
     return (
-        <AppLayout>
-            <Head title="Transactions by Category" />
+        <AppLayout breadcrumbs={[{ title: pageTitle, path: route('transactions.index') }]}>
+            <Head title={pageTitle} />
             <PageContainer
-                title="Transactions"
-                breadcrumbs={[{ label: 'Transactions', href: route('transactions.index') }, { label: 'By Category' }]}
+                title={pageTitle}
                 actions={
-                    <Stack direction="row" spacing={1}>
-                        <Button
-                            component={Link}
-                            variant="contained"
-                            href={route('transactions.payments.new')}
-                            startIcon={<AddIcon />}
-                            size={'small'}
-                        >
+                    <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'stretch', sm: 'center' }} spacing={1}>
+                        <Button component={Link} variant="contained" href={route('transactions.payments.new')} startIcon={<AddIcon />} size={'small'}>
                             Payment
                         </Button>
-                        <Button
-                            component={Link}
-                            variant="contained"
-                            href={route('transactions.revenues.new')}
-                            startIcon={<AddIcon />}
-                            size={'small'}
-                        >
+                        <Button component={Link} variant="contained" href={route('transactions.revenues.new')} startIcon={<AddIcon />} size={'small'}>
                             Revenue
                         </Button>
                         <Button
@@ -267,7 +256,9 @@ export default function ByCategory({
                                             handleCategoryChange(newValue?.id || null);
                                             setSelectedCategoryObj(newValue);
                                         }}
-                                        renderInput={(params) => <TextField {...params} label={false} variant="outlined" placeholder="Select Category" />}
+                                        renderInput={(params) => (
+                                            <TextField {...params} label={undefined} variant="outlined" placeholder="Select Category" />
+                                        )}
                                         fullWidth
                                     />
                                 </FormControl>
@@ -360,19 +351,19 @@ export default function ByCategory({
                                                         </Typography>
                                                     </Box>
                                                     <Grid container spacing={1}>
-                                                        <Grid item xs={6}>
+                                                        <Grid size={6}>
                                                             <Typography variant="caption" color="text.secondary" display="block">
                                                                 Type
                                                             </Typography>
                                                             <Typography variant="body2">{formatType(row)}</Typography>
                                                         </Grid>
-                                                        <Grid item xs={6}>
+                                                        <Grid size={6}>
                                                             <Typography variant="caption" color="text.secondary" display="block">
                                                                 Account
                                                             </Typography>
                                                             <Typography variant="body2">{getAccountName(row.account_id)}</Typography>
                                                         </Grid>
-                                                        <Grid item xs={12}>
+                                                        <Grid size={12}>
                                                             <Typography variant="caption" color="text.secondary" display="block">
                                                                 Amount
                                                             </Typography>
@@ -436,10 +427,10 @@ export default function ByCategory({
                                                         </TableCell>
                                                         <TableCell align="right">
                                                             <IconButton size="small" onClick={() => handleEditRecord(row)}>
-                                                                <EditIcon />
+                                                                <EditIcon aria-hidden="true" />
                                                             </IconButton>
                                                             <IconButton size="small" onClick={() => handleDeleteRecord(row)}>
-                                                                <DeleteIcon />
+                                                                <DeleteIcon aria-hidden="true" />
                                                             </IconButton>
                                                         </TableCell>
                                                     </TableRow>
@@ -463,7 +454,9 @@ export default function ByCategory({
                                                                 <FirstPageIcon />
                                                             </IconButton>
                                                             <IconButton
-                                                                onClick={() => pagination_data.prev_page_url && router.visit(pagination_data.prev_page_url)}
+                                                                onClick={() =>
+                                                                    pagination_data.prev_page_url && router.visit(pagination_data.prev_page_url)
+                                                                }
                                                                 disabled={!pagination_data.prev_page_url}
                                                             >
                                                                 <KeyboardArrowLeft />
@@ -472,7 +465,9 @@ export default function ByCategory({
                                                                 Page {pagination_data.current_page} of {pagination_data.last_page}
                                                             </Typography>
                                                             <IconButton
-                                                                onClick={() => pagination_data.next_page_url && router.visit(pagination_data.next_page_url)}
+                                                                onClick={() =>
+                                                                    pagination_data.next_page_url && router.visit(pagination_data.next_page_url)
+                                                                }
                                                                 disabled={!pagination_data.next_page_url}
                                                             >
                                                                 <KeyboardArrowRight />

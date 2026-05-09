@@ -203,7 +203,7 @@ export default function Index({
             : '';
     };
 
-    const pageTitle = 'Transactions';
+    const pageTitle = 'Transactions By Account';
 
     return (
         <AppLayout breadcrumbs={[{ title: pageTitle, path: route('transactions.index') }]}>
