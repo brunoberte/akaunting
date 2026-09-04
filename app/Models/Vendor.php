@@ -47,6 +47,11 @@ class Vendor extends AppModel
         return $this->hasMany(Payment::class);
     }
 
+    public function payables()
+    {
+        return $this->hasMany(Payable::class);
+    }
+
     public function currency()
     {
         return $this->belongsTo(Currency::class, 'currency_code', 'code');

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CompaniesController;
+use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PayablesController;
 use App\Http\Controllers\ReceivablesController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Transactions\PaymentsController;
 use App\Http\Controllers\Transactions\RevenuesController;
 use App\Http\Controllers\Transactions\TransfersController;
 use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\VendorsController;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +60,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('categories', [CategoriesController::class, 'create'])->name('categories.create');
     Route::patch('categories/{category}', [CategoriesController::class, 'update'])->name('categories.update');
     Route::delete('categories/{category}', [CategoriesController::class, 'destroy'])->name('categories.delete');
+
+    Route::get('customers', [CustomersController::class, 'index'])->name('customers.index');
+    Route::get('customers/new', [CustomersController::class, 'new'])->name('customers.new');
+    Route::get('customers/{customer}', [CustomersController::class, 'edit'])->name('customers.edit');
+    Route::post('customers', [CustomersController::class, 'create'])->name('customers.create');
+    Route::patch('customers/{customer}', [CustomersController::class, 'update'])->name('customers.update');
+    Route::delete('customers/{customer}', [CustomersController::class, 'destroy'])->name('customers.delete');
+
+    Route::get('vendors', [VendorsController::class, 'index'])->name('vendors.index');
+    Route::get('vendors/new', [VendorsController::class, 'new'])->name('vendors.new');
+    Route::get('vendors/{vendor}', [VendorsController::class, 'edit'])->name('vendors.edit');
+    Route::post('vendors', [VendorsController::class, 'create'])->name('vendors.create');
+    Route::patch('vendors/{vendor}', [VendorsController::class, 'update'])->name('vendors.update');
+    Route::delete('vendors/{vendor}', [VendorsController::class, 'destroy'])->name('vendors.delete');
 
     Route::get('payables', [PayablesController::class, 'index'])->name('payables.index');
     Route::get('payables/new', [PayablesController::class, 'new'])->name('payables.new');

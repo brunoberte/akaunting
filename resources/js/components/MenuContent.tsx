@@ -2,7 +2,9 @@ import { Link } from '@inertiajs/react';
 import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import StoreRoundedIcon from '@mui/icons-material/StoreRounded';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -17,6 +19,8 @@ const mainListItems = [
     { text: 'Receivables', icon: <AssignmentRoundedIcon />, path: route('receivables.index') },
     { text: 'Accounts', icon: <SettingsRoundedIcon />, path: route('accounts.index') },
     { text: 'Categories', icon: <InfoRoundedIcon />, path: route('categories.index') },
+    { text: 'Customers', icon: <PeopleRoundedIcon />, path: route('customers.index') },
+    { text: 'Vendors', icon: <StoreRoundedIcon />, path: route('vendors.index') },
 ];
 
 const secondaryListItems = [

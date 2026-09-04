@@ -59,17 +59,22 @@ class Customer extends AppModel
 
     public function revenues()
     {
-        return $this->hasMany('App\Models\Income\Revenue');
+        return $this->hasMany(Revenue::class);
+    }
+
+    public function receivables()
+    {
+        return $this->hasMany(Receivable::class);
     }
 
     public function currency()
     {
-        return $this->belongsTo('App\Models\Setting\Currency', 'currency_code', 'code');
+        return $this->belongsTo(Currency::class, 'currency_code', 'code');
     }
 
     public function user()
     {
-        return $this->belongsTo('App\Models\Auth\User', 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function onCloning($src, $child = null)
