@@ -63,6 +63,12 @@ class VendorsController extends Controller
         return to_route('vendors.index');
     }
 
+    public function toggleStatus(Vendor $vendor): RedirectResponse
+    {
+        $vendor->update(['enabled' => !$vendor->enabled]);
+        return back();
+    }
+
     public function create(VendorCreateRequest $request): RedirectResponse
     {
         Vendor::create($request->validated());

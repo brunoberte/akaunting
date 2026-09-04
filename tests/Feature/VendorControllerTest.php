@@ -136,6 +136,36 @@ test('Vendor can be updated', function () {
     ]);
 });
 
+test('Vendor status can be toggled', function () {
+    $user = User::factory()->create();
+    $company = Company::factory()->create();
+    $vendor = Vendor::factory()->state(['company_id' => $company->id, 'enabled' => true])->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->withSession(['company_id' => $company->id])
+        ->from('/vendors')
+        ->patch("/vendors/{$vendor->id}/toggle-status");
+
+    $response->assertRedirect('/vendors');
+    $this->assertDatabaseHas('vendors', [
+        'id'      => $vendor->id,
+        'enabled' => false,
+    ]);
+
+    $response2 = $this
+        ->actingAs($user)
+        ->withSession(['company_id' => $company->id])
+        ->from('/vendors')
+        ->patch("/vendors/{$vendor->id}/toggle-status");
+
+    $response2->assertRedirect('/vendors');
+    $this->assertDatabaseHas('vendors', [
+        'id'      => $vendor->id,
+        'enabled' => true,
+    ]);
+});
+
 test('Vendor can be deleted if not in use', function () {
     $user = User::factory()->create();
     $company = Company::factory()->create();

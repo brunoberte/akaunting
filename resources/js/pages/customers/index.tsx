@@ -83,6 +83,23 @@ const handleDeleteRecord = (row: CustomerItem) => {
     }
 };
 
+const handleToggleStatus = (row: CustomerItem) => {
+    router.patch(
+        route('customers.toggle-status', [row.id]),
+        {},
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                toast.success(`Customer ${row.name} status updated`);
+            },
+            onError: () => {
+                toast.error('Failed to update status');
+            },
+        },
+    );
+};
+
 export default function Index({
     customers,
     filter_text = '',
@@ -217,11 +234,15 @@ export default function Index({
                                             <TableCell>{row.phone || '-'}</TableCell>
                                             <TableCell>{row.currency_code}</TableCell>
                                             <TableCell align="center">
-                                                <Chip
-                                                    label={row.enabled ? 'Active' : 'Inactive'}
-                                                    color={row.enabled ? 'success' : 'default'}
-                                                    size="small"
-                                                />
+                                                <Tooltip title="Click to change status" arrow>
+                                                    <Chip
+                                                        label={row.enabled ? 'Active' : 'Inactive'}
+                                                        color={row.enabled ? 'success' : 'default'}
+                                                        size="small"
+                                                        onClick={() => handleToggleStatus(row)}
+                                                        sx={{ cursor: 'pointer' }}
+                                                    />
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell align="right">
                                                 <IconButton size="small" href={route('customers.edit', { customer: row.id })}>

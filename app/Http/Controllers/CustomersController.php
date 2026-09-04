@@ -63,6 +63,12 @@ class CustomersController extends Controller
         return to_route('customers.index');
     }
 
+    public function toggleStatus(Customer $customer): RedirectResponse
+    {
+        $customer->update(['enabled' => !$customer->enabled]);
+        return back();
+    }
+
     public function create(CustomerCreateRequest $request): RedirectResponse
     {
         Customer::create($request->validated());

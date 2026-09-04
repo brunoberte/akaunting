@@ -66,6 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('customers/{customer}', [CustomersController::class, 'edit'])->name('customers.edit');
     Route::post('customers', [CustomersController::class, 'create'])->name('customers.create');
     Route::patch('customers/{customer}', [CustomersController::class, 'update'])->name('customers.update');
+    Route::patch('customers/{customer}/toggle-status', [CustomersController::class, 'toggleStatus'])->name('customers.toggle-status');
     Route::delete('customers/{customer}', [CustomersController::class, 'destroy'])->name('customers.delete');
 
     Route::get('vendors', [VendorsController::class, 'index'])->name('vendors.index');
@@ -73,6 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('vendors/{vendor}', [VendorsController::class, 'edit'])->name('vendors.edit');
     Route::post('vendors', [VendorsController::class, 'create'])->name('vendors.create');
     Route::patch('vendors/{vendor}', [VendorsController::class, 'update'])->name('vendors.update');
+    Route::patch('vendors/{vendor}/toggle-status', [VendorsController::class, 'toggleStatus'])->name('vendors.toggle-status');
     Route::delete('vendors/{vendor}', [VendorsController::class, 'destroy'])->name('vendors.delete');
 
     Route::get('payables', [PayablesController::class, 'index'])->name('payables.index');

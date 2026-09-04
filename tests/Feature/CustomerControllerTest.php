@@ -136,6 +136,36 @@ test('Customer can be updated', function () {
     ]);
 });
 
+test('Customer status can be toggled', function () {
+    $user = User::factory()->create();
+    $company = Company::factory()->create();
+    $customer = Customer::factory()->state(['company_id' => $company->id, 'enabled' => true])->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->withSession(['company_id' => $company->id])
+        ->from('/customers')
+        ->patch("/customers/{$customer->id}/toggle-status");
+
+    $response->assertRedirect('/customers');
+    $this->assertDatabaseHas('customers', [
+        'id'      => $customer->id,
+        'enabled' => false,
+    ]);
+
+    $response2 = $this
+        ->actingAs($user)
+        ->withSession(['company_id' => $company->id])
+        ->from('/customers')
+        ->patch("/customers/{$customer->id}/toggle-status");
+
+    $response2->assertRedirect('/customers');
+    $this->assertDatabaseHas('customers', [
+        'id'      => $customer->id,
+        'enabled' => true,
+    ]);
+});
+
 test('Customer can be deleted if not in use', function () {
     $user = User::factory()->create();
     $company = Company::factory()->create();
