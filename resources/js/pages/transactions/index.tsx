@@ -37,6 +37,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 export const schema = z.object({
     id: z.number(),
+    transfer_id: z.number().nullable().optional(),
     account_id: z.number(),
     category_id: z.number(),
     customer_id: z.number().optional(),
@@ -106,6 +107,7 @@ export default function Index({
         if (window.confirm('Are you sure you want to delete this record?')) {
             try {
                 let route_name = '';
+                let id = item.id;
                 switch (item.record_type) {
                     case 'Payment':
                         route_name = 'transactions.payments.delete';
@@ -113,11 +115,16 @@ export default function Index({
                     case 'Revenue':
                         route_name = 'transactions.revenues.delete';
                         break;
+                    case 'TransferPayment':
+                    case 'TransferRevenue':
+                        route_name = 'transactions.transfers.delete';
+                        id = item.transfer_id;
+                        break;
                     default:
                         toast.error('Not implemented');
                         return;
                 }
-                router.delete(route(route_name, [item.id]), {
+                router.delete(route(route_name, [id]), {
                     preserveScroll: true,
                     preserveState: true,
                     onSuccess: (page) => {

@@ -12,6 +12,7 @@ use App\Models\Revenue;
 use App\Models\Transfer;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -143,7 +144,14 @@ class TransfersController extends Controller
 
     public function destroy(Transfer $transfer): RedirectResponse
     {
-        $transfer->delete();
-        return to_route('transactions.index', ['account_id' => $transfer->payment->account_id]);
+        $account_id = $transfer->payment?->account_id;
+
+        DB::transaction(function () use ($transfer) {
+            $transfer->payment?->delete();
+            $transfer->revenue?->delete();
+            $transfer->delete();
+        });
+
+        return to_route('transactions.index', ['account_id' => $account_id]);
     }
 }

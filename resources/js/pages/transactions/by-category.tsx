@@ -125,20 +125,24 @@ export default function ByCategory({
         if (window.confirm('Are you sure you want to delete this record?')) {
             try {
                 let route_name = '';
+                let id = item.id;
                 switch (item.record_type) {
                     case 'Payment':
-                    case 'TransferPayment':
                         route_name = 'transactions.payments.delete';
                         break;
                     case 'Revenue':
-                    case 'TransferRevenue':
                         route_name = 'transactions.revenues.delete';
+                        break;
+                    case 'TransferPayment':
+                    case 'TransferRevenue':
+                        route_name = 'transactions.transfers.delete';
+                        id = item.transfer_id as number;
                         break;
                     default:
                         toast.error('Not implemented');
                         return;
                 }
-                router.delete(route(route_name, [item.id]), {
+                router.delete(route(route_name, [id]), {
                     preserveScroll: true,
                     preserveState: true,
                     onSuccess: () => {
